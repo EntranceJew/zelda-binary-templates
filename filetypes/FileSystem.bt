@@ -1,0 +1,13 @@
+typedef struct {
+    uint start;
+    uint end;
+} ZFileSystemRange;
+
+typedef struct {
+    uint virtual_start;
+    uint virtual_end;
+    uint physical_start;
+    uint physical_end;
+//    char controlCode;
+//    ubyte tabwidth;
+} ZFileSystemEntry;

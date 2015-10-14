@@ -1,0 +1,11 @@
+//--------------------------------------
+//--- 010 Editor v6.0.3 Script File
+//
+// File:
+// Author:
+// Revision:
+// Purpose:
+//--------------------------------------
+local string s;
+SPrintf(s, "%d", GetCursorPos());
+CopyStringToClipboard(s);

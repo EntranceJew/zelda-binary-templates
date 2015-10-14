@@ -1,0 +1,25 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File:
+// Author:
+// Revision:
+// Purpose:
+//--------------------------------------
+
+
+
+
+
+typedef struct {
+    ubyte numPoints;
+    ubyte zeroes[3];
+    ZBankPointer off;
+    if( off.bankNo == 0x02 ){
+        local uint64 returnTo = FTell();
+        FSeek(headerStart + off.startOffset);
+        ZVector nodes[numPoints];
+        FSeek(returnTo);
+    }
+} ZPathList;
+

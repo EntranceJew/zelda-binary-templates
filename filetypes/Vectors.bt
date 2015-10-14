@@ -1,0 +1,43 @@
+typedef struct {
+    short x;
+    short y;
+    short z;
+} VEC3S[3] <read=Vec3SRead, write=Vec3SWrite>;
+
+string Vec3SRead( VEC3S v ){
+    string s;
+    SPrintf( s, "(%f %f %f)", v.x, v.y, v.z );
+    return s;
+}
+
+void Vec3SWrite( VEC3F &v, string s )
+{
+    SScanf( s, "(%f %f %f)", v.x, v[1], v[2] );
+}
+/*
+// Custom read functions that allows the name of the
+//  of the file to appear in the Template Results.
+
+string ReadZIPFILERECORD( ZIPFILERECORD &file )
+{
+    if( exists( file.frFileName ) )
+        return file.frFileName;
+    else
+        return "";
+}
+
+// Custom write function that allows changing
+//  the name of the file - note that the file
+//  name size cannot be increased
+
+void WriteZIPFILERECORD( ZIPFILERECORD &file, string s )
+{
+    local int len = Strlen( s );
+    if( exists( file.frFileName ) )
+    {
+        Strncpy( file.frFileName, s, file.frFileNameLength );
+        if( len < file.frFileNameLength )
+            file.frFileName[len] = 0; //null terminate        
+    }
+}
+*/

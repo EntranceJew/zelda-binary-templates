@@ -1,0 +1,47 @@
+typedef struct {
+    ubyte red;
+    ubyte green;
+    ubyte blue;
+} ZColor;
+
+typedef struct {
+    // These are signed. 0x7FFF = 1.0
+    hfloat x;
+    hfloat y;
+    hfloat z;
+} ZNormal;
+
+typedef struct {
+    // These are signed.
+    short x;
+    short y;
+    short z;
+} ZVector;
+
+typedef struct {
+    // These are signed.
+    ubyte x;
+    ubyte y;
+    ubyte z;
+} ZByteVector;
+
+local int colorFlop = 0;
+typedef struct Block( uint64 startPoint, uint64 blockRange){
+    Printf( "block range: %d\n", blockRange );
+    if ( colorFlop == 0 ){
+        colorFlop = 1;
+        SetBackColor( cDkBlue );
+        SetForeColor( cLtBlue );
+    } else {
+        colorFlop = 0;
+        SetBackColor( cLtBlue );
+        SetForeColor( cDkBlue );
+    }
+    local uint64 pos = FTell();
+    FSeek(startPoint);
+    char block[ blockRange ];
+//    FSeek(pos);
+    SetBackColor( cNone );
+    SetForeColor( cNone );
+    FSeek(pos);
+};

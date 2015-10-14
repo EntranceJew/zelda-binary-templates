@@ -1,0 +1,78 @@
+/*
+    We don't actually know what the main bank does / us.
+    Here are some types relating to it, though.
+    TODO: Find the main bank definition(s).
+*/
+
+typedef struct {
+    ubyte bankNo : 8;
+} ZBank <read=ZBankRead>;
+
+//, write=ZBankWrite
+
+string ZBankRead(ZBank &zb){
+    switch(zb.bankNo){
+        case 0x02:
+            return "Scene";
+        case 0x03:
+            return "Room";
+        case 0x04:
+            return "gameplay_keep";
+        case 0x05:
+            return "gameplay_field/dangeon_keep";
+        case 0x06:
+            return "Current Object";
+        case 0x07:
+            return "link_animetion/07?";
+        default:
+            local string s;
+            SPrintf( s, "0x%LX?", zb.bankNo);
+            return s;
+    }
+};
+
+typedef struct {
+    ZBank zb;
+    uint offset : 24;
+} ZBankPointer <read=ZBankPointerRead, size=4>;
+
+typedef struct {
+    //WARNING: this doesn't care if the exit bank is not at the same bank level
+    ZBankPointer start;
+    ZBankPointer end;
+} ZBankRange;
+
+string ZBankPointerRead(ZBankPointer &zbp){
+    local string s;
+    SPrintf( s, "%s @ 0x%LX", ZBankRead(zbp.zb), zbp.offset);
+    return s;
+};
+
+int IsZBankLocal( ZBank &zb, int &thisBank ){
+    if( zb.bankNo == thisBank ){
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int IsZBankPointerLocal( ZBankPointer &zbp, int &thisBank ){
+    return IsZBankLocal( zbp.zb, thisBank );
+}
+
+/*
+// Custom write function that allows changing
+//  the name of the file - note that the file
+//  name size cannot be increased
+
+void WriteZIPFILERECORD( ZIPFILERECORD &file, string s )
+{
+    local int len = Strlen( s );
+    if( exists( file.frFileName ) )
+    {
+        Strncpy( file.frFileName, s, file.frFileNameLength );
+        if( len < file.frFileNameLength )
+            file.frFileName[len] = 0; //null terminate        
+    }
+}
+*/

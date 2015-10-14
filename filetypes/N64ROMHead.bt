@@ -1,0 +1,52 @@
+// TODO: Finish this (rom head)
+// Incomplete.
+typedef struct {
+    SetBackColor( cDkBlue );
+    SetForeColor( cLtBlue );
+    ubyte endianess;
+
+    ubyte d1releaseReg : 4;
+    ubyte d1pagesReg   : 4;
+    ubyte d1pulseWidthReg;
+    ubyte d1latencyReg;
+    uint clockrate; //0xFFFFFFF0 for override
+    uint programCounter;
+    uint release;
+    uint CRC1;
+    uint CRC2;
+    char unknown[8];
+
+    char gameTitle[20];
+    char nullZone[5];
+    char spareNulls[2];
+    char gameCode[3];
+    char destinationCode;
+
+    /*
+    65 0x41 'A' (not documented, generic NTSC?)
+    66 0x42 'B' "Brazilian"
+    67 0x43 'C' "Chinese"
+    68 0x44 'D' "German"
+    69 0x45 'E' "North America"
+    70 0x46 'F' "French"
+    71 0x47 'G': Gateway 64 (NTSC)
+    72 0x48 'H' "Dutch"
+    73 0x49 'I' "Italian"
+    74 0x4A 'J' "Japanese"
+    75 0x4B 'K' "Korean"
+    76 0x4C 'L': Gateway 64 (PAL)
+    78 0x4E 'N' "Canadian"
+    80 0x50 'P' "European (basic spec.)"
+    83 0x53 'S' "Spanish"
+    85 0x55 'U' "Australian"
+    87 0x57 'W' "Scandinavian"
+    88 0x58 'X' "Others"
+    89 0x59 'Y' "Others"
+    90 0x5A 'Z' "Others"
+    */
+    ubyte maskROMVersion;
+
+    SetBackColor( cLtBlue );
+    SetForeColor( cDkBlue );
+    char bootCode[4032];
+} N64ROMHead;

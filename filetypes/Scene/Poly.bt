@@ -1,0 +1,23 @@
+typedef struct {
+    ushort type;
+    ZVector verts;
+    ZNormal normal;
+    short displacement;
+} ZPolyList;
+
+typedef struct {
+    // TODO: Identify http://wiki.cloudmodding.com/oot/Collision_Format#Polygon_Types
+    ubyte maybeSetSwitcher;
+    ushort specialEffects : 12;
+    ubyte  exitTrigger : 4;
+    ubyte cameraAngle;
+
+    ubyte unknown1 : 4;
+    ubyte specialWallEffects : 4;
+    ubyte unknown2 : 4;
+    ubyte hookshot : 4;
+    ubyte k : 4;
+    ubyte e : 4;
+    ubyte l : 4;
+    ubyte s : 4;
+} ZPolyType;

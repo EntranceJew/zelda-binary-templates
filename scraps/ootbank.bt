@@ -1,0 +1,587 @@
+/*
+4	Audiobank	00019030	00044DF0	
+5	Audioseq	00044DF0	00094870	
+6	Audiotable	00094870	004E5C00	
+29	code	    00A94000	00BCEF30	
+*/
+
+BitfieldDisablePadding();
+
+// scaffolding
+#include "../filetypes/Bits.bt"
+
+local int colorBeforeSignificant = cNone;
+local int isSignificant = 0;
+void TurnOnSignificant(){
+    isSignificant = 1;
+    colorBeforeSignificant = GetBackColor();
+    SetBackColor( cLtGray );
+    ToggleSignificant();
+}
+
+void TurnOffSignificant(){
+    isSignificant = 0;
+    SetBackColor( colorBeforeSignificant );
+}
+
+void ToggleSignificant(){
+    local int color;
+    local int new;
+    color = GetBackColor();
+    switch(color){
+        case cSilver:
+            new = cLtGray;
+            break;
+        case cLtGray:
+            new = cSilver;
+            break;
+        default:
+            new = color;
+            break;
+    }
+    SetBackColor( new );
+}
+
+#define SION  TurnOnSignificant()
+#define SIOFF TurnOffSignificant()
+#define SIT   ToggleSignificant()
+
+local uint64 restoreDepth;
+local uint64 restorePoints[64];
+#define SAVE    { \
+                    restoreDepth += 1; \
+                    restorePoints[restoreDepth] = FTell();
+
+#define REST        FSeek( restorePoints[restoreDepth] ); \
+                    restorePoints[restoreDepth] = 0; \
+                    restoreDepth -= 1; \
+                }
+
+// the actual file
+#define AUDIOBANK  0x00019030
+#define AUDIOSEQ   0x00044DF0
+#define AUDIOTABLE 0x00094870
+#define ATBL_END   004E5C00
+#define CODEFILE   0x00A94000
+#define INSTRUMENT 0x00BCC270
+#define SEQTABLE   0x00BCC6A0
+#define SAMPLES    0x00BCCD90
+
+SION;
+// ootsamp.bt
+FSeek( SAMPLES );
+
+SIT;
+ushort numSamps;
+SIT;
+ubyte  numSampsPadding[14];
+struct {
+    uint offset; // relative to AUDIOTABLE
+    uint size;  // 
+    ubyte unk1;
+    ubyte unk2;
+    ubyte zeroes[6];
+} SampRecords[numSamps];
+
+
+// ootbank.bt
+FSeek( INSTRUMENT );
+
+ushort numInstrumentSets;
+SIT;
+ubyte  instrumentSetPadding[14];
+
+typedef struct(ubyte sampleBank){
+    SIT;
+    ubyte unknown1 : 8;
+    if( unknown1 != 0 ){
+        Printf("WARNING: The first byte of a TableSample wasn't 0 (was %d) @ 0x%Lx\n", unknown1, FTell()-8);
+    }
+    SIT;
+    uint sampleSize : 24;
+    SIT;
+    uint offset; // from the Audiotable
+    SIT;
+    SAVE;
+    FSeek( AUDIOTABLE + SampRecords[sampleBank].offset + offset );
+    ubyte audioSample[sampleSize];
+    REST;
+} TableSample;
+
+// deathbasket structure 1
+typedef struct(uint seekPos){
+    SIT;
+    uint unknown1;
+    SIT;
+    uint unknown2;
+    if( unknown1 == 0 ){
+        SIT;
+        uint zeroes[2];
+    } else {
+        SIT;
+        uint FFs;
+        SIT;
+        uint zeroes;
+        SIT;
+        uint unknown3[8];
+    }
+} Unknown2;
+
+// deathbasket structure 2
+typedef struct(uint seekPos){
+    SIT;
+    uint type;
+    SIT;
+    uint blockSize;
+    SIT;
+    ubyte dataBlock[32 * blockSize];
+} SampleBlock;
+
+typedef struct(uint seekPos, ubyte sampleBank){
+    TableSample sampleFromTable(sampleBank);
+    SIT;
+    uint unknownPointer; //chunkFooter?!
+    SIT;
+    uint chunkPointer;
+    SAVE;
+    FSeek( seekPos + chunkPointer);
+    SampleBlock sampleData(seekPos);
+    REST;
+
+    SAVE;
+    FSeek( seekPos + unknownPointer );
+    Unknown2 unknown2(seekPos);
+    REST;
+} SampleHead;
+
+typedef struct(uint seekPos, ubyte sampleBank){
+    SIT;
+    uint sampleHead;
+    SIT;
+    float pitch;
+    SIT;
+    if( sampleHead > 0 ){
+        SAVE;
+        FSeek( seekPos + sampleHead );
+        SampleHead headSample(seekPos, sampleBank);
+        REST;
+    }
+} InstrumentSample;
+
+// elusive record 2
+typedef struct(uint seekPos, ubyte sampleBank){
+    ubyte unknown1 : 8;
+    uint  unknown2 : 24;
+    InstrumentSample sample(seekPos, sampleBank);
+    uint  unknown5; // if it's a set-local pointer,
+                    // it's an instrumentProperties pointer
+} ElusiveRecord2;
+
+// elusive record 1
+typedef struct(uint seekPos, ubyte sampleBank){
+    SIT;
+    uint er2Pointers[4];
+    local uint i;
+    for( i = 0; i < 4; i++ ){
+        if( er2Pointers[i] > 0){
+            SAVE;
+            FSeek( seekPos + er2Pointers[i] );
+            ElusiveRecord2 er2(seekPos, sampleBank);
+            REST;
+        }
+    }
+} ElusiveRecord1;
+
+typedef struct{
+    SIT;
+    ushort props[8];
+} InstProperties;
+
+typedef struct(uint seekPos, ubyte sampleBank){
+    SIT;
+    ubyte unknown1[4];
+    InstrumentSample sample(seekPos, sampleBank);
+    SIT;
+    uint instPropertiesPointer;
+    /*
+        xxxxxxxx zzzzzzzz pppppppp yyyyyyyy
+         
+        x = Unknown.
+        zzzzzzzz = Pointer to unknown data structure.
+        pppppppp = Default sample pitch.
+        yyyyyyyy = Pointer to instrument properties.
+    */
+    /*
+    if( pointerToUnknown > 0 ){
+        SAVE;
+        FSeek( seekPos + pointerToUnknown );
+        SampleHead headSample(seekPos);
+        REST;
+    }
+    */
+    SAVE;
+    FSeek( seekPos + instPropertiesPointer );
+    InstProperties properties;
+    REST;
+} PercussionInstrumentIndex;
+
+typedef struct(uint seekPos, ubyte sampleBank){
+    SIT;
+    local uint64 numRecords = 64;
+    local uint64 j;
+    uint instrumentRecords[numRecords];
+    for( j = 0; j < numRecords; j++ ){
+        SAVE;
+        FSeek( seekPos + instrumentRecords[j] );
+        PercussionInstrumentIndex myInstruments(seekPos, sampleBank);
+        REST;
+    }
+} PercussionInstrument;
+
+typedef struct(uint seekPos, ubyte sampleBank){
+    SIT;
+    ubyte startNoteNumbers[3];
+    SIT;
+    ubyte maybeDecay;
+    SIT;
+    uint instPropertiesPointer;
+    SAVE;
+    FSeek( seekPos + instPropertiesPointer );
+    InstProperties properties;
+    REST;
+    InstrumentSample samples(seekPos, sampleBank)[3]<optimize=false>;
+} OtherInstrument;
+
+local uint64 numII = 0;
+struct {
+    local uint64 setStart = FTell();
+    local uint i;
+    local uint j;
+    
+    SIT;
+    uint aBankOffset; // REL: AUDIOBANK
+    SIT;
+    uint size;
+    SIT;
+    ubyte majorVersion;
+    SIT;
+    ubyte minorVersion;
+    SIT;
+    ubyte drampleBank;
+    SIT;
+    ubyte FF;
+    /*
+    The third byte is an index for a list at 
+    SAMPLES which gives the base address to load
+    samples from. What is the purpose of this? Well
+    apparently just to be a pain in the arse, 
+    because taking these numbers and adding them to sample 
+    pointers will load that sample perfectly if the index
+    is changed to 1, which has a base address of zero and 
+    is what most instrument sets use. Only four sets seem 
+    to actually do this though, namely the:
+    Deku Tree, Jabu-Jabu's belly, Goron City and the Spirit Temple.
+    Super Mario 64 does something similar but it affects every single instrument set in the game.
+    */
+    SIT;
+    ubyte numInstruments;
+    SIT;
+    //Number of instruments to be read (can be less than total but 
+    // not greater, does not include percussion).
+    BitEight unknown1;         // aa
+    /*
+    aa = a bitrange
+    only bits 6 8 and 2 are used at any given time
+    bit 2 handles percussion
+    bit 6 is only ever set on the first record
+    bit 8 is only ever set on the second record
+    */
+    SIT;
+    BitEight unknown3;         // bb
+    SIT;
+    ubyte numExtraInstrumentSamples;         // cc
+    // unknown4 is only ever used when minorVersion == 02
+
+    /*
+    foreach on the number of instruments
+    */
+    SAVE;
+    FSeek( AUDIOBANK + aBankOffset );
+
+    local uint64 seekPos = FTell();
+    uint seek1;
+    if( seek1 != 0 ){
+            //Printf("[instrument] seek1: %d was not 0 (was %d)\n", numII, seek1);
+    }
+
+    if( numII <= 1 ){
+        SAVE;
+        FSeek( seekPos + seek1 );
+        ElusiveRecord1 er1(seekPos, drampleBank);
+        REST;
+    }
+
+    /* 
+    the value of Seek1 is valid relative to itself,
+    wherein it points to a list of relative pointers
+    
+    */
+    uint seek2;
+    if( seek2 != 0 ){
+            //Printf("[instrument] seek2: %d was not 0 (was %d)\n", numII, seek2);
+    }
+
+    // odd ones out
+    if( numExtraInstrumentSamples > 0 ){
+        SAVE;
+        FSeek( seekPos + seek2 );
+        for( i = 0; i < numExtraInstrumentSamples; i++ ){
+            InstrumentSample extraInstrumentSamples(seekPos, drampleBank);
+        }
+        REST;
+    }
+
+    if(unknown1.bit2 == 1 && seek2 == 0 && seek1 > 0){
+        SAVE;
+        FSeek( seekPos + seek1 );
+        PercussionInstrument myInstruments(seekPos, drampleBank);
+        REST;
+    }
+
+    /*
+    if( unknown1.bit2 == 1 && seek2 == 0){
+        SAVE;
+        FSeek(seekPos + seek1);
+        SIT;
+        local uint64 numFunk = 16 * 4;
+        uint funkyPointers[numFunk];
+        for( i = 0; i < numFunk; i++ ){
+            SAVE;
+            FSeek( seekPos + funkyPointers[i] );
+            FunkyRecord funkyRec;
+            REST;
+        }
+        REST;
+    } 
+    */
+
+    if( seek1 != 0 && unknown1.bit2 != 1 ) {
+        Printf("[instrument] seek1: %d was not 0 (was %d)\n", numII, seek1);
+    } else if( seek2 != 0 && unknown1.bit2 == 0  ) {
+        Printf("[instrument] seek2: %d was not 0 (was %d)\n", numII, seek2);
+    }
+
+    local ubyte instSeekSize = numInstruments;
+    /*
+    if( unknown1.bit2 == 1 ){
+        instSeekSize += 1;
+    }
+    */
+    SIT;
+    //Printf("[instlocs] now: %d; depth: %d\n", FTell(), restoreDepth);
+    uint myInstrumentLocations[ instSeekSize ];
+    REST;
+    
+    // iterate through all the instruments
+    for( i = 0; i < instSeekSize; i++ ){
+        if( myInstrumentLocations[ i ] != 0 ){
+            SAVE;
+            FSeek( seekPos + myInstrumentLocations[ i ] );
+            //FSeek( AUDIOBANK + aBankOffset + myInstrumentLocations[ i ] );
+            //Printf("[instrument] setStart: %d; pointer: %d; now: %d; depth: %d\n", setStart, myInstrumentLocations[i], FTell(), restoreDepth);
+            OtherInstrument myInstruments(seekPos, drampleBank);
+            REST;
+        } else {
+            Printf("WARNING: On %dth set, found %dth instrument location set too low (0x%Lx)!\n", numII, i, myInstrumentLocations[ i ] );
+        }
+    }
+
+    numII++;
+    //OtherInstrument myInstruments[numInstruments]<optimize=false>;
+} InstrumentSet[numInstrumentSets]<optimize=false>;
+
+/*
+things with mystery pointers:
+PercussionInstrumentIndex
+OtherInstrument
+*/
+
+/*
+struct InstrumentSet[3] is 96 bytes long 
+before it collides with a variable sized Unknown_5
+80 bytes if you assume that it's padded at the end
+
+struct myInstruments[51] has a pointer of 0 that
+doesn't reach beyond the pointer table
+
+myInstruments[1] has a pointer that does not work 
+(data not structured the same)
+it is 1072 (0430h) bytes long and the second 
+
+
+InstrumentSets (2, 37) with a type of 020200 have had 
+seek1 and seek2 values of 0 and 0
+the percussion flag was absent in both cases
+
+InstrumentSets (34, 33) with a type of 020201 have had
+seek1 values but a seek2 value of 0
+
+(SEEK1 POINTERS ARE RELATIVE TO 
+THE POSITION SEEK1 STARTS AT)
+if seek1 and seek2 are set, 
+seek1 points to 4 pointers, those pointers point 
+to records that look like:
+D3 XX XX XX YY YY YY YY 3F ZZ ZZ ZZ AA AA AA AA
+and seek2 points to
+00 00 18 80 3F 20 00 00 | 
+
+if seek1 and seek2 are set, seek1 
+
+InstrumentSets (31) with a type of 020201 
+and the percussion flag have been found to lead with 3 
+sets of 0s (a 0 in the first position) yet numInstruments
+still describes how many instruments it has before the
+padding
+
+the only time seek2 is set to something that isn't 0
+when the percussion flag is not set, is for sets 0 and 1
+
+InstrumentSet[16] lacks the precussion flag but
+still has seek2 set to 0 with a defined seek1
+its patchVersion seems to correlate with the size
+of it's seek2 (6 records)
+
+all instrument lengths tend to be 32 bytes
+
+
+// DEFINITELY TRUE AND RELEVANT NOTES FOR
+// FINALIZING THESE DATA STRUCTURES
+i think the data inlined by what's referred to as 
+"SampleBlock sampleData" is code similar to what's
+found in the sequence definitions 
+
+the first byte of the TableSample object is only
+ever not set to 0 if it's in InstrumentSet 0 or 1
+
+all my references to InstrumentSet 1 &| 2 are most
+likely meant to be references to InstrumentSet 0 &| 1,
+I can't help that after using lua for so long my brain
+became 1-indexed again
+
+I think my data for getting the precussion instruments
+might be wrong, what I call seek1 might be the
+precussion entry and I might be skipping a regular
+instrument in the mix of things
+
+InstrumentSet's seek2 points to
+1088 bytes of unused data in the form of 
+pointer, float, pointer, float ...
+which is 138 records long, which is 80,
+which is the value of unknown4!!!
+
+@ 0x1E278 in OoT_MQ_E_debugD.z64,
+there's some leftover data implying this
+first instrumentset had fewer records
+and that thenext instrumentset was not yet
+defined due to its SampleBlock being raised up
+
+0x1EF60 has a set of data defined relative to it
+but I can't find the InstrumentSet that is responsible
+for it
+
+InstrumentSet[3] has some dangling data
+
+// ALL NOTES AFTER THIS POINT ARE AFTER 
+// THE PRECUSSION CORRECTION
+0x1A870 has 2 InstrumentProperties
+0x1AD10 has several
+0x1B920 is the nearest defined landmark
+
+(extraInstrumentSamples is not 
+jumping to the correct address when defining
+InstrumentSample->SampleHead
+
+
+0x47fb0c is the first audiotable entry with no
+reference to it in the soundbank
+(or it's the last)
+it spans 418036 bytes (0x660F4)
+
+and ends with a clean set of six nulls
+
+the audio table has 231~ items in it if
+you assume that the size of one record
+is 19548 bytes
+(5135360-608368)/190938
+
+if the audio table were to have ~231 records
+in it (based on one particular record being 
+19548 bytes long) then there are ~21 records
+not referenced at the end of the audio table
+
+0x47d420 to 0x47fb0c (9964 bytes)
+
+the offset for the last good record is 0x003E8BB0
+(referenced)
+
+the offset for the first unknown record is 0x003EB29C
+(unreferenced)
+
+the offset for the second unknown record is 0x003F0F70
+(referenced? at 0x00BCCDD0 in the code block)
+
+// AFTER PATCHING TO BOUNCE OF SAMPLEBANKS
+0x4a2884 is the first unknown record area
+spanning 42460 bytes (0xA5DC)
+
+samplebanks 0, 1, 2, 3, 5, 6 are all directly
+referenced despite samplebank 1 being empty 
+(effectually the same as overlapping onto 
+samplebank 0)
+
+samplebank 4 has data in it but the audiobank 
+doesn't directly reference them
+
+// TEST RESULTS:
+* can confirm that changing the third byte 
+(sampleBank) made an ugly mess of audio
+
+0x4a2890
+0x4a8ca0
+
+ 4885664 - 4860048 = 25616
+
+0x29190
+
+4860048 - 1635760 = 3224288
+
+16824 bytes (Sample2)
+until 
+4902488
+
+* setting TableSample's two properties from
+the second InstrumentSample to be the same
+as the first caused a crash
+
+
+samp4:
+start   4251680
+size    42448
+52
+
+stops:
+0x0     
+0x6410  = 25616
+(25616)
+0x72d0  = 29392
+(3776) @ 4306848
+0x8230  = 33328
+(3936) @ 4310784
+0x9030  = 36912
+(3584)
+0xa5c0  = 42432
+(5520)
+
+25616
+4251680
+*/

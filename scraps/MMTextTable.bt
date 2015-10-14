@@ -1,0 +1,159 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File:    
+// Author:
+// Revision:
+// Purpose:
+//--------------------------------------
+// this uses the MM (U) decompressed rom.
+BitfieldDisablePadding();
+typedef ushort word;
+typedef uint dword;
+typedef uint64 qword;
+
+
+
+N64ROMHead dab;
+
+typedef struct {
+    //FSeek(11341836);
+    char type;
+    char yPos;
+    char icon;
+    char jumpMessage[2];
+    char cost[2];
+    char junk[4];
+    string message;
+}  MMTextMessage;
+
+typedef struct {
+    //FSeek(12964056);
+    ushort msgNo <format=decimal>;
+    char space[2];
+    char zeroeight[1];
+    ubyte offPage;
+    ushort offset;
+//    FSeek(11341836 + offset);
+//    MMTextMessage mmessage;
+} MMTextTable;
+/*
+local int i, shoveoff = 0;
+for( i = 0; i < 4589; i++ ){
+    shoveoff = message_head[i].offset;
+    shoveoff += (message_head[i].offPage * 65536);
+    FSeek(11341824 + shoveoff);
+    MMTextMessage david;
+}
+
+*/
+
+/*
+typedef struct {
+    char weirdhead[8];
+    char tab[1];
+    string credit;
+} MMCreditSequence;
+
+FSeek(11776000);
+*/
+
+/*
+    NOTES:
+    * all this shit 
+    * when the camera changes scenes, no matter how long the previous text is held, it gets cleared
+    * you can't insert additional credits pages because each page has a specified "JUMP"
+
+    MEMORY:
+    B3B000          start
+    B3B03C  +44     directors
+    B3B094  +148
+    B3B0F0
+
+    INDENTS:
+    3C(60)      = leftmost indentation
+    60(96)[+36] = one indent level
+
+    HEADERS:
+        01    = newline, put in more 
+        02    = stops text drawing
+                end of the credits "page"
+                if not preceeded by 11 then it will stop all text events until forced by the scene changing
+        03    = draws an overline and a right-aligned dash, does not move print head http://i.imgur.com/9J4Da3x.png ("p" replaced with an "O" to show it) 
+        04??  = functionally identical to 02
+        05?   = DOES NOT ACT LIKE OoT COUNTERPART, TAKES NO ARGUMENTS
+                fucks up text kerning immensely the moment after it appears http://i.imgur.com/HrH90uT.png
+                putting one right after another pretends like nothing bad ever happened [05 05]
+                http://i.imgur.com/4fGEwph.png adding another one changes the fuck amount 
+                http://i.imgur.com/1TsAbvp.png 
+                http://i.imgur.com/LF1IYQ4.png 
+                effects do not travel to next drawn scene
+        06 XX = tab (width)
+                3C = titles
+                60 = person name
+        07 XX XX = display message ID (must be preceeded by 11 XX XX to function)
+(17)    08    = everything following this draws immediately
+        09    = negates the effect of 08
+        10?
+        11    = XX XX where XX XX is a ushort of how long to keep the text on screen; if missing, all the other text doesn't get drawn [scene page]
+        0C    = XX ??? pushes text page
+        0F    = supposed to be the player name, is instead "!  $! $"
+        ??
+        16    = crash
+
+        20-AF = text chars
+        B0-BB = control icons (doesn't push other symbols / has no color)
+        BC    = crash
+        ??
+        BF    = crash
+
+*/
+
+typedef struct {
+    char controlCode;
+    ubyte tabwidth;
+} MMCreditTab;
+
+typedef struct {
+    char start;
+    local ubyte readbyte;
+    while ( 1 == 1 ) {
+        readbyte = ReadUByte(FTell());
+        if ( readbyte == 9 ){
+            break;
+        } else {
+            char linetext;
+        }
+    }
+    ubyte end;
+} MMCreditTextLine;
+
+//MMCreditTextLine lineOne;
+
+/*
+char eightOneOneOneOneOneOne[7];
+//char oneOneOneSix[4];
+MMCreditTab tab1;
+char indentLevel;
+char visibleText[20];
+char oneOneOneOne[4];
+MMCreditTab tab2;
+char visibleText2[16];
+char lineCap2;
+char mysteryData[7];
+char eightOneOneOne2[4];
+MMCreditTab tab3;
+
+*/
+
+// DerrikeG, to add to the 0xFE thing. Sometimes when they use a short (2 bytes) they also use 0x7FFF, or even 0x7FFE, along with 0xFFFF and 0xFFFE
+
+/*
+    67108863, 3FFFFFF
+*/
+local uint64 buildPos = 107728;
+FSeek(buildPos); //build date
+char buildInfo[48];
+
+//MMFileSystemTable yes;
+//MMFileSystemEntry garg[1552];

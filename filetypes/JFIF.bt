@@ -1,0 +1,32 @@
+enum <ubyte> JFIFPixelDensity {
+    NotSpecified        = 0x00,
+    PixelsPerInch       = 0x01,
+    PixelsPerCentimeter = 0x02
+};
+
+typedef struct {
+    char start[2]; //0xFFD8 or riot
+    char APP0[2]; //0xFFE0 or riot
+    ushort headLen; //usually 16
+    string magic; // "JFIF" followed by a null
+    ubyte verMajor; //OoT uses v1.01
+    ubyte verMinor;
+    JFIFPixelDensity pixelDensity;
+    ushort densityX;
+    ushort densityY;
+    ushort thumbWidth; // 0 or riot
+    ushort thumbHeight; // 0 or riot
+    ubyte thumbData[thumbWidth * thumbHeight * 3]; // empty or riot
+    char headEnd[2]; //0xFFDB or riot
+    local ushort readByte = 0x0000;
+    local uint64 startPos = FTell();
+    while( 1 == 1 ){
+        readByte = ReadUShort(FTell());
+        if( readByte == 0xFFDB ){
+            break;
+        }
+        FSkip(1); // not sure if this should be 2 (might miss it for odd dimensions)
+    }
+    ubyte data[FTell()-startPos];
+    char end[2]; //0xFFD9 or riot
+} JFIF;
