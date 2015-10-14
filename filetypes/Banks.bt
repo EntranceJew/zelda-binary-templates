@@ -12,6 +12,8 @@ typedef struct {
 
 string ZBankRead(ZBank &zb){
     switch(zb.bankNo){
+        case 0x01:
+            return "Title Static?!";
         case 0x02:
             return "Scene";
         case 0x03:
