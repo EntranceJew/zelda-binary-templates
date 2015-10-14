@@ -1,12 +1,18 @@
 # To Do
 A handy file that lists everything that must be done, ever.
 
+## Stuff That Was Found But Not Documented Yet
+* Most if not all [unknown header commands](filetypes/Scene/HeaderCommand.bt) accept a number, two bytes of null, and then a scene-local [ZBank](filetypes/Banks.bt).
+* Nearly everything in [ootbank.bt](scraps/ootbank.bt), specifically where deathbasket's docs leave gaps that are bridged by spinout's.
+* The 4th sample bank is not yet referenced by ootbank and through testing it only contains a vocal pad, potentially unused?
+
 ## Template Based
 If it relates to refactoring templates or styles to enforce, then it should happen here.
 ### Housekeeping
 * Bring up any stray TODOs in the files here.
 * Clean out unused / copypasted code.
 * Get some standards.
+* Replace all warnings with a hard warning macro.
 ### Find Data
 * Scrounge around for source code from other tools, particularly files of type .cs, .h, or .py -- I don't want to reverse a source-less tool unless I'm absolutely stumped.
 ### Following The Rules
