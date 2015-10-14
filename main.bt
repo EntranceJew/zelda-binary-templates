@@ -19,6 +19,7 @@ BitfieldDisablePadding();
 #include "filetypes/Scene/Camera.bt"
 #include "filetypes/Scene/Poly.bt"
 #include "filetypes/Scene/Collision.bt"
+#include "filetypes/Scene/Cutscene.bt"
 #include "filetypes/JFIF.bt"
 #include "filetypes/Scene/Mesh.bt"
 
@@ -31,8 +32,8 @@ void EXWarning(string reason){
 }
 
 //FSeek(0x213B000);
-SetForeColor( cDkPurple );
-ZScene mysteryroom;
+//SetForeColor( cDkPurple );
+//ZScene mysteryroom;
 //FSeek(0x4C40);
 //local ubyte bankType = 0x03;
 //ZSceneHeader wat( bankType );
@@ -40,6 +41,7 @@ ZScene mysteryroom;
 //        SetBackColor( cDkGreen);
 //        SetBackColor( cNone );
 //FSeek(0x00C95000);
+/*
 typedef struct {
     struct {
         FSeek(0x00DD5A50);
@@ -65,11 +67,9 @@ typedef struct {
         for(i = 0; i < itemsInActorTable; i++){
             Block watashi(ZActorTableRecord[i].vromStart,  ZActorTableRecord[i].vromEnd -  ZActorTableRecord[i].vromStart);
         }
-        /*
-        00 = mayor's office
-        01 = majora's lair
-        ...
-        */
+        //00 = mayor's office
+        //01 = majora's lair
+        //...
         SetBackColor( cNone );
     } ZActorTable;
     struct {
@@ -79,11 +79,9 @@ typedef struct {
         struct {
             char neat[12];
         } neat[121];
-        /*
-        00 = mayor's office
-        01 = majora's lair
-        ...
-        */
+        //00 = mayor's office
+        //01 = majora's lair
+        //...
         SetBackColor( cNone );
     } ZInterestingStrings;
     struct {
@@ -95,13 +93,10 @@ typedef struct {
         for(i = 0; i < itemsInObjectTable; i++){
             Block watashi(bankLocations.start, bankLocations.end - bankLocations.start);
         }
-        /*
-        00 = gameplay_keep
-        01 = gameplay_feild_keep
-        02 = gameplay_dangeon_keep
-        03 = anju's grandmother ???
-        ...
-        */
+        //00 = gameplay_keep
+        //01 = gameplay_feild_keep
+        //02 = gameplay_dangeon_keep
+        //03 = anju's grandmother ???
         SetBackColor( cNone );
     } ZObjectTable;
     struct {
@@ -115,11 +110,9 @@ typedef struct {
         for(i = 0; i < itemsInAreaTable; i++){
             Block watashi(bankLocations.start, bankLocations.end - bankLocations.start);
         }
-        /*
-        00 = mayor's office
-        01 = majora's lair
-        ...
-        */
+        //00 = mayor's office
+        //01 = majora's lair
+        //...
         SetBackColor( cNone );
     } ZAreaTable;
 } ZCodeBlock;
@@ -137,6 +130,10 @@ typedef struct {
 //ZScene Z2_LAST_BS;
 //FSeek(03104000h);
 //ZRoom Z2_WITCH_SHOP_room_14;
+
+FSeek(03066000h);
+ZScene clocktower;
+
 
 /*
     Task List:

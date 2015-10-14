@@ -28,6 +28,8 @@ typedef struct {
     }
 } ZPathList;
 
+
+
 typedef struct {
     uint startPosition; // references room start position list
     uint roomToLoad; // TODO: Find room references?
@@ -348,9 +350,20 @@ typedef struct ( ubyte &bankType ) { //ZSceneHeaderCommand
             ubyte echo;
             break;
         case 0x17:
-            ubyte idk[7];
+            // Cutscenes
+            local uint i;
+            ubyte numCutscenes;
+            ubyte zeroes[2];
+            ZBankPointer listOffset;
+            if( listOffset.zb.bankNo == bankType ){
+                local uint64 returnTo = FTell();
+                FSeek(headerStart + listOffset.offset);
+                ZCutsceneHeader cutscenes(headerStart)[numCutscenes]<optimize=false>;
+                FSeek(returnTo);
+            } else {
+                Warning("External Bank");
+            }
             break;
-//            return "Cutscenes";
         case 0x18:
             // "Alternate Headers";
             // points to all existing headers other than itself
