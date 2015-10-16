@@ -17,6 +17,7 @@ If it relates to refactoring templates or styles to enforce, then it should happ
 * Write a handy macro for comparing two like structures using [science](http://www.sweetscape.com/010editor/manual/FuncTools.htm#Compare).
 ### Find Data
 * Scrounge around for source code from other tools, particularly files of type .cs, .h, or .py -- I don't want to reverse a source-less tool unless I'm absolutely stumped.
+* Cross-reference checkums and junk with places like No-Intro, GoodN64, MAME's N64 softwarelist.
 ### Following The Rules
 * Remove instances of data that was defined as part of the template, this throws off counts.
 * Agnosticize certain files into .h files where it can be done via #defines.
