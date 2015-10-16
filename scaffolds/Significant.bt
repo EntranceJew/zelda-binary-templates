@@ -1,0 +1,40 @@
+/*
+    Add some macros for toggling background color banding
+    to increase visibility.
+*/
+
+local int colorBeforeSignificant = cNone;
+local int isSignificant = 0;
+void TurnOnSignificant(){
+    isSignificant = 1;
+    colorBeforeSignificant = GetBackColor();
+    SetBackColor( cLtGray );
+    ToggleSignificant();
+}
+
+void TurnOffSignificant(){
+    isSignificant = 0;
+    SetBackColor( colorBeforeSignificant );
+}
+
+void ToggleSignificant(){
+    local int color;
+    local int new;
+    color = GetBackColor();
+    switch(color){
+        case cSilver:
+            new = cLtGray;
+            break;
+        case cLtGray:
+            new = cSilver;
+            break;
+        default:
+            new = color;
+            break;
+    }
+    SetBackColor( new );
+}
+
+#define SION  TurnOnSignificant()
+#define SIOFF TurnOffSignificant()
+#define SIT   ToggleSignificant()

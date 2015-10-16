@@ -1,0 +1,15 @@
+/*
+    Add some macros for getting back to where you were
+    without caring where you were!
+*/
+
+local uint64 restoreDepth;
+local uint64 restorePoints[64];
+#define SAVE    { \
+                    restoreDepth += 1; \
+                    restorePoints[restoreDepth] = FTell();
+
+#define REST        FSeek( restorePoints[restoreDepth] ); \
+                    restorePoints[restoreDepth] = 0; \
+                    restoreDepth -= 1; \
+                }

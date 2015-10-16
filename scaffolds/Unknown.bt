@@ -1,0 +1,11 @@
+/*
+    Make note of an unknown variable in style.
+*/
+void AlertUnknownData(){
+    local string msg;
+    SPrintf(msg, "UNKNOWN: @ %LXh", FTell());
+    SPrintf(msg, "%s\n", msg);
+    Printf(msg);
+}
+
+#define UNK AlertUnknownData()
