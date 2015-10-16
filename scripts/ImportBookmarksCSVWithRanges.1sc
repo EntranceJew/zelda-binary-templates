@@ -1,0 +1,117 @@
+//--------------------------------------
+//--- 010 Editor v4.0.3 Script File
+//
+// File: ImportBookmarksCSV.1sc
+// Author: Artur Babecki  (artur.babecki@gmail.com)
+// Revision: 2012-12-02
+// Purpose: Import Bookmarks from the exported CSV file.
+// 
+//--------------------------------------------------------
+// BEGIN
+//-----------------------------------------------
+    string typename,name,value;
+    int arraySize;
+    int64 pos;
+    int forecolor;
+    int backcolor;
+    int moveWithCursor=false;
+    int size;    
+	int sizeP1;
+	int sizeP2;
+//-----------------------------------------------
+#define LINELENGTH 2048
+uchar buffer[LINELENGTH];
+uint64 numlines;
+int i,k;
+int f0,f1;      //file indexes
+string fname;
+uint64 f0size;
+
+// --------------------------------------------------
+// uncomment the line below if you want to clear previous bookmarks
+// while (GetNumBookmarks())  RemoveBookmark(0);
+// --------------------------------------------------
+
+RequiresVersion(4,0,0);
+f0=GetFileNum();
+f0size=FileSize();
+fname=InputOpenFileName("Import Bookmarks CSV file)",    "All files (*.csv)|(*.*)","" );
+
+f1=FileOpen(fname,false,"Text",false);
+
+numlines=TextGetNumLines();
+
+for(i=1;i<numlines-1;i++) {
+    FileSelect(f1);
+    TextReadLine(buffer,i,LINELENGTH);
+
+    scanline();
+
+    FileSelect(f0);
+
+//--------------------------------------------------------------------------------
+if(pos>f0size){
+            Printf("\n\nWARNING: ");
+            Printf("Offsets of the bookmarks exceed the file size: the bookmarks are truncated.\n");
+            Printf("          File size:    %.10Ld (%.10LXh)\n          Offset found: %.10Ld (%.10LXh)" ,f0size,f0size,pos,pos);
+            Printf("\n\n%d from %d bookmark(s) imported.",k,numlines-2);
+            FileSelect(f0);
+            return;
+            }
+
+//--------------------------------------------------------------------------------
+    AddBookmark(pos,name,typename,arraySize,forecolor,backcolor,moveWithCursor);
+    typename="";
+    name="";
+    arraySize=0;
+    forecolor=cNone;
+    k++;    //counter
+}
+FileSelect(f1);
+FileClose();
+FileSelect(f0);
+Printf("\n\n%d from %d bookmark(s) imported.",k,numlines-2);
+
+
+//  END OF MAIN
+
+//--------------------------------------------------
+void scanline ()
+{
+#define DELIMETER  ','
+local string field1,field2,field3,field4,field5;
+local string wrk_str;
+local uint i,k;
+local uint idx[4];
+local string size2;
+
+
+    for (i=0;i<Strlen(buffer);i++)
+      {if ( buffer[i]==DELIMETER) { idx[k]=i;k++;} }  //scan for DELIMETER
+
+
+    field1=SubStr( buffer,0,idx[0]);
+    field2=SubStr( buffer,idx[0]+1,idx[1]-idx[0]-1);
+    field3=SubStr( buffer,idx[1]+1,idx[2]-idx[1]-1);
+    field4=SubStr( buffer,idx[2]+1,idx[3]-idx[2]-1);
+    field5=SubStr( buffer,idx[3]+1,-1);
+    Printf("%s,%s,%s,%s,%s", field1, field2, field3, field4, field5);
+
+     SScanf(field1,"%[^[][%[^]]",wrk_str,size2);
+        if (size2 !="") arraySize=Atoi(size2); else arraySize=-1;
+     SScanf(wrk_str,"%s %s",typename,name);
+         value=field2;
+     SScanf(field3,"%LXh",pos);
+     SScanf(field4,"%LXh-%LXh",sizeP1,sizeP2);
+	 size=sizeP2-sizeP1;
+     arraySize=size;
+     Printf("%LXh-%LXh=%d\n", sizeP2, sizeP1, size);
+     SScanf(field5,"Fg:%[^Bg:]Bg:%X",wrk_str,backcolor);
+        if (Strlen(wrk_str)==1){forecolor=cNone;} else SScanf(wrk_str,"%X",forecolor);
+     Printf("UNDERSTOOD: %s %s,%s,%LXh,%d,Fg: 0x%LX Bg: 0x%LX\n", typename, name, value, pos, size, forecolor, backcolor);
+    
+return;
+}
+
+//  END OF CODE
+//---------------------------------------------------------------------
