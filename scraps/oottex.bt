@@ -1,0 +1,254 @@
+// TODO: Fix bitwise alignment sadness.
+// TODO: Combine palette visualization lookup.
+// TODO: Test out the jay peg, why not?
+BitfieldDisablePadding();
+
+// scaffolding
+#include "filetypes/Bits.bt"
+#include "filetypes/JFIF.bt"
+#include "scaffolds/__init__.bt"
+
+uint64 scale(uint64 valueIn, uint64 baseMin, uint64 baseMax, uint64 limitMin){
+    return ((limitMax - limitMin) * (valueIn - baseMin) / (baseMax - baseMin)) + limitMin;
+}
+
+int flipBits(int n, int k) {
+    local int mask = 1;
+    local int i;
+    for(i = 1; i < k; ++i)
+        mask |= mask << 1;
+
+    return ~n & mask;
+}
+
+void SetBackColorAuto(int color){
+    SetBackColor( color );
+    SetForeColor( flipBits(color, 8) );
+}
+
+/* 
+    warning:
+    i4 implementation might not be accurate
+    due to mysteries w/r/t bit shifting
+    
+    technically all they need to be a single number but w/e I'm great
+*/
+
+/*
+Palettes uses rgb5a1 and are completely separate from the ci textures.
+They are usually put after the texture itself, 
+but the distance can vary a lot.
+Multiple textures may share the same palette, and the palette may sometimes be part of an actual texture.
+*/
+
+#define icon_item_static 7651328
+typedef struct{
+    local uint64 color;
+    local string dat;
+    local ubyte hot = ReadUByte(FTell()) & 0x0F;
+    hot = hot * 255/15;
+    SPrintf(dat,"0x%02LX%02LX%02LX\n", hot, hot, hot);
+    //Printf("%s\n", dat);
+    SScanf(dat,"0x%LX",color);
+    SetBackColor( color );
+    ubyte r : 1;
+    ubyte g : 1;
+    ubyte b : 1;
+    ubyte a : 1;
+} i4;
+
+typedef struct{
+    local uint64 color;
+    local string dat;
+    local ubyte hot = ReadUByte(FTell());
+    SPrintf(dat,"0x%02LX%02LX%02LX\n", hot, hot, hot);
+    //Printf("%s\n", dat);
+    SScanf(dat,"0x%LX",color);
+    SetBackColor( color );
+    ubyte r : 2;
+    ubyte g : 2;
+    ubyte b : 2;
+    ubyte a : 2;
+} i8;
+
+typedef struct{
+    local uint64 color;
+    local string dat;
+    local ubyte hot = ReadUByte(FTell()) & 0x0F;
+    hot = hot * 255/7;
+    SPrintf(dat,"0x%02LX%02LX%02LX\n", hot, hot, hot);
+    Printf("%s\n", dat);
+    SScanf(dat,"0x%LX",color);
+    SetBackColorAuto( color );
+    ubyte r : 1;
+    ubyte g : 1;
+    ubyte b : 1;
+    ubyte a : 1;
+} ia4;
+
+typedef struct{
+    local uint64 color;
+    local string dat;
+    local ubyte hot = ReadUByte(FTell()) & 0x0F;
+    hot = hot * 255/15;
+    SPrintf(dat,"0x%02LX%02LX%02LX\n", hot, hot, hot);
+    //Printf("%s\n", dat);
+    SScanf(dat,"0x%LX",color);
+    SetBackColor( color );
+    ubyte c : 4;
+    ubyte a : 4;
+} ia8;
+
+typedef struct{
+    local uint64 color;
+    local string dat;
+    local ubyte hot = ReadUByte(FTell());
+    SPrintf(dat,"0x%02LX%02LX%02LX\n", hot, hot, hot);
+    //Printf("%s\n", dat);
+    SScanf(dat,"0x%LX",color);
+    SetBackColor( color );
+    ubyte c;
+    ubyte a;
+} ia16;
+
+typedef struct{
+    // TODO: color calculations are way off
+    local uint64 color;
+    local string dat;
+    local uint64 hR = ReadUByte(FTell()+2) * (255/31);
+    local uint64 hG = ReadUByte(FTell()+1) * (255/31);
+    local uint64 hB = ReadUByte(FTell()) * (255/31);
+    SPrintf(dat,"0x%02LX%02LX%02LX\n", ReadUByte(FTell()+2), ReadUByte(FTell()+1), ReadUByte(FTell()));
+    //Printf("%s\n", dat);
+    SScanf(dat,"0x%LX",color);
+    SetBackColor( color );
+    ubyte r : 5;
+    ubyte g : 5;
+    ubyte b : 5;
+    ubyte a : 1;
+} rgb5a1;
+
+// 8 bits per channel, allowing values 0 through 255 for each individual channel.
+typedef struct{
+    local uint64 color;
+    local string dat;
+    SPrintf(dat,"0x%02LX%02LX%02LX\n", ReadUByte(FTell()+2), ReadUByte(FTell()+1), ReadUByte(FTell()));
+    //Printf("%s\n", dat);
+    SScanf(dat,"0x%LX",color);
+    SetBackColor( color );
+    ubyte r : 8;
+    ubyte g : 8;
+    ubyte b : 8;
+    ubyte a : 8;
+} rgba32;
+//rgba32 heh[32*32]<optimize=false>;
+
+typedef struct{
+    local uint64 color;
+    local string dat;
+    local uint64 hot = (ReadUByte() & 0x0F);
+    SPrintf(dat,"0x%02LX%02LX%02LX\n", hot, 0, 0);
+    Printf("%s\n", dat);
+    SScanf(dat,"0x%LX",color);
+    SetBackColorAuto( color );
+    ubyte x : 4;
+} ci4;
+
+typedef struct{
+    local uint64 color;
+    local string dat;
+    SPrintf(dat,"0x%02LX%02LX%02LX\n", ReadUByte(), ReadUByte(), ReadUByte());
+    //Printf("%s\n", dat);
+    SScanf(dat,"0x%LX",color);
+    SetBackColor( color );
+    ubyte x;
+} ci8;
+
+typedef struct(uint width, uint height){
+    rgba32 pixesl[width * height]<optimize=false>;
+} rgba32Images;
+
+//FSeek(icon_item_static);
+//rgba32Images imgs(32,32)[5A000h / 1000h]<optimize=false>;
+
+//FSeek(icon_item_static + 1000h);
+
+//ubyte end_heh;
+
+// 
+
+/* works
+FSeek(0x0074C000 + 0x0005BB00);
+i4 hotdog[48 * 48]<optimize=false>;
+*/
+
+/* works
+FSeek(0x017F7000 + 0x00024C00);
+i8 the_legend_of[72 * 8]<optimize=false>;
+*/
+
+/* works
+FSeek(0x0074C000 + 0x0005C1C0);
+ia4 top_left[16 * 16]<optimize=false>;
+*/
+
+/* works
+FSeek(0x0074C000 + 0x0005A000);
+ia8 the_legend_of[48 * 48]<optimize=false>;
+// cool note: data like this tends to spin if you gradually
+// change the column width, which makes it a little easier to spot
+
+// otherwise it's typically a bunch of nulls speckled with data that seems to
+// interleaf two shapes together (halfs of bombs) at 16 bytes wide
+*/
+
+/* works
+FSeek(0x01AA4000 + 0x00014200);
+ia16 end_button[44 * 16]<optimize=false>;
+*/
+
+/* works
+FSeek(0x01AEC000 + 0x00002600);
+rgb5a1 score_target[24 * 16]<optimize=false>;
+*/
+
+/*
+// 57 wide
+FSeek(0x027D6000 + 0x00024818);
+ci4 h00024818_64x64_ci4[64 * 64]<optimize=false>;
+// pal lives at 0x00013D70
+*/
+
+/*
+FSeek(0x017F7000 + 0x00024C00);
+ci8 the_legend_of[72 * 8]<optimize=false>;
+*/
+
+/*
+x   i4
+x   i8
+x   ia4
+x   ia8
+x   ia16
+~   rgb5a1
+~   rgba16
+x   rgba32
+~   ci4
+?   ci8
+*/
+
+/*
+FSeek(0x027B0000 + 0x000006F0);
+JFIF depth_test; // size 0x00025EF0
+*/
+
+//FSeek( 0x0354C000 + 0x0002E640 );
+FSeek( 0x03554E40 );
+JFIF face_shop_room_0;
+
+/*
+<directory name="vr_FCVR_static" address="0x01F9F000" size="0x00020000">
+	<texture name="Happy Mask Shop 1" address="0x00000000" format="ci8" width="256" height="256" palette="0x00020000"/>
+	<texture name="Happy Mask Shop 2" address="0x00010000" format="ci8" width="256" height="256" palette="0x00020200"/>
+</directory>
+*/

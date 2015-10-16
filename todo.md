@@ -13,6 +13,8 @@ If it relates to refactoring templates or styles to enforce, then it should happ
 * Clean out unused / copypasted code.
 * Get some standards.
 * Replace all warnings with a hard warning macro.
+### Getting Pumped
+* Write a handy macro for comparing two like structures using [science](http://www.sweetscape.com/010editor/manual/FuncTools.htm#Compare).
 ### Find Data
 * Scrounge around for source code from other tools, particularly files of type .cs, .h, or .py -- I don't want to reverse a source-less tool unless I'm absolutely stumped.
 ### Following The Rules
