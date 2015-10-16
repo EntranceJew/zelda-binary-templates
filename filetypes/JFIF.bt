@@ -4,6 +4,40 @@ enum <ubyte> JFIFPixelDensity {
     PixelsPerCentimeter = 0x02
 };
 
+void NowYCbCr2RGB(){
+    local ubyte Y = ReadUByte(FTell());
+    local ubyte Cb = ReadUByte(FTell()+1);
+    local ubyte Cr = ReadUByte(FTell()+2);
+    local string out;
+    local int color;
+    SPrintf(out,"0x%02X%02X%02X",
+        Y + 1.772 * ( Cb - 128),
+        Y - 0.34414 * ( Cb - 128 ) - 0.71414 * (Cr - 128 ),
+        Y + 1.402 * ( Cr - 128)
+    );
+    SScanf(out, "0x%06X", color);
+    SetBackColor( color );
+}
+
+typedef struct {
+    NowYCbCr2RGB();
+    ubyte Y;
+    ubyte Cb;
+    ubyte Cr;
+} YCbCr;
+
+int YCbCr2RGB( YCbCr &ycbcr ){
+    local string out;
+    local int color;
+    SPrintf(out,"0x%02X%02X%02X",
+        ycbcr.Y + 1.402 * ( ycbcr.Cr - 128),
+        ycbcr.Y - 0.34414 * ( ycbcr.Cb - 128 ) - 0.71414 * (ycbcr.Cr - 128 ),
+        ycbcr.Y + 1.772 * ( ycbcr.Cb - 128)
+    );
+    SScanf(out, "0x%06X", color);
+    return color;
+}
+
 typedef struct {
     char start[2]; //0xFFD8 or riot
     char APP0[2]; //0xFFE0 or riot
@@ -14,19 +48,19 @@ typedef struct {
     JFIFPixelDensity pixelDensity;
     ushort densityX;
     ushort densityY;
-    ushort thumbWidth; // 0 or riot
-    ushort thumbHeight; // 0 or riot
+    ubyte thumbWidth; // 0 or riot
+    ubyte thumbHeight; // 0 or riot
     ubyte thumbData[thumbWidth * thumbHeight * 3]; // empty or riot
     char headEnd[2]; //0xFFDB or riot
     local ushort readByte = 0x0000;
     local uint64 startPos = FTell();
-    while( 1 == 1 ){
-        readByte = ReadUShort(FTell());
-        if( readByte == 0xFFDB ){
-            break;
-        }
-        FSkip(1); // not sure if this should be 2 (might miss it for odd dimensions)
+    while( ReadUShort() != 0xFFD9 ){
+        FSkip(1); 
+        // should only advance a single byte,
+        // not guaranteed to fall on boundaries
     }
-    ubyte data[FTell()-startPos];
+    local uint64 sizeOfData = FTell()-startPos;
+    FSeek(startPos);
+    YCbCr pixels[sizeOfData / 3]<optimize=false>;
     char end[2]; //0xFFD9 or riot
 } JFIF;
