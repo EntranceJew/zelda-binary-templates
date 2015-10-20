@@ -1,0 +1,14 @@
+// 8 bits per channel, allowing values 0 through 255
+// for each individual channel.
+// TODO: Implement pseudo-alpha drawing.
+typedef struct{
+    // visualize it
+    if(ReadUByte(FTell()+3) > 0){
+        SetBackColorTup( ReadUByte(FTell()), ReadUByte(FTell()+1), ReadUByte(FTell()+2) );
+    }
+
+    ubyte r : 8;
+    ubyte g : 8;
+    ubyte b : 8;
+    ubyte a : 8;
+} rgba32;

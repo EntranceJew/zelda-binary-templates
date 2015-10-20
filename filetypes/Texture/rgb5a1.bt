@@ -1,0 +1,15 @@
+typedef struct{
+    // visualize it
+    local uint64 hR = ReadUShortBits(FTell(),  0, 5) * (255.0/31.0);
+    local uint64 hG = ReadUShortBits(FTell(),  5, 5) * (255.0/31.0);
+    local uint64 hB = ReadUShortBits(FTell(), 10, 5) * (255.0/31.0);
+    local uint64 hA = ReadUShortBits(FTell(), 15, 1) * 255.0;
+    if(hA > 0){
+        SetBackColorTup( hR, hG, hB );
+    }
+
+    ubyte r : 5;
+    ubyte g : 5;
+    ubyte b : 5;
+    ubyte a : 1;
+} rgb5a1;

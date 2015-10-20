@@ -1,0 +1,11 @@
+typedef struct{
+    // visualize it
+    local ubyte hC = ReadUByteBits(FTell(), 0, 4) * (255.0 / 15.0);
+    local ubyte hA = ReadUByteBits(FTell(), 4, 4) * (255.0 / 15.0);
+    if( hA > 0 ){
+        SetBackColorTup( hC, hC, hC );
+    }
+
+    ubyte c : 4;
+    ubyte a : 4;
+} ia8;

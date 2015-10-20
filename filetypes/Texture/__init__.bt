@@ -1,0 +1,15 @@
+/*
+    More texture formats
+    than you can shake a stick at.
+*/
+
+#include "filetypes/Texture/ci4.bt"
+#include "filetypes/Texture/ci8.bt"
+#include "filetypes/Texture/i4.bt"
+#include "filetypes/Texture/i8.bt"
+#include "filetypes/Texture/ia4.bt"
+#include "filetypes/Texture/ia8.bt"
+#include "filetypes/Texture/ia16.bt"
+#include "filetypes/Texture/JFIF.bt"
+#include "filetypes/Texture/rgb5a1.bt"
+#include "filetypes/Texture/rgba32.bt"

@@ -1,0 +1,19 @@
+uint64 ColorTupToUInt(uint64 red, uint64 green, uint64 blue){
+    local uint64 color;
+    local string dat;
+    SPrintf(dat, "0x%02LX%02LX%02LX", blue, green, red);
+    SScanf(dat, "0x%LX", color);
+    return color;
+}
+
+// take a tup of colors and set the background
+void SetBackColorTup(uint64 red, uint64 green, uint64 blue){
+    SetBackColor( ColorTupToUInt(red, green, blue) );
+}
+
+// set the background color and then
+// set the foreground to something readable
+void SetBackColorAuto(int color){
+    SetBackColor( color );
+    SetForeColor( ~color );
+}

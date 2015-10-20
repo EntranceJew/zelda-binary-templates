@@ -1,0 +1,18 @@
+// a hack to allow our in-memory read to stay aligned with 
+// the actual bitfield, only works if an image dimension evens-out
+local uint64 _ia4toggle_hack = 0;
+typedef struct{
+    local ubyte hC = ReadUByteBits(FTell(), _ia4toggle_hack, 3) * (255.0 / 7.0);
+    local ubyte hA = ReadUByteBits(FTell(), _ia4toggle_hack+3, 1);
+    //if(hA > 0){
+        SetBackColorTup( hC, hC, hC );
+    //}
+    ubyte c : 3;
+    ubyte a : 1;
+
+    if( _ia4toggle_hack ){
+        _ia4toggle_hack = 0;
+    } else {
+        _ia4toggle_hack = 4;
+    }
+} ia4;

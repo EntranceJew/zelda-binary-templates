@@ -3,6 +3,7 @@
     easier and your fingers faster.
 */
 
+#include "scaffolds/Colors.bt"
 #include "scaffolds/Jumps.bt"
 #include "scaffolds/Significant.bt"
 #include "scaffolds/Unknown.bt"

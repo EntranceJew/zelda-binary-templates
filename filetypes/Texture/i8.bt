@@ -1,0 +1,5 @@
+typedef struct{
+    local ubyte hA = ReadUByte(FTell());
+    SetBackColorTup( hA, hA, hA );
+    ubyte a : 8;
+} i8;

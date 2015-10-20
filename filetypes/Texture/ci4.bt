@@ -1,0 +1,12 @@
+local uint64 _ci4toggle_hack = 0;
+typedef struct{
+    local ubyte hX = ReadUByteBits(FTell(), _ci4toggle_hack, 4) * (255.0 / 15.0);
+    SetBackColorTup( hX, hX, hX );
+    ubyte x : 4;
+
+    if( _ci4toggle_hack ){
+        _ci4toggle_hack = 0;
+    } else {
+        _ci4toggle_hack = 4;
+    }
+} ci4;

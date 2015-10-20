@@ -4,6 +4,16 @@
     TODO: Find the main bank definition(s).
 */
 
+// from stackexchange or some crap
+int FlipIntBits(int theNumber, int numBits) {
+    local int mask = 1;
+    local int i;
+    for(i = 1; i < numBits; ++i)
+        mask |= mask << 1;
+
+    return ~theNumber & mask;
+}
+
 typedef struct {
     BitfieldDisablePadding();
     byte bit1 : 1;
@@ -22,3 +32,21 @@ string BitEightRead(BitEight &be){
     SPrintf(s, "%d %d %d %d, %d %d %d %d", be.bit1, be.bit2, be.bit3, be.bit4, be.bit5, be.bit6, be.bit7, be.bit8);
     return s;
 };
+
+uint64 ReadUShortBits(uint64 pos, uint64 bitStart, uint64 readSize){
+    local ushort data = ReadUShort(pos);
+    // we can't adjust the size or type of what we read, so we can hardcode the mask base
+    // this sure beats writing a geometric function to read bits
+    local ushort mask = 0xFFFF >> (sizeof(data)*8 - readSize);
+    local ushort outvalue = (( data >> (sizeof(data)*8 - (readSize + bitStart)) ) & mask);
+    return outvalue;
+}
+
+uint64 ReadUByteBits(uint64 pos, uint64 bitStart, uint64 readSize){
+    local ubyte data = ReadUByte(pos);
+    // we can't adjust the size or type of what we read, so we can hardcode the mask base
+    // this sure beats writing a geometric function to read bits
+    local ubyte mask = 0xFF >> (sizeof(data)*8 - readSize);
+    local ubyte outvalue = (( data >> (sizeof(data)*8 - (readSize + bitStart)) ) & mask);
+    return outvalue;
+}
