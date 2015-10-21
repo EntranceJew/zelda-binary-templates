@@ -23,7 +23,7 @@ typedef struct {
     char destinationCode;
 
     /*
-    65 0x41 'A' (not documented, generic NTSC?)
+    65 0x41 'A' "Asian (NTSC)"
     66 0x42 'B' "Brazilian"
     67 0x43 'C' "Chinese"
     68 0x44 'D' "German"
@@ -40,8 +40,8 @@ typedef struct {
     83 0x53 'S' "Spanish"
     85 0x55 'U' "Australian"
     87 0x57 'W' "Scandinavian"
-    88 0x58 'X' "Others"
-    89 0x59 'Y' "Others"
+    88 0x58 'X' "European"
+    89 0x59 'Y' "European"
     90 0x5A 'Z' "Others"
     */
     ubyte maskROMVersion;
