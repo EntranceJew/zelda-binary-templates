@@ -12,10 +12,11 @@
 #define AUDIOTABLE 0x000A2B40
 #define ATBL_END   0x005EB2B0
 #define CODEFILE   0x00C95000
-// FOLLOWING NOT FIXED YET
-#define INSTRUMENT 0x00BCC270
-#define SEQTABLE   0x00BCC6A0
-#define SAMPLES    0x00BCCD90
+#define INSTRUMENT 0x00E0F7E0
+#define SEQTABLE   0x00E0FC90
+#define SAMPLES    0x00E104A0
 
 
 
+// INTERESTING SEQUENCE @ 0xdf0fd8
+// maybe part of a known audio structure? 0xce97c8

@@ -17,8 +17,8 @@ BitfieldDisablePadding();
 */
 
 // == game switch, only have a pair of these set at once ==
-//#include "dMM_E_debug.bt"
-#include "dOoTMQ_E_debug.bt"
+#include "dMM_E_debug.bt"
+//#include "dOoTMQ_E_debug.bt"
 
 // == a great big block of global settings ==
 
