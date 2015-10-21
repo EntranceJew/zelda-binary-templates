@@ -6,7 +6,7 @@
 
 typedef struct {
     ubyte bankNo : 8;
-} ZBank <read=ZBankRead>;
+} ZBank <read=ZBankRead, size=1>;
 
 //, write=ZBankWrite
 

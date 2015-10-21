@@ -1,0 +1,54 @@
+// change the state of 010
+BitfieldDisablePadding();
+
+// helpers for not making a mess
+// == scaffolds/*.bt
+#include "scaffolds/Colors.bt"
+#include "scaffolds/Jumps.bt"
+#include "scaffolds/Significant.bt"
+#include "scaffolds/Unknown.bt"
+#include "scaffolds/Warning.bt"
+
+// post-helper macros
+// turn on painting significant variables
+SION;
+
+// simple things
+// == filetypes/*.bt
+#include "filetypes/Banks.bt"
+#include "filetypes/Bits.bt"
+#include "filetypes/FileSystem.bt"
+#include "filetypes/N64ROMHead.bt"
+#include "filetypes/Simple.bt"
+#include "filetypes/Vectors.bt"
+
+// bigger data formats
+// == filetypes/Audio/*.bt
+#include "filetypes/Audio/Sample.bt"
+#include "filetypes/Audio/Instrument.bt"
+#include "filetypes/Audio/InstrumentSet.bt"
+#include "filetypes/Audio/Sequence.bt"
+#include "filetypes/Audio/SequenceHead.bt"
+#include "filetypes/Audio/ChannelHead.bt"
+// == filetypes/Texture/*.bt
+#include "filetypes/Texture/ci4.bt"
+#include "filetypes/Texture/ci8.bt"
+#include "filetypes/Texture/i4.bt"
+#include "filetypes/Texture/i8.bt"
+#include "filetypes/Texture/ia4.bt"
+#include "filetypes/Texture/ia8.bt"
+#include "filetypes/Texture/ia16.bt"
+#include "filetypes/Texture/JFIF.bt"
+#include "filetypes/Texture/rgb5a1.bt"
+#include "filetypes/Texture/rgba32.bt"
+// == filetypes/Scene/*.bt
+#include "filetypes/Scene/Actor.bt"
+#include "filetypes/Scene/Camera.bt"
+#include "filetypes/Scene/Poly.bt"
+#include "filetypes/Scene/Collision.bt"
+#include "filetypes/Scene/Cutscene.bt"
+#include "filetypes/Scene/Mesh.bt"
+
+#include "filetypes/Scene/HeaderCommand.bt"
+
+#include "filetypes/Scene/Scene.bt"

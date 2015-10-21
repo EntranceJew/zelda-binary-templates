@@ -15,3 +15,9 @@
 #define INSTRUMENT 0x00BCC270
 #define SEQTABLE   0x00BCC6A0
 #define SAMPLES    0x00BCCD90
+
+// helpers & known types
+#include "autoload.bt"
+
+// import the ROM structure
+#include "regions/dOoTMQ_E_debug/main.bt"

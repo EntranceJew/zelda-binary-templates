@@ -51,4 +51,3 @@ BitfieldDisablePadding();
 FSeek( pos ); ZBank          _zb     <name="ZBank">;
 FSeek( pos ); ZBankPointer   _zbp    <name="ZBankPointer">;
 FSeek( pos ); BitEight       _be     <name="BitEight">;
-//BitfieldEnablePadding();

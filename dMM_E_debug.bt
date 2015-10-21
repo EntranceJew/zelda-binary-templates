@@ -16,7 +16,8 @@
 #define SEQTABLE   0x00E0FC90
 #define SAMPLES    0x00E104A0
 
+// helpers & known types
+#include "autoload.bt"
 
-
-// INTERESTING SEQUENCE @ 0xdf0fd8
-// maybe part of a known audio structure? 0xce97c8
+// import the ROM structure
+#include "regions/dMM_E_debug/main.bt"

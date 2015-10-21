@@ -1,11 +1,15 @@
 /*
     Make note of an unknown variable in style.
 */
-void AlertUnknownData(){
+void Unknown(string context){
     local string msg;
-    SPrintf(msg, "UNKNOWN: @ %LXh", FTell());
-    SPrintf(msg, "%s\n", msg);
+    SPrintf(msg, "UNKNOWN: @%LXh %s\n", FTell(), context);
     Printf(msg);
+}
+
+void AlertUnknownData(){
+    // @todo: Set the background color here and have SIT undo it.
+    Printf("UNKNOWN: @%LXh\n", FTell());
 }
 
 #define UNK AlertUnknownData()

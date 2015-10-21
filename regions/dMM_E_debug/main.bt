@@ -2,10 +2,9 @@ struct {
     FSeek( SAMPLES );
     SampleTable sampleTable;
 
-    // ootbank.bt
     FSeek( INSTRUMENT );
     InstrumentSetTable instrumentSetTable;
 
-    FSeek( SEQTABLE );
-    SequenceTable sequenceTable;
+    //FSeek( SEQTABLE );
+    //SequenceTable sequenceTable;
 } ROM;

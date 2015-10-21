@@ -1,21 +1,83 @@
-local uint64 numII = 0;
+/*
+    COVERAGE (ITEMS DONE):
+    InstrumentSetTable
+    InstrumentSet
+
+    ITEMS NOT DONE:
+    InstrumentSetData
+*/
+
 typedef struct {
-    local uint64 setStart = FTell();
-    local uint i;
-    local uint j;
-    
+    local uint64 i;
+    /* 
+    the value of Seek1 is valid relative to itself,
+    wherein it points to a list of relative pointers
+    */
     SIT;
-    uint aBankOffset; // REL: AUDIOBANK
+    uint seek1;
+    if(parentof(this).unknown1.bit2 || parentof(this).unknown1.bit4 || parentof(this).unknown1.bit6 || parentof(this).unknown1.bit8){
+        AssertUIntGTZero(seek1, "InstrumentSetData->seek1");
+
+        SAVE;
+        FSeek( startof(this) + seek1 );
+        if(!parentof(this).unknown1.bit2){
+            ElusiveRecord1 er1(startof(this), parentof(this).sampleBank);
+        } else {
+            PercussionInstrument myInstruments(startof(this), parentof(this).sampleBank);
+        }
+        REST;
+    }
+
+    SIT;
+    uint seek2;
+    if(parentof(this).unknown1.bit4 || parentof(this).unknown1.bit6 || parentof(this).unknown1.bit8){
+        AssertUIntGTZero(seek2, "InstrumentSetData->seek2 [non-drums do not blank]");
+        SAVE;
+        FSeek( startof(this) + seek2 );
+        for( i = 0; i < numExtraInstrumentSamples; i++ ){
+            InstrumentSample extraInstrumentSamples(startof(this), parentof(this).sampleBank);
+        }
+        REST;
+    } else if(parentof(this).unknown1.bit2){
+        AssertNumberEquals(seek2, 0, "InstrumentSetData->seek2 [drums should be blank]");
+    }
+
+    SIT;
+    uint myInstrumentLocations[ parentof(this).numInstruments ];
+    
+    // iterate through all the instruments
+    for( i = 0; i < parentof(this).numInstruments; i++ ){
+        if( myInstrumentLocations[ i ] != 0 ){
+            SAVE;
+            FSeek( startof(this) + myInstrumentLocations[ i ] );
+            //FSeek( AUDIOBANK + aBankOffset + myInstrumentLocations[ i ] );
+            //Printf("[instrument] setStart: %d; pointer: %d; now: %d; depth: %d\n", setStart, myInstrumentLocations[i], FTell(), restoreDepth);
+            OtherInstrument myInstruments(startof(this), parentof(this).sampleBank);
+            REST;
+        } else {
+            //Printf("WARNING: On %dth set, found %dth instrument location set too low (0x%Lx)!\n", numII, i, myInstrumentLocations[ i ] );
+        }
+    }
+    //OtherInstrument myInstruments[numInstruments]<optimize=false>;
+} InstrumentSetData;
+
+typedef struct {
+    SIT;
+    uint offset; // relative to AUDIOBANK
     SIT;
     uint size;
     SIT;
     ubyte majorVersion;
+    //AssertNumberEquals(majorVersion, 2, "InstrumentSet->majorVersion");
     SIT;
     ubyte minorVersion;
+    AssertNumberInBetween(minorVersion, 0, 2, "InstrumentSet->minorVersion");
     SIT;
-    ubyte drampleBank;
+    ubyte sampleBank<comment="This corresponds with SampleTable->mySampRecords[#]">;
+    AssertNumberInBetween(sampleBank, 0, sampleTable.numSamps, "InstrumentSet->sampleBank");
     SIT;
-    ubyte FF;
+    ubyte unknown2;
+    AssertNumberEquals(unknown2, 0xFF, "InstrumentSet->unknown2 (NOT PADDING!!!)");
     /*
     The third byte is an index for a list at 
     SAMPLES which gives the base address to load
@@ -29,122 +91,46 @@ typedef struct {
     Deku Tree, Jabu-Jabu's belly, Goron City and the Spirit Temple.
     Super Mario 64 does something similar but it affects every single instrument set in the game.
     */
-    SIT;
-    ubyte numInstruments;
-    SIT;
     //Number of instruments to be read (can be less than total but 
     // not greater, does not include percussion).
+    SIT;
+    ubyte numInstruments;
+    AssertUIntGTZero(numInstruments, "InstrumentSet->numInstruments");
+    SIT;
     BitEight unknown1;         // aa
+    AssertNumberEquals(unknown1.bit1, 0, "InstrumentSet->unknown1->bit1");
+    // AssertNumberEquals(unknown1.bit2, 0, "InstrumentSet->unknown1->bit2");
+    AssertNumberEquals(unknown1.bit3, 0, "InstrumentSet->unknown1->bit3");
+    //AssertNumberEquals(unknown1.bit4, 0, "InstrumentSet->unknown1->bit4");
+    AssertNumberEquals(unknown1.bit5, 0, "InstrumentSet->unknown1->bit5");
+    //AssertNumberEquals(unknown1.bit6, 0, "InstrumentSet->unknown1->bit6");
+    AssertNumberEquals(unknown1.bit7, 0, "InstrumentSet->unknown1->bit7");
+    //AssertNumberEquals(unknown1.bit8, 0, "InstrumentSet->unknown1->bit8");
     /*
     aa = a bitrange
     only bits 6 8 and 2 are used at any given time
     bit 2 handles percussion
+        * dOoTMQ_E_debug
+        * dMM_E_debug
+    bit 4 is only ever set on the first record
+        * dMM_E_debug
     bit 6 is only ever set on the first record
+        * dOoTMQ_E_debug
     bit 8 is only ever set on the second record
+        * dOoTMQ_E_debug
+        * dMM_E_debug
     */
+
     SIT;
-    UNK;
-    BitEight unknown3;         // bb
-    SIT;
-    ubyte numExtraInstrumentSamples;         // cc
-    // unknown4 is only ever used when minorVersion == 02
+    ushort numExtraInstrumentSamples;
 
     /*
     foreach on the number of instruments
     */
     SAVE;
-    FSeek( AUDIOBANK + aBankOffset );
-
-    local uint64 seekPos = FTell();
-    uint seek1;
-    if( seek1 != 0 ){
-            //Printf("[instrument] seek1: %d was not 0 (was %d)\n", numII, seek1);
-    }
-
-    if( numII <= 1 ){
-        SAVE;
-        FSeek( seekPos + seek1 );
-        ElusiveRecord1 er1(seekPos, drampleBank);
-        REST;
-    }
-
-    /* 
-    the value of Seek1 is valid relative to itself,
-    wherein it points to a list of relative pointers
-    
-    */
-    uint seek2;
-    if( seek2 != 0 ){
-            //Printf("[instrument] seek2: %d was not 0 (was %d)\n", numII, seek2);
-    }
-
-    // odd ones out
-    if( numExtraInstrumentSamples > 0 ){
-        SAVE;
-        FSeek( seekPos + seek2 );
-        for( i = 0; i < numExtraInstrumentSamples; i++ ){
-            InstrumentSample extraInstrumentSamples(seekPos, drampleBank);
-        }
-        REST;
-    }
-
-    if(unknown1.bit2 == 1 && seek2 == 0 && seek1 > 0){
-        SAVE;
-        FSeek( seekPos + seek1 );
-        PercussionInstrument myInstruments(seekPos, drampleBank);
-        REST;
-    }
-
-    /*
-    if( unknown1.bit2 == 1 && seek2 == 0){
-        SAVE;
-        FSeek(seekPos + seek1);
-        SIT;
-        local uint64 numFunk = 16 * 4;
-        uint funkyPointers[numFunk];
-        for( i = 0; i < numFunk; i++ ){
-            SAVE;
-            FSeek( seekPos + funkyPointers[i] );
-            FunkyRecord funkyRec;
-            REST;
-        }
-        REST;
-    } 
-    */
-
-    if( seek1 != 0 && unknown1.bit2 != 1 ) {
-        Printf("[instrument] seek1: %d was not 0 (was %d)\n", numII, seek1);
-    } else if( seek2 != 0 && unknown1.bit2 == 0  ) {
-        Printf("[instrument] seek2: %d was not 0 (was %d)\n", numII, seek2);
-    }
-
-    local ubyte instSeekSize = numInstruments;
-    /*
-    if( unknown1.bit2 == 1 ){
-        instSeekSize += 1;
-    }
-    */
-    SIT;
-    //Printf("[instlocs] now: %d; depth: %d\n", FTell(), restoreDepth);
-    uint myInstrumentLocations[ instSeekSize ];
+    FSeek( AUDIOBANK + offset );
+    InstrumentSetData myData;
     REST;
-    
-    // iterate through all the instruments
-    for( i = 0; i < instSeekSize; i++ ){
-        if( myInstrumentLocations[ i ] != 0 ){
-            SAVE;
-            FSeek( seekPos + myInstrumentLocations[ i ] );
-            //FSeek( AUDIOBANK + aBankOffset + myInstrumentLocations[ i ] );
-            //Printf("[instrument] setStart: %d; pointer: %d; now: %d; depth: %d\n", setStart, myInstrumentLocations[i], FTell(), restoreDepth);
-            OtherInstrument myInstruments(seekPos, drampleBank);
-            REST;
-        } else {
-            Printf("WARNING: On %dth set, found %dth instrument location set too low (0x%Lx)!\n", numII, i, myInstrumentLocations[ i ] );
-        }
-    }
-
-    numII++;
-    //OtherInstrument myInstruments[numInstruments]<optimize=false>;
 } InstrumentSet;
 
 typedef struct {

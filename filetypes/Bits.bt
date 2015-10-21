@@ -25,7 +25,7 @@ typedef struct {
     byte bit6 : 1;
     byte bit7 : 1;
     byte bit8 : 1;
-} BitEight <read=BitEightRead>;
+} BitEight <read=BitEightRead, size=1>;
 
 string BitEightRead(BitEight &be){
     local string s;

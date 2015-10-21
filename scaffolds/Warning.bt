@@ -8,6 +8,7 @@ void EXWarning(string reason){
     Printf("%s: @ 0x%Lx\n", reason, FTell());
 }
 
+// == NULL
 void AssertUBytesNull( ubyte b[], string msg ){
     local uint64 i;
     local string omsg;
@@ -17,4 +18,30 @@ void AssertUBytesNull( ubyte b[], string msg ){
             Assert( b[i] != 0x00, EXSWarning(omsg));
         }
     }
+}
+
+// == ZERO
+void AssertUIntGTZero( uint a, string msg ){
+    local string omsg;
+    SPrintf(omsg, "%s %d was less not greater than zero", msg, a);
+    Assert( a > 0, EXSWarning(omsg));
+}
+
+void AssertUIntGTEZero( uint subject, string msg ){
+    local string omsg;
+    SPrintf(omsg, "%s %d was less not greater than or equal to zero", msg, subject);
+    Assert( subject >= 0, EXSWarning(omsg));
+}
+
+// == EQUALITY
+void AssertNumberEquals( uint subject, uint expectation, string msg ){
+    local string omsg;
+    SPrintf(omsg, "%s was %d which isn't %d", msg, subject, expectation);
+    Assert( subject == expectation, EXSWarning(omsg));
+}
+
+void AssertNumberInBetween( uint subject, uint min, uint max, string msg ){
+    local string omsg;
+    SPrintf(omsg, "%s was %d which isn't between %d and %d", msg, subject, min, max);
+    Assert( subject >= min && subject <= max, EXSWarning(omsg));
 }

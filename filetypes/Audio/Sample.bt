@@ -5,8 +5,10 @@ typedef struct {
     uint size;
     SIT;
     ubyte unk1;
+    AssertNumberEquals( unk1, 2, "SampRecord->unk1" );
     SIT;
     ubyte unk2;
+    AssertNumberEquals( unk2, 4, "SampRecord->unk2" );
     SIT;
     ubyte zeroes[6];
     AssertUBytesNull( zeroes, "SampRecord->zeroes" ); 
