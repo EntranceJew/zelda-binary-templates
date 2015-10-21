@@ -1,0 +1,159 @@
+local uint64 numII = 0;
+typedef struct {
+    local uint64 setStart = FTell();
+    local uint i;
+    local uint j;
+    
+    SIT;
+    uint aBankOffset; // REL: AUDIOBANK
+    SIT;
+    uint size;
+    SIT;
+    ubyte majorVersion;
+    SIT;
+    ubyte minorVersion;
+    SIT;
+    ubyte drampleBank;
+    SIT;
+    ubyte FF;
+    /*
+    The third byte is an index for a list at 
+    SAMPLES which gives the base address to load
+    samples from. What is the purpose of this? Well
+    apparently just to be a pain in the arse, 
+    because taking these numbers and adding them to sample 
+    pointers will load that sample perfectly if the index
+    is changed to 1, which has a base address of zero and 
+    is what most instrument sets use. Only four sets seem 
+    to actually do this though, namely the:
+    Deku Tree, Jabu-Jabu's belly, Goron City and the Spirit Temple.
+    Super Mario 64 does something similar but it affects every single instrument set in the game.
+    */
+    SIT;
+    ubyte numInstruments;
+    SIT;
+    //Number of instruments to be read (can be less than total but 
+    // not greater, does not include percussion).
+    BitEight unknown1;         // aa
+    /*
+    aa = a bitrange
+    only bits 6 8 and 2 are used at any given time
+    bit 2 handles percussion
+    bit 6 is only ever set on the first record
+    bit 8 is only ever set on the second record
+    */
+    SIT;
+    UNK;
+    BitEight unknown3;         // bb
+    SIT;
+    ubyte numExtraInstrumentSamples;         // cc
+    // unknown4 is only ever used when minorVersion == 02
+
+    /*
+    foreach on the number of instruments
+    */
+    SAVE;
+    FSeek( AUDIOBANK + aBankOffset );
+
+    local uint64 seekPos = FTell();
+    uint seek1;
+    if( seek1 != 0 ){
+            //Printf("[instrument] seek1: %d was not 0 (was %d)\n", numII, seek1);
+    }
+
+    if( numII <= 1 ){
+        SAVE;
+        FSeek( seekPos + seek1 );
+        ElusiveRecord1 er1(seekPos, drampleBank);
+        REST;
+    }
+
+    /* 
+    the value of Seek1 is valid relative to itself,
+    wherein it points to a list of relative pointers
+    
+    */
+    uint seek2;
+    if( seek2 != 0 ){
+            //Printf("[instrument] seek2: %d was not 0 (was %d)\n", numII, seek2);
+    }
+
+    // odd ones out
+    if( numExtraInstrumentSamples > 0 ){
+        SAVE;
+        FSeek( seekPos + seek2 );
+        for( i = 0; i < numExtraInstrumentSamples; i++ ){
+            InstrumentSample extraInstrumentSamples(seekPos, drampleBank);
+        }
+        REST;
+    }
+
+    if(unknown1.bit2 == 1 && seek2 == 0 && seek1 > 0){
+        SAVE;
+        FSeek( seekPos + seek1 );
+        PercussionInstrument myInstruments(seekPos, drampleBank);
+        REST;
+    }
+
+    /*
+    if( unknown1.bit2 == 1 && seek2 == 0){
+        SAVE;
+        FSeek(seekPos + seek1);
+        SIT;
+        local uint64 numFunk = 16 * 4;
+        uint funkyPointers[numFunk];
+        for( i = 0; i < numFunk; i++ ){
+            SAVE;
+            FSeek( seekPos + funkyPointers[i] );
+            FunkyRecord funkyRec;
+            REST;
+        }
+        REST;
+    } 
+    */
+
+    if( seek1 != 0 && unknown1.bit2 != 1 ) {
+        Printf("[instrument] seek1: %d was not 0 (was %d)\n", numII, seek1);
+    } else if( seek2 != 0 && unknown1.bit2 == 0  ) {
+        Printf("[instrument] seek2: %d was not 0 (was %d)\n", numII, seek2);
+    }
+
+    local ubyte instSeekSize = numInstruments;
+    /*
+    if( unknown1.bit2 == 1 ){
+        instSeekSize += 1;
+    }
+    */
+    SIT;
+    //Printf("[instlocs] now: %d; depth: %d\n", FTell(), restoreDepth);
+    uint myInstrumentLocations[ instSeekSize ];
+    REST;
+    
+    // iterate through all the instruments
+    for( i = 0; i < instSeekSize; i++ ){
+        if( myInstrumentLocations[ i ] != 0 ){
+            SAVE;
+            FSeek( seekPos + myInstrumentLocations[ i ] );
+            //FSeek( AUDIOBANK + aBankOffset + myInstrumentLocations[ i ] );
+            //Printf("[instrument] setStart: %d; pointer: %d; now: %d; depth: %d\n", setStart, myInstrumentLocations[i], FTell(), restoreDepth);
+            OtherInstrument myInstruments(seekPos, drampleBank);
+            REST;
+        } else {
+            Printf("WARNING: On %dth set, found %dth instrument location set too low (0x%Lx)!\n", numII, i, myInstrumentLocations[ i ] );
+        }
+    }
+
+    numII++;
+    //OtherInstrument myInstruments[numInstruments]<optimize=false>;
+} InstrumentSet;
+
+typedef struct {
+    SIT;
+    ushort numInstrumentSets;
+    SIT;
+    ubyte  instrumentSetPadding[14];
+    AssertUBytesNull( instrumentSetPadding, "instrumentSetPadding" );
+
+    EXWarning("OPTIMIZE FIX: InstrumentSetTable->myInstrumentSets (InstrumentSet)");
+    InstrumentSet myInstrumentSets[numInstrumentSets]<optimize=false>;
+} InstrumentSetTable;

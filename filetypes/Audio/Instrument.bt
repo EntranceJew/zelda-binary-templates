@@ -1,0 +1,163 @@
+typedef struct(ubyte sampleBank){
+    SIT;
+    ubyte unknown1 : 8;
+    if( unknown1 != 0 ){
+        Printf("WARNING: The first byte of a TableSample wasn't 0 (was %d) @ 0x%Lx\n", unknown1, FTell()-8);
+    }
+    SIT;
+    uint sampleSize : 24;
+    SIT;
+    uint offset; // from the Audiotable
+    SIT;
+    SAVE;
+    FSeek( AUDIOTABLE + sampleTable.mySampRecords[sampleBank].offset + offset );
+    ubyte audioSample;
+    //ubyte audioSample[sampleSize];
+    REST;
+} TableSample;
+
+// deathbasket structure 1
+typedef struct(uint seekPos){
+    SIT;
+    uint unknown1;
+    SIT;
+    uint unknown2;
+    if( unknown1 == 0 ){
+        SIT;
+        uint zeroes[2];
+    } else {
+        SIT;
+        uint FFs;
+        SIT;
+        uint zeroes;
+        SIT;
+        uint unknown3[8];
+    }
+} Unknown2;
+
+// deathbasket structure 2
+typedef struct(uint seekPos){
+    SIT;
+    uint type;
+    SIT;
+    uint blockSize;
+    SIT;
+    ubyte dataBlock[32 * blockSize];
+} SampleBlock;
+
+typedef struct(uint seekPos, ubyte sampleBank){
+    TableSample sampleFromTable(sampleBank);
+    SIT;
+    uint unknownPointer; //chunkFooter?!
+    SIT;
+    uint chunkPointer;
+    SAVE;
+    FSeek( seekPos + chunkPointer);
+    SampleBlock sampleData(seekPos);
+    REST;
+
+    SAVE;
+    FSeek( seekPos + unknownPointer );
+    Unknown2 unknown2(seekPos);
+    REST;
+} SampleHead;
+
+typedef struct(uint seekPos, ubyte sampleBank){
+    SIT;
+    uint sampleHead;
+    SIT;
+    float pitch;
+    SIT;
+    if( sampleHead > 0 ){
+        SAVE;
+        FSeek( seekPos + sampleHead );
+        SampleHead headSample(seekPos, sampleBank);
+        REST;
+    }
+} InstrumentSample;
+
+// elusive record 2
+typedef struct(uint seekPos, ubyte sampleBank){
+    ubyte unknown1 : 8;
+    uint  unknown2 : 24;
+    InstrumentSample sample(seekPos, sampleBank);
+    uint  unknown5; // if it's a set-local pointer,
+                    // it's an instrumentProperties pointer
+} ElusiveRecord2;
+
+// elusive record 1
+typedef struct(uint seekPos, ubyte sampleBank){
+    SIT;
+    uint er2Pointers[4];
+    local uint i;
+    for( i = 0; i < 4; i++ ){
+        if( er2Pointers[i] > 0){
+            SAVE;
+            FSeek( seekPos + er2Pointers[i] );
+            ElusiveRecord2 er2(seekPos, sampleBank);
+            REST;
+        }
+    }
+} ElusiveRecord1;
+
+typedef struct{
+    SIT;
+    ushort props[8];
+} InstProperties;
+
+// everything below this definitely belongs in this file
+
+typedef struct(uint seekPos, ubyte sampleBank){
+    SIT;
+    ubyte unknown1[4];
+    InstrumentSample sample(seekPos, sampleBank);
+    SIT;
+    uint instPropertiesPointer;
+    /*
+        xxxxxxxx zzzzzzzz pppppppp yyyyyyyy
+         
+        x = Unknown.
+        zzzzzzzz = Pointer to unknown data structure.
+        pppppppp = Default sample pitch.
+        yyyyyyyy = Pointer to instrument properties.
+    */
+    /*
+    if( pointerToUnknown > 0 ){
+        SAVE;
+        FSeek( seekPos + pointerToUnknown );
+        SampleHead headSample(seekPos);
+        REST;
+    }
+    */
+    SAVE;
+    FSeek( seekPos + instPropertiesPointer );
+    InstProperties properties;
+    REST;
+} PercussionInstrumentIndex;
+
+typedef struct(uint seekPos, ubyte sampleBank){
+    SIT;
+    local uint64 numRecords = 64;
+    local uint64 j;
+    uint instrumentRecords[numRecords];
+    for( j = 0; j < numRecords; j++ ){
+        SAVE;
+        FSeek( seekPos + instrumentRecords[j] );
+        PercussionInstrumentIndex myInstruments(seekPos, sampleBank);
+        REST;
+    }
+} PercussionInstrument;
+
+typedef struct(uint seekPos, ubyte sampleBank){
+    SIT;
+    ubyte startNoteNumbers[3];
+    SIT;
+    ubyte maybeDecay;
+    SIT;
+    uint instPropertiesPointer;
+    SAVE;
+    FSeek( seekPos + instPropertiesPointer );
+    InstProperties properties;
+    REST;
+    InstrumentSample samples(seekPos, sampleBank)[3]<optimize=false>;
+} OtherInstrument;

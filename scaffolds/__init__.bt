@@ -7,3 +7,4 @@
 #include "scaffolds/Jumps.bt"
 #include "scaffolds/Significant.bt"
 #include "scaffolds/Unknown.bt"
+#include "scaffolds/Warning.bt"

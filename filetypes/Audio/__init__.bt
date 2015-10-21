@@ -1,0 +1,189 @@
+#include "filetypes/Audio/Sample.bt"
+#include "filetypes/Audio/Instrument.bt"
+#include "filetypes/Audio/InstrumentSet.bt"
+
+/*
+things with mystery pointers:
+PercussionInstrumentIndex
+OtherInstrument
+*/
+
+/*
+struct InstrumentSet[3] is 96 bytes long 
+before it collides with a variable sized Unknown_5
+80 bytes if you assume that it's padded at the end
+
+struct myInstruments[51] has a pointer of 0 that
+doesn't reach beyond the pointer table
+
+myInstruments[1] has a pointer that does not work 
+(data not structured the same)
+it is 1072 (0430h) bytes long and the second 
+
+
+InstrumentSets (2, 37) with a type of 020200 have had 
+seek1 and seek2 values of 0 and 0
+the percussion flag was absent in both cases
+
+InstrumentSets (34, 33) with a type of 020201 have had
+seek1 values but a seek2 value of 0
+
+(SEEK1 POINTERS ARE RELATIVE TO 
+THE POSITION SEEK1 STARTS AT)
+if seek1 and seek2 are set, 
+seek1 points to 4 pointers, those pointers point 
+to records that look like:
+D3 XX XX XX YY YY YY YY 3F ZZ ZZ ZZ AA AA AA AA
+and seek2 points to
+00 00 18 80 3F 20 00 00 | 
+
+if seek1 and seek2 are set, seek1 
+
+InstrumentSets (31) with a type of 020201 
+and the percussion flag have been found to lead with 3 
+sets of 0s (a 0 in the first position) yet numInstruments
+still describes how many instruments it has before the
+padding
+
+the only time seek2 is set to something that isn't 0
+when the percussion flag is not set, is for sets 0 and 1
+
+InstrumentSet[16] lacks the precussion flag but
+still has seek2 set to 0 with a defined seek1
+its patchVersion seems to correlate with the size
+of it's seek2 (6 records)
+
+all instrument lengths tend to be 32 bytes
+
+
+// DEFINITELY TRUE AND RELEVANT NOTES FOR
+// FINALIZING THESE DATA STRUCTURES
+i think the data inlined by what's referred to as 
+"SampleBlock sampleData" is code similar to what's
+found in the sequence definitions 
+
+the first byte of the TableSample object is only
+ever not set to 0 if it's in InstrumentSet 0 or 1
+
+all my references to InstrumentSet 1 &| 2 are most
+likely meant to be references to InstrumentSet 0 &| 1,
+I can't help that after using lua for so long my brain
+became 1-indexed again
+
+I think my data for getting the precussion instruments
+might be wrong, what I call seek1 might be the
+precussion entry and I might be skipping a regular
+instrument in the mix of things
+
+InstrumentSet's seek2 points to
+1088 bytes of unused data in the form of 
+pointer, float, pointer, float ...
+which is 138 records long, which is 80,
+which is the value of unknown4!!!
+
+@ 0x1E278 in OoT_MQ_E_debugD.z64,
+there's some leftover data implying this
+first instrumentset had fewer records
+and that thenext instrumentset was not yet
+defined due to its SampleBlock being raised up
+
+0x1EF60 has a set of data defined relative to it
+but I can't find the InstrumentSet that is responsible
+for it
+
+InstrumentSet[3] has some dangling data
+
+// ALL NOTES AFTER THIS POINT ARE AFTER 
+// THE PRECUSSION CORRECTION
+0x1A870 has 2 InstrumentProperties
+0x1AD10 has several
+0x1B920 is the nearest defined landmark
+
+(extraInstrumentSamples is not 
+jumping to the correct address when defining
+InstrumentSample->SampleHead
+
+
+0x47fb0c is the first audiotable entry with no
+reference to it in the soundbank
+(or it's the last)
+it spans 418036 bytes (0x660F4)
+
+and ends with a clean set of six nulls
+
+the audio table has 231~ items in it if
+you assume that the size of one record
+is 19548 bytes
+(5135360-608368)/190938
+
+if the audio table were to have ~231 records
+in it (based on one particular record being 
+19548 bytes long) then there are ~21 records
+not referenced at the end of the audio table
+
+0x47d420 to 0x47fb0c (9964 bytes)
+
+the offset for the last good record is 0x003E8BB0
+(referenced)
+
+the offset for the first unknown record is 0x003EB29C
+(unreferenced)
+
+the offset for the second unknown record is 0x003F0F70
+(referenced? at 0x00BCCDD0 in the code block)
+
+// AFTER PATCHING TO BOUNCE OF SAMPLEBANKS
+0x4a2884 is the first unknown record area
+spanning 42460 bytes (0xA5DC)
+
+samplebanks 0, 1, 2, 3, 5, 6 are all directly
+referenced despite samplebank 1 being empty 
+(effectually the same as overlapping onto 
+samplebank 0)
+
+samplebank 4 has data in it but the audiobank 
+doesn't directly reference them
+
+// TEST RESULTS:
+* can confirm that changing the third byte 
+(sampleBank) made an ugly mess of audio
+
+0x4a2890
+0x4a8ca0
+
+ 4885664 - 4860048 = 25616
+
+0x29190
+
+4860048 - 1635760 = 3224288
+
+16824 bytes (Sample2)
+until 
+4902488
+
+* setting TableSample's two properties from
+the second InstrumentSample to be the same
+as the first caused a crash
+
+
+samp4:
+start   4251680
+size    42448
+52
+
+stops:
+0x0     
+0x6410  = 25616
+(25616)
+0x72d0  = 29392
+(3776) @ 4306848
+0x8230  = 33328
+(3936) @ 4310784
+0x9030  = 36912
+(3584)
+0xa5c0  = 42432
+(5520)
+
+25616
+4251680
+*/

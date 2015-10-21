@@ -10,7 +10,7 @@ string Vec3SRead( VEC3S v ){
     return s;
 }
 
-void Vec3SWrite( VEC3F &v, string s )
+void Vec3SWrite( VEC3S &v, string s )
 {
     SScanf( s, "(%f %f %f)", v.x, v[1], v[2] );
 }

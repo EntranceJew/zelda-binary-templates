@@ -1,0 +1,20 @@
+string EXSWarning(string reason){
+    local string out;
+    SPrintf(out, "%s: @ 0x%Lx\n", reason, FTell());
+    return out;
+}
+
+void EXWarning(string reason){
+    Printf("%s: @ 0x%Lx\n", reason, FTell());
+}
+
+void AssertUBytesNull( ubyte b[], string msg ){
+    local uint64 i;
+    local string omsg;
+    for( i = 0; i < sizeof(b); i++ ){
+        if( b[i] != 0x00 ){
+            SPrintf(omsg, "%d of %d was not null in %s", i, sizeof(b), msg);
+            Assert( b[i] != 0x00, EXSWarning(omsg));
+        }
+    }
+}

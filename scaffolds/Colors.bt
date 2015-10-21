@@ -1,3 +1,5 @@
+#define cOrange 0x00A5FF
+
 uint64 ColorTupToUInt(uint64 red, uint64 green, uint64 blue){
     local uint64 color;
     local string dat;

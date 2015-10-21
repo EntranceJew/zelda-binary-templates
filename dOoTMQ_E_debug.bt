@@ -1,0 +1,15 @@
+// main identifiers
+#define GAME    "OoTMQ"
+#define REGION  "E"
+#define VIDEO   "PAL"
+
+// very significant identifiers that cannot
+// be determined dynamically from the rom data yet
+#define AUDIOBANK  0x00019030
+#define AUDIOSEQ   0x00044DF0
+#define AUDIOTABLE 0x00094870
+#define ATBL_END   0x004E5C00
+#define CODEFILE   0x00A94000
+#define INSTRUMENT 0x00BCC270
+#define SEQTABLE   0x00BCC6A0
+#define SAMPLES    0x00BCCD90

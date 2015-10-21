@@ -9,47 +9,34 @@
 // Legend of Zelda, The - Majora's Mask (E) (M4) (Debug Version).z64 decompressed
 BitfieldDisablePadding();
 
-#define cOrange 0xFFA500
+// == game switch, only have one of these at once ==
+//#include "dMM_E_debug.bt"
+#include "dOoTMQ_E_debug.bt"
 
-#include "filetypes/Banks.bt"
-#include "filetypes/Simple.bt"
-#include "filetypes/FileSystem.bt"
+/*
+    todo:
+    * throw some #warning and #error around
+*/
 
-#include "filetypes/Texture/__init__.bt"
+// == a great big block of global settings ==
 
-#include "filetypes/Scene/Actor.bt"
-#include "filetypes/Scene/Camera.bt"
-#include "filetypes/Scene/Poly.bt"
-#include "filetypes/Scene/Collision.bt"
-#include "filetypes/Scene/Cutscene.bt"
-#include "filetypes/Scene/Mesh.bt"
+// toggles the background color between each defined
+// instance of SIT as long as SION is called beforehand
+//#define ENABLE_PAINT_SIGNIFICANT    1
 
-#include "filetypes/Scene/HeaderCommand.bt"
-
-#include "filetypes/Scene/Scene.bt"
-
-void EXWarning(string reason){
-    Printf("%s: @ 0x%Lx\n", reason, FTell());
-}
+// == the actual code that works ==
+#include "scaffolds/__init__.bt"
+#include "filetypes/__init__.bt"
 
 
 
-//typedef struct {
-//  u32 relative_offset;     /* offset relative to start of audioseq file */
-//  u32 length;              /* length in bytes */
-//  u32 seq_type;            /* 0x02000000, 0x02010000, 0x02020000 */
-//  u32 padding;             /* NULL */
-//} PointerTableEntry;
-//PointerTableEntry SequencePointers[SeqCount];
 
-//FSeek(03107000h);
-//SetBackColor( cDkGreen );
-//ZScene Z2_LAST_BS;
-//FSeek(03104000h);
-//ZRoom Z2_WITCH_SHOP_room_14;
 
+/*
+SetBackColor(cOrange);
 FSeek(0x213b000);
 ZScene Z2_20SICHITAI2;
 
 FSeek(03066000h);
 ZScene clocktower;
+*/
