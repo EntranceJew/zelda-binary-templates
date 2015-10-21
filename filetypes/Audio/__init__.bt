@@ -1,6 +1,9 @@
 #include "filetypes/Audio/Sample.bt"
 #include "filetypes/Audio/Instrument.bt"
 #include "filetypes/Audio/InstrumentSet.bt"
+#include "filetypes/Audio/Sequence.bt"
+#include "filetypes/Audio/SequenceHead.bt"
+#include "filetypes/Audio/ChannelHead.bt"
 
 /*
 things with mystery pointers:

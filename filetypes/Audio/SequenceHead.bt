@@ -1,0 +1,110 @@
+typedef struct (uint noArgs){
+    SIT;
+    ubyte command;
+    local uint64 i;
+    for( i = 0; i < noArgs; i++ ){
+        SIT;
+        ubyte arg;
+    }
+} SHCommand;
+
+typedef struct {
+    /*
+        Sequence Header Commands[edit]
+        
+        Note: some sequences have the following data after the first four bytes of their sequence header:
+        D7FFFF 8776CCFF7786F3 vv F2 ww C801F3 xx [C801FA yyyy] FB zzzz
+        v, w and x are unknowns, y and z seem to be pointers to 9x commands for different parts of the sequence within the sequence header. The part in square brackets is repeated in some sequences. Its purpose is currently unknown but it may be to do with continuing playback mid-sequence after returning to the area from a house/shop.
+        
+        https://github.com/sauraen/seq64/blob/master/romdesc/mm_info.xml
+        https://sites.google.com/site/messiaen64/toads-music-incomplete
+        https://sites.google.com/site/messiaen64/differences-between-sseq-nds-and-mario64-seq-format
+        https://sites.google.com/site/messiaen64/mario-64-sequenced-music-specification
+    */
+    local ubyte op;
+    local ubyte breakout = 0;
+    local string warn;
+    while ( breakout == 0 ){
+        op = ReadUByte(FTell());
+        switch( op ){
+            case 0xCC:
+                SHCommand CC(2);
+                // yyxx
+                // Unknown. yy starts at zero and increases each time the command appears, xx is (always?) 73.
+                break;
+            case 0xD3:
+                SHCommand D3(1);
+                // xx
+                //Seems to be something to do with the sequence type or format; for Super Mario 64, xx is usually 80, for Zelda 64, xx is usually 20.
+                break;
+            case 0xD5:
+                SHCommand D5(1);
+                // xx
+                // Unknown. xx usually takes the value of 32. For sequences that don't play any music xx is 46.
+                break;
+            case 0xD6:
+                SHCommand D6(2);
+                // xxxx
+                // Disables channels given by xxxx.
+                break;
+            case 0xD7:
+                SHCommand D7(2);
+                // xxxx
+                // Enables channels given by xxxx (boolean, each channel is one bit).
+                break;
+            case 0xDB:
+                SHCommand DB(1);
+                // xx
+                // Master volume control, xx is the volume.
+                break;
+            case 0xDD:
+                SHCommand DD(1);
+                // xx
+                // Tempo control, xx is the tempo value in beats per minute.
+                break;
+            case 0x90:
+            case 0x91:
+            case 0x92:
+            case 0x93:
+            case 0x94:
+            case 0x95:
+            case 0x96:
+            case 0x97:
+            case 0x98:
+            case 0x99:
+            case 0x9A:
+            case 0x9B:
+            case 0x9C:
+            case 0x9D:
+            case 0x9E:
+            case 0x9F:
+                SHCommand NINEX(2);
+                // yyyy
+                // Points to a channel header offset. 9X is the channel number (0 - F) and yyyy is the offset of that channel's header relative to the start of the sequence file.
+                break;
+            case 0xFB:
+                SHCommand FB(2);
+                // xxxx
+                // Offset to loop from, xxxx is the offset relative to the start of the sequence file.
+                break;
+            case 0xFD:
+                if( ReadUByte(FTell()+1) > 0x7F ){
+                    SHCommand FD(2);
+                } else {
+                    SHCommand FD(1);
+                }
+                // FD xx / FD yyyy
+                // Timestamp (number of 'ticks' to wait before the next command is read, relative to tempo), variable length. If xx goes above 7F, add 8000 to it to get yyyy.
+                break;
+            case 0xFF:
+                SHCommand FF(0);
+                breakout = 1;
+                break;
+            default:
+                SHCommand IDK(1);
+                SPrintf(warn, "WARNING: Unknown SeqHead opcode (0x%02LX)!", op);
+                EXWarning(warn);
+                break;
+        }
+    }
+} SeqHead;

@@ -1,0 +1,99 @@
+typedef struct{
+    local ubyte op;
+    local int breakout = 0;
+    local string warn;
+    while ( breakout == 0 ){
+        op = ReadUByte(FTell());
+        switch( op ){
+            case 0xC1:
+                SHCommand C1(1);
+                // C1 xx
+                // Sets the instrument number, xx, to be used for the current channel.
+                break;
+            case 0xC2:
+                SHCommand C2(1);
+                // C2 xx
+                // Transposition, signed. xx is the number of semitones to transpose by.
+                break;
+            case 0xC4:
+                SHCommand C4(0);
+                // Initialises the channel for music playback.
+                break;
+            case 0xD3:
+                SHCommand D3(2);
+                // D3 xx (yy)
+                // Pitch bend amount, signed, value of xx. yy is a timestamp used between control changes.
+                break;
+            case 0xD4:
+                SHCommand D4(1);
+                // D4 xx
+                // Effects level (echo). xx is the effect amount.
+                break;
+            case 0xD8:
+                SHCommand D8(2);
+                // D8 xx (yy)
+                // Vibrato amount, value of xx. Higher values can produce odd sounds. yy is a timestamp used between control changes.
+                break;
+            case 0xDD:
+                SHCommand DD(2);
+                // DD xx
+                // Channel pan. xx is the pan amount, 00 = hard left, 3F = centre, 7F = hard right.
+                break;
+            case 0xDF:
+                SHCommand DF(2);
+                // xx (yy)
+                // Channel volume. xx is the volume value, yy is a timestamp used between control changes (when the volume is changing constantly).
+                break;
+            case 0xE9:
+                SHCommand E9(1);
+                // E9 xx
+                // Priority. Unknown how it is used, takes the value of xx.
+            case 0x80: // unused?
+            case 0x81: // unused?
+            case 0x82: // unused?
+            case 0x83: // unused?
+            case 0x84: // unused?
+            case 0x85: // unused?
+            case 0x86: // unused?
+            case 0x87: // unused?
+            case 0x88:
+            case 0x89:
+            case 0x8A:
+            case 0x8B:
+            case 0x8C: // unused?
+            case 0x8D: // unused?
+            case 0x8E: // unused?
+            case 0x8F: // unused?
+                SHCommand EIGHTX(2);
+                // 8x yyyy
+                // Points to music data to be played on the current channel. x is the 'note layer' to be used (8 - B), up to a maximum of four note layers can be loaded per channel. yyyy is the offset of the music data to be played, relative to the start of the sequence file.
+                break;
+            case 0xFB:
+                SHCommand FB(2);
+                // xxxx
+                // Offset to loop from, xxxx is the offset relative to the start of the sequence file.
+                break;
+            case 0xFD:
+                // *** slave copy from SeqHead ***
+                if( ReadUByte(FTell()+1) > 0x7F ){
+                    SHCommand FD(2);
+                } else {
+                    SHCommand FD(1);
+                }
+                // FD xx / FD yyyy
+                // Timestamp (number of 'ticks' to wait before the next command is read, relative to tempo), variable length. If xx goes above 7F, add 8000 to it to get yyyy.
+                break;
+            case 0xFF:
+                // FF
+                // Marks the end of the channel header. 
+                SHCommand FF(0);
+                //breakout = 1;
+                break;
+            default:
+                SHCommand IDK(1);
+                SPrintf(warn, "\nWARNING: Unknown ChanHead opcode (0x%02L)!", op);
+                EXWarning(warn);
+                break;
+        }
+    }
+} ChanHead;

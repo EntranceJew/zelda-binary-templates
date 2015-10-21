@@ -9,14 +9,16 @@
 // Legend of Zelda, The - Majora's Mask (E) (M4) (Debug Version).z64 decompressed
 BitfieldDisablePadding();
 
-// == game switch, only have one of these at once ==
-//#include "dMM_E_debug.bt"
-#include "dOoTMQ_E_debug.bt"
+
 
 /*
     todo:
     * throw some #warning and #error around
 */
+
+// == game switch, only have a pair of these set at once ==
+//#include "dMM_E_debug.bt"
+#include "dOoTMQ_E_debug.bt"
 
 // == a great big block of global settings ==
 
@@ -29,8 +31,12 @@ BitfieldDisablePadding();
 #include "filetypes/__init__.bt"
 
 
-
-
+// find the game we need
+if( GAME == "OoTMQ" && REGION == "E" && VIDEO == "PAL" && DEFLATE && DEBUG ){
+    #include "regions/dOoTMQ_E_debug/main.bt"
+} else if( GAME == "MM" && REGION == "E" && VIDEO == "PAL" && DEFLATE && DEBUG ){
+    #include "regions/dMM_E_debug/main.bt"
+}
 
 /*
 SetBackColor(cOrange);

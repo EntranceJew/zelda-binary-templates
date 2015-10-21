@@ -2,6 +2,8 @@
 #define GAME    "OoTMQ"
 #define REGION  "E"
 #define VIDEO   "PAL"
+#define DEFLATE 1
+#define DEBUG   1
 
 // very significant identifiers that cannot
 // be determined dynamically from the rom data yet

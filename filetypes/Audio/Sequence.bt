@@ -1,0 +1,35 @@
+struct SeqHead;
+
+local uint doWalkThrough = 0;
+local ushort seqNo = 0;
+typedef struct {
+    SIT;
+    /* offset relative to start of audioseq file */
+    uint relative_offset;     
+    SIT;
+    /* length in bytes */
+    uint length;              
+    SIT;
+    /* 0x02000000, 0x02010000, 0x02020000 */
+    uint seq_type;            
+    SIT;
+    ubyte padding[4];             
+    AssertUBytesNull( padding, "SequenceRecord->padding" ); 
+
+    SAVE;
+    SetBackColor( cPurple );
+    FSeek(AUDIOSEQ + relative_offset);
+    SeqHead microcode;
+    REST;
+} SequenceRecord;
+
+typedef struct {
+    SIT;
+    ushort numSeqs;
+    SIT;
+    ubyte  numSeqsPadding[14];
+    AssertUBytesNull( numSeqsPadding, "numSeqsPadding" );
+
+    EXWarning("OPTIMIZE FIX: SequenceTable->mySequenceRecords (SequenceRecord)");
+    SequenceRecord mySequenceRecords[numSeqs]<optimize=false>;
+} SequenceTable;
