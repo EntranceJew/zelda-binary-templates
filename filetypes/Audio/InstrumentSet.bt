@@ -15,6 +15,10 @@ typedef struct {
     */
     SIT;
     uint seek1;
+
+    SIT;
+    uint seek2;
+
     if(parentof(this).unknown1.bit2 || parentof(this).unknown1.bit4 || parentof(this).unknown1.bit6 || parentof(this).unknown1.bit8){
         AssertUIntGTZero(seek1, "InstrumentSetData->seek1");
 
@@ -28,8 +32,7 @@ typedef struct {
         REST;
     }
 
-    SIT;
-    uint seek2;
+
     if(parentof(this).unknown1.bit4 || parentof(this).unknown1.bit6 || parentof(this).unknown1.bit8){
         AssertUIntGTZero(seek2, "InstrumentSetData->seek2 [non-drums do not blank]");
         SAVE;

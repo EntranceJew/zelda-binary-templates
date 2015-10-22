@@ -107,11 +107,12 @@ typedef struct(uint seekPos, ubyte sampleBank){
 
 // elusive record 1
 typedef struct(uint seekPos, ubyte sampleBank){
+    local uint64 sizeToRead = (parentof(this).seek2 - parentof(this).seek1) / 4;
     SIT;
-    uint er2Pointers[4];
+    uint er2Pointers[sizeToRead];
     SIT; // flip it so we don't odd-man-out the next var
-    local uint i;
-    for( i = 0; i < 4; i++ ){
+    local uint64 i;
+    for( i = 0; i < sizeToRead; i++ ){
         if( er2Pointers[i] > 0){
             SAVE;
             FSeek( seekPos + er2Pointers[i] );
