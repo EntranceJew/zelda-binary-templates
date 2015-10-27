@@ -1,0 +1,74 @@
+typedef struct( uint64 size ) {
+    if( NIFF2 ){
+        uint scene_chain_root_link_num;
+        uint external_obj_num;
+        uint external_env_num;
+        uint external_cam_num;
+        uint external_light_num;
+        if( scene_chain_root_link_num ){
+            uint scene_chain_root_link_index[scene_chain_root_link_num];
+        }
+        if( external_obj_num ){
+            uint external_obj_file_name_index[external_obj_num];
+            uint external_obj_name_index[external_obj_num];
+        }
+        if( external_env_num ){
+            uint external_env_file_name_index[external_env_num];
+            uint external_env_name_index[external_env_num];
+        }
+        if( external_cam_num ){
+            uint external_cam_file_name_index[external_cam_num];
+            uint external_cam_name_index[external_cam_num];
+        }
+        if( external_light_num ){
+            uint external_light_file_name_index[external_light_num];
+            uint external_light_name_index[external_light_num];
+        }
+    }
+    // since we can be variable size,
+    // block out all unknown data
+    local uint64 size_of_the_unknown = size - (FTell() - startof(this));
+    if( size_of_the_unknown > 0 ){
+        ubyte unknown[size_of_the_unknown];
+    }
+} NIFF_NEB_SceneHeader;
+
+typedef struct( uint64 size ){
+    // since we can be variable size,
+    // block out all unknown data
+    local uint64 size_of_the_unknown = size - (FTell() - startof(this));
+    if( size_of_the_unknown > 0 ){
+        ubyte unknown[size_of_the_unknown];
+    }
+} NIFF_UEB_SceneHeader;
+
+typedef struct {
+    uint scene_header_tag;
+    Assert( scene_header_tag == TAG_SCENE_HEADER, "Invalid NIFF_SceneHeader: Wrong Tag");
+    uint scene_header_size;
+    uint scene_size;
+    // @TODO: enum scene_cfg
+    uint scene_cfg;
+    uint scene_name_index;
+    uint scene_obj_link_num;
+    uint scene_env_link_num;
+    uint scene_cam_link_num;
+    uint scene_light_link_num;
+    uint nintendo_extension_block_size;
+    uint user_extension_block_size;
+} NIFF_SceneHeader;
+
+typedef struct {
+    NIFF_SceneHeader header;
+    Assert( header.scene_header_size == sizeof(header), "Invalid NIFF SceneHeader: Size Mismatch" );
+    uint scene_obj_link_index[header.scene_obj_link_num];
+    uint scene_env_link_index[header.scene_env_link_num];
+    uint scene_cam_link_index[header.scene_cam_link_num];
+    uint scene_light_link_index[header.scene_light_link_num];
+    if( header.nintendo_extension_block_size != NINTENDO_EXT_BLOCK_NONE ){
+        NIFF_NEB_SceneHeader nintendoExtensionBlock(header.nintendo_extension_block_size);
+    }
+    if( header.user_extension_block_size != USER_EXT_BLOCK_NONE ){
+        NIFF_UEB_SceneHeader userExtensionBlock(header.user_extension_block_size);
+    }
+} NIFF_SceneList;

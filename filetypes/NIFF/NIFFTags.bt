@@ -1,0 +1,19 @@
+// NIFF v1.0 structure tags
+
+#define	TAG_HEADER	                0x00000000
+
+#define TAG_SCENE_HEADER	        0x00010000
+
+#define TAG_CAM_LIST	            0x000e0000
+#define TAG_CAM	                    0x000e0100
+
+#define TAG_LIGHT_LIST	            0x000f0000
+#define TAG_LIGHT	                0x000f0100
+#define TAG_DIR_LIGHT_DIRECTION	    0x000f0101
+#define TAG_DIR_LIGHT_POSITION	    0x000f0102
+
+#define TAG_ENV_LIST	            0x00100000
+#define TAG_ENV	                    0x00100100
+
+#define NINTENDO_EXT_BLOCK_NONE     0x00000000
+#define USER_EXT_BLOCK_NONE         0x00000000

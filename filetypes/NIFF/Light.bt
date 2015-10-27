@@ -1,0 +1,132 @@
+// @todo: I got distracted while writing these so there's a high chance that
+// this needs to be fixed up in some capacity
+
+enum <uint> LIGHT_TYPE {
+    DIRECTION = LIGHT_TYPE_DIRECTION,
+    POSITION  = LIGHT_TYPE_POSITION
+};
+
+typedef struct {
+    uint dir_light_tag;
+    uint this_dir_light_index;
+    uint dir_light_size;
+    float dir_color_r;
+    float dir_color_g;
+    float dir_color_b;
+    float dir_x;
+    float dir_y;
+    float dir_z;
+} NIFF_DirLight1;
+
+typedef struct {
+    uint dir_light_tag;
+    uint this_dir_light_index;
+    uint dir_light_size;
+    float dir_color_r;
+    float dir_color_g;
+    float dir_color_b;
+    float pos_x;
+    float pos_y;
+    float pos_z;
+    //float dir_a1;
+    //float dir_a2;
+} NIFF_DirLightDirection;
+
+typedef struct {
+    uint dir_light_tag;
+    uint this_dir_light_index;
+    uint dir_light_size;
+    float dir_color_r;
+    float dir_color_g;
+    float dir_color_b;
+    float dir_x;
+    float dir_y;
+    float dir_z;
+    float pos_x;
+    float pos_y;
+    float pos_z;
+    float dir_a1;
+    float dir_a2;
+} NIFF_DirLightPosition;
+
+typedef struct {
+    uint light_tag;
+    Assert( light_tag == TAG_LIGHT, "Invalid NIFF_Light: Wrong Tag" );
+    uint this_light_index;
+    uint light_header_size;
+    uint light_size;
+    // @TODO: Validate against NameList
+    uint light_name_index;
+    // @TODO: Validate that item has name
+    LIGHT_TYPE light_type;
+    float ambient_r;
+    float ambient_g;
+    float ambient_b;
+    uint dir_light_num;
+    uint nintendo_extension_block_size;
+    uint user_extension_block_size;
+} NIFF_LightHeader;
+
+typedef struct {
+    NIFF_LightHeader header;
+    Assert( header.light_header_size == sizeof(header), "Invalid NIFF_LightHeader: Size Mismatch" );
+    if( header.light_type == LIGHT_TYPE_DIRECTION ){
+        NIFF_DirLightDirection dir_lights[header.dir_light_num]<optimize=false>;
+    } else if( header.light_type == LIGHT_TYPE_POSITION ){
+        NIFF_DirLightPosition dir_lights[header.dir_light_num]<optimize=false>;
+    } else {
+        Assert( false, "Invalid NIFF_Light: Unrecognized light_type" );
+    }
+    
+    local uint64 i;
+    local string warn;
+    local string thisName;
+    for( i = 0; i < header.dir_light_num; i++ ){
+        SPrintf( thisName, "Invalid NIFF_DirLight[%d]: ", i );
+
+        SPrintf( warn, "%sSize Mismatch: Actual != Internal", thisName );
+        Assert( dir_lights[i].dir_light_size == sizeof(dir_lights[i]), warn );
+        SPrintf( warn, "%sIndex Mismatch: Header != Internal", thisName );
+        //Assert( i == lights[i].this_light_index, warn );
+    }
+} NIFF_Light;
+
+// everything under here has been vetted ;)
+typedef struct {
+    uint light_list_tag;
+    Assert( light_list_tag == TAG_LIGHT_LIST, "Invalid NIFF_LightListHeader: Wrong Tag" );
+    uint light_list_header_size;
+    uint light_list_size;
+    uint light_num;
+    uint nintendo_extension_block_size;
+    uint user_extension_block_size;
+    uint light_num_byte[light_num];
+} NIFF_LightListHeader;
+
+typedef struct {
+    NIFF_LightListHeader header;
+    Assert( header.light_list_header_size == sizeof(header), "Invalid NIFF_LightListHeader: Size Mismatch" );
+
+    NIFF_Light lights[header.light_num]<optimize=false>;
+    local uint64 i;
+    local string warn;
+    local string thisName;
+    for( i = 0; i < header.light_num; i++ ){
+        SPrintf( thisName, "Invalid NIFF_Light[%d]: ", i );
+
+        SPrintf( warn, "%sSize Mismatch: Actual != Header", thisName );
+        Assert( header.light_num_byte[i] == sizeof(lights[i]), warn );
+        SPrintf( warn, "%sSize Mismatch: Actual != Internal", thisName );
+        //Assert( lights[i].light_size == sizeof(lights[i]), warn );
+        SPrintf( warn, "%sSize Mismatch: Header != Internal", thisName );
+        //Assert( header.light_num_byte[i] == lights[i].light_size, warn );
+        SPrintf( warn, "%sIndex Mismatch: Header != Internal", thisName );
+        //Assert( i == lights[i].this_light_index, warn );
+    }
+    if( header.nintendo_extension_block_size != NINTENDO_EXT_BLOCK_NONE ){
+        NIFF_XEB_Generic nintendoExtensionBlock(header.nintendo_extension_block_size);
+    }
+    if( header.user_extension_block_size != USER_EXT_BLOCK_NONE ){
+        NIFF_XEB_Generic userExtensionBlock(header.user_extension_block_size);
+    }
+} NIFF_LightList;

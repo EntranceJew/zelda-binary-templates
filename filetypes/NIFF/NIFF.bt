@@ -1,0 +1,122 @@
+#include "filetypes/NIFF/NIFFFlags.bt"
+#include "filetypes/NIFF/NIFFTags.bt"
+
+#include "filetypes/NIFF/Common.bt"
+
+#include "filetypes/NIFF/Scene.bt"
+#include "filetypes/NIFF/Env.bt"
+#include "filetypes/NIFF/Cam.bt"
+#include "filetypes/NIFF/Light.bt"
+
+BigEndian();
+BitfieldDisablePadding();
+
+local int NIFF2 = 0;
+typedef struct {
+    ubyte majorVersion;
+    if( majorVersion >= 2 ){
+        NIFF2 = 1;
+    }
+    ubyte minorVersion;
+} NIFF_Version <read=ReadNIFF_Version>;
+
+string ReadNIFF_Version( NIFF_Version &v ){
+    local string s;
+    SPrintf( s, "%u.%X", v.majorVersion, v.minorVersion);
+    return s;
+}
+
+typedef struct {
+    ubyte creatorCode;
+    ubyte toolCode;
+    NIFF_Version version;
+} NIFF_ToolVersion;
+
+typedef struct( uint64 size ){
+    if( NIFF2 ){
+        uint ci_img_list_num_byte;
+        uint color_palette_list_num_byte;
+        uint envelope_list_num_byte;
+        uint cluster_list_num_byte;
+        uint weight_list_num_byte;
+        uint chain_root_list_num_byte;
+        uint joint_list_num_byte;
+        uint effector_list_num_byte;
+        uint external_name_list_num_byte;
+    }
+    // since we can be variable size,
+    // block out all unknown data
+    local uint64 size_of_the_unknown = size - (FTell() - startof(this));
+    if( size_of_the_unknown > 0 ){
+        ubyte unknown[size_of_the_unknown];
+    }
+} NIFF_NEB_FileHeader;
+
+typedef struct( uint64 size ){
+    // since we can be variable size,
+    // block out all unknown data
+    local uint64 size_of_the_unknown = size - (FTell() - startof(this));
+    if( size_of_the_unknown > 0 ){
+        ubyte unknown[size_of_the_unknown];
+    }
+} NIFF_UEB_FileHeader;
+
+typedef struct {
+    NIFF_ToolVersion version;
+    uint file_size;
+    uint header_tag;
+    Assert( header_tag == TAG_HEADER, "Invalid NIFF_FileHeader: Wrong Tag" );
+    // despite the names, all of the following are sizes
+    uint file_header_num_byte;
+    uint scene_list_num_byte;
+    uint env_list_num_byte;
+    uint cam_list_num_byte;
+    uint light_list_num_byte;
+    uint obj_list_num_byte;
+    uint shape_list_num_byte;
+    uint vtx_list_num_byte;
+    uint color_list_num_byte;
+    uint vector_list_num_byte;
+    uint st_list_num_byte;
+    uint tri_list_num_byte;
+    uint part_list_num_byte;
+    uint mat_list_num_byte;
+    uint tex_list_num_byte;
+    uint tex_img_list_num_byte;
+    uint anim_list_num_byte;
+    uint coll_list_num_byte;
+    uint switch_list_num_byte;
+    uint name_list_num_byte;
+    uint nintendo_extension_block_size;
+    uint user_extension_block_size;   
+    if( nintendo_extension_block_size != NINTENDO_EXT_BLOCK_NONE ){
+        NIFF_NEB_FileHeader nintendoExtensionBlock(nintendo_extension_block_size);
+        Assert( nintendo_extension_block_size == sizeof(nintendoExtensionBlock), "Invalid NIFF_NEB_FileHeader: Size Mismatch" );
+    }
+    if( user_extension_block_size != USER_EXT_BLOCK_NONE ){
+        NIFF_UEB_FileHeader userExtensionBlock(user_extension_block_size);
+        Assert( user_extension_block_size == sizeof(userExtensionBlock), "Invalid NIFF_UEB_FileHeader: Size Mismatch" );
+    } 
+} NIFF_FileHeader;
+
+typedef struct {
+    NIFF_FileHeader header;
+    Assert( header.file_header_num_byte == sizeof(header), "Invalid NIFF_FileHeader: Size Mismatch" );   
+
+    // TODO: Go back and give this the same checks that EnvList has.
+    // TODO: Inline relevant ENUMs
+    NIFF_SceneList scenes;
+    Assert( scenes.header.scene_size == sizeof(scenes), "Invalid NIFF_SceneList: Size Mismatch" );
+
+    NIFF_EnvList env_list;
+    Assert( env_list.header.env_list_size == sizeof(env_list), "Invalid NIFF_EnvList: Size Mismatch" );
+
+    NIFF_CamList cam_list;
+    Assert( cam_list.header.cam_list_size == sizeof(cam_list), "Invalid NIFF_CamList: Size Mismatch" );
+
+    NIFF_LightList light_list;
+    Assert( light_list.header.light_list_size == sizeof(light_list), "Invalid NIFF_LightList: Size Mismatch" );
+} NIFF;
+
+SetBackColor( cGray );
+NIFF niff;

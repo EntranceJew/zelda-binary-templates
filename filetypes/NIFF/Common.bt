@@ -1,0 +1,26 @@
+#define GENERIC_NONE 0xFFFFFFFF
+
+typedef struct {
+    ubyte R;
+    ubyte G;
+    ubyte B;
+    ubyte A;
+} NIFF_Color;
+
+typedef struct {
+    ubyte E;
+    Assert( E == 0, "Invalid NIFF_FillColor: First Byte Null" );
+    ubyte R;
+    ubyte G;
+    ubyte B;
+} NIFF_FillColor;
+
+// not everything uses the NEB/UEB, so scaffold it
+typedef struct( uint64 size ){
+    // since we can be variable size,
+    // block out all unknown data
+    local uint64 size_of_the_unknown = size - (FTell() - startof(this));
+    if( size_of_the_unknown > 0 ){
+        ubyte unknown[size_of_the_unknown];
+    }
+} NIFF_XEB_Generic;

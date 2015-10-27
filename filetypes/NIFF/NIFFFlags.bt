@@ -1,0 +1,25 @@
+// NIFF v1.0 structure flags
+
+// Scene
+#define SCENE_CFG_VIDEO_NTSC	0x00000000
+#define SCENE_CFG_VIDEO_PAL	    0x00000001
+#define SCENE_CFG_VIDEO_MPAL	0x00000002
+#define SCENE_CFG_GAMMA	        0x00000004
+#define SCENE_CFG_DITHER	    0x00000008
+#define SCENE_CFG_DIVOT	        0x00000010
+
+// Cam
+#define CAM_TYPE_PERSP	        0x00000000
+#define CAM_TYPE_ORTHO	        0x00000001
+
+// Light
+#define LIGHT_TYPE_DIRECTION	0x00000000
+#define LIGHT_TYPE_POSITION	    0x00000001
+
+// Env
+#define ENV_FOG_USE	            0x00000001
+#define ENV_FOG_NONE	        0x00000000
+#define FILL_COLOR_NONE	        0xffffffff
+#define FILL_DEPTH_NONE	        0xffffffff
+#define BG_COLOR_IMG_NONE	    0xffffffff
+#define BG_DEPTH_IMG_NONE	    0xffffffff
