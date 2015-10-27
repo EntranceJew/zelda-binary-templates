@@ -4,6 +4,7 @@ BitfieldDisablePadding();
 // helpers for not making a mess
 // == scaffolds/*.bt
 #include "scaffolds/Colors.bt"
+#include "scaffolds/Block.bt"
 #include "scaffolds/Jumps.bt"
 #include "scaffolds/Significant.bt"
 #include "scaffolds/Unknown.bt"

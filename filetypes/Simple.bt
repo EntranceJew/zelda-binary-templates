@@ -24,24 +24,3 @@ typedef struct {
     ubyte y;
     ubyte z;
 } ZByteVector;
-
-local int colorFlop = 0;
-typedef struct Block( uint64 startPoint, uint64 blockRange){
-    Printf( "block range: %d\n", blockRange );
-    if ( colorFlop == 0 ){
-        colorFlop = 1;
-        SetBackColor( cDkBlue );
-        SetForeColor( cLtBlue );
-    } else {
-        colorFlop = 0;
-        SetBackColor( cLtBlue );
-        SetForeColor( cDkBlue );
-    }
-    local uint64 pos = FTell();
-    FSeek(startPoint);
-    char block[ blockRange ];
-//    FSeek(pos);
-    SetBackColor( cNone );
-    SetForeColor( cNone );
-    FSeek(pos);
-};
