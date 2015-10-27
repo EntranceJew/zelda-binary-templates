@@ -22,6 +22,7 @@ then I guess dive in to the [binary templates](http://www.sweetscape.com/010edit
 I tend to reference ROMs by a shorthand name, the full stats of any ROM I work with are listed in [the checksums directory](checksums/).
 ### Majora's Mask
 * `dMM_E_debugD.z64` is shorthand for a ROM that matches [these checksums](checksums/decompressed/Legend of Zelda, The - Majora's Mask (E) (M4) (Debug Version).z64.csv)
+
 ### Ocarina of Time
 * `dOoT_MQ_E_debugD.z64` is shorthand for a ROM that matches [these checksums](checksums/decompressed/Legend of Zelda, The - Ocarina of Time - Master Quest (E) (GC) (Debug Version).z64.csv)
 

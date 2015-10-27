@@ -1,4 +1,6 @@
 struct {
+    N64ROMHead makerom;
+
     FSeek( SAMPLES );
     SampleTable sampleTable;
 
