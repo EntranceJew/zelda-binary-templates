@@ -1,4 +1,5 @@
 typedef struct {
+    SIBE;
     SIT;
     uint offset; // relative to AUDIOTABLE
     SIT;
@@ -12,15 +13,20 @@ typedef struct {
     SIT;
     ubyte zeroes[6];
     AssertUBytesNull( zeroes, "SampRecord->zeroes" ); 
+    SIEND;
 } SampRecord;
 
 typedef struct {
+    SIBE;
     SIT;
     ushort numSamps;
     SIT;
     ubyte  numSampsPadding[14];
     AssertUBytesNull( numSampsPadding, "numSampsPadding" );
 
+    SIT;
+
     EXWarning("OPTIMIZE FIX: SampleTable->mySampRecords (SampRecord)");
     SampRecord mySampRecords[numSamps]<optimize=false>;
+    SIEND;
 } SampleTable;

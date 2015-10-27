@@ -3,6 +3,65 @@
     to increase visibility.
 */
 
+/*
+    define a variable for the significant step-grade
+        this impacts how frequently we see a new color
+        and when the old one
+steps:1 steps:2
+0/6      0/12+
+         1/12
+1/6      2/12-+
+         3/12
+2/6      4/12-+
+         5/12
+3/6      6/12-+
+         7/12
+4/6      8/12-+
+         9/12
+5/6     10/12-+
+        11/12
+6/6     12/12-
+*/
+local uint64 colorGrades = 12; // how many major denominations of color we got
+local uint64 colorSteps  = 1; // how many color steps we have between said things
+
+local int64 gradePos = 0; // stays between 1 and colorGrades
+local int64 stepPos = 0; // stays between 1 and colorSteps
+
+local uint64 isSignificant = 0;
+
+void BeginSignificantStruct(){
+    gradePos += 1;
+    gradePos = gradePos % colorGrades;
+    stepPos = 0;
+    // resetting stepPos makes similarly structured data the same color
+}
+
+void EndSignificantStruct(){
+    gradePos -= 1;
+    gradePos = gradePos % colorGrades;
+    stepPos = 0;
+}
+
+void ToggleSignificant(){
+    stepPos += 1;
+    stepPos = stepPos % colorSteps;
+    local float i = ((float)stepPos + (float)gradePos) / ((float)colorGrades*(float)colorSteps);
+    //Printf("S: %d G: %d | I: %f \t", stepPos, gradePos, i);
+    local uint64 newcolor = FloatToRainbowColor(i);
+    //Printf("HAIL SATAN: 0x%06LX\n", newcolor);
+    SetBackColor( newcolor );
+}
+
+void TurnOnSignificant(){
+    isSignificant = 1;
+}
+
+void TurnOffSignificant(){
+    isSignificant = 0;
+}
+
+/* classic significant
 local int colorBeforeSignificant = cNone;
 local int isSignificant = 0;
 void TurnOnSignificant(){
@@ -34,7 +93,10 @@ void ToggleSignificant(){
     }
     SetBackColor( new );
 }
+*/
 
 #define SION  TurnOnSignificant()
 #define SIOFF TurnOffSignificant()
 #define SIT   ToggleSignificant()
+#define SIBE  BeginSignificantStruct()
+#define SIEND EndSignificantStruct()

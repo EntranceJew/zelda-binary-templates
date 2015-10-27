@@ -16,6 +16,7 @@
 */
 
 typedef struct(ubyte sampleBank){
+    SIBE;
     SIT;
     ubyte unknown1 : 8;
     if( unknown1 != 0 ){
@@ -31,10 +32,12 @@ typedef struct(ubyte sampleBank){
     ubyte audioSample;
     //ubyte audioSample[sampleSize];
     REST;
+    SIEND;
 } TableSample;
 
 // deathbasket structure 1
 typedef struct(uint seekPos){
+    SIBE;
     SIT;
     uint unknown1;
     SIT;
@@ -50,19 +53,23 @@ typedef struct(uint seekPos){
         SIT;
         uint unknown3[8];
     }
+    SIEND;
 } Unknown2;
 
 // deathbasket structure 2
 typedef struct(uint seekPos){
+    SIBE;
     SIT;
     uint type;
     SIT;
     uint blockSize;
     SIT;
     ubyte dataBlock[32 * blockSize];
+    SIEND;
 } SampleBlock;
 
 typedef struct(uint seekPos, ubyte sampleBank){
+    SIBE;
     TableSample sampleFromTable(sampleBank);
     SIT;
     uint unknownPointer; //chunkFooter?!
@@ -77,9 +84,11 @@ typedef struct(uint seekPos, ubyte sampleBank){
     FSeek( seekPos + unknownPointer );
     Unknown2 unknown2(seekPos);
     REST;
+    SIEND;
 } SampleHead;
 
 typedef struct(uint seekPos, ubyte sampleBank){
+    SIBE;
     SIT;
     uint sampleHead;
     SIT;
@@ -91,10 +100,12 @@ typedef struct(uint seekPos, ubyte sampleBank){
         SampleHead headSample(seekPos, sampleBank);
         REST;
     }
+    SIEND;
 } InstrumentSample;
 
 // elusive record 2
 typedef struct(uint seekPos, ubyte sampleBank){
+    SIBE;
     SIT;
     ubyte unknown1 : 8;
     SIT;
@@ -103,14 +114,16 @@ typedef struct(uint seekPos, ubyte sampleBank){
     SIT;
     uint  unknown5; // if it's a set-local pointer,
                     // it's an instrumentProperties pointer
+    SIEND;
 } ElusiveRecord2;
 
 // elusive record 1
 typedef struct(uint seekPos, ubyte sampleBank){
+    SIBE;
     local uint64 sizeToRead = (parentof(this).seek2 - parentof(this).seek1) / 4;
     SIT;
     uint er2Pointers[sizeToRead];
-    SIT; // flip it so we don't odd-man-out the next var
+    //SIT; // flip it so we don't odd-man-out the next var
     local uint64 i;
     for( i = 0; i < sizeToRead; i++ ){
         if( er2Pointers[i] > 0){
@@ -120,16 +133,20 @@ typedef struct(uint seekPos, ubyte sampleBank){
             REST;
         }
     }
+    SIEND;
 } ElusiveRecord1;
 
 typedef struct{
+    SIBE;
     SIT;
     ushort props[8];
+    SIEND;
 } InstProperties;
 
 // everything below this definitely belongs in this file
 
 typedef struct(uint seekPos, ubyte sampleBank){
+    SIBE;
     SIT;
     ubyte unknown1[4];
     InstrumentSample sample(seekPos, sampleBank);
@@ -155,9 +172,11 @@ typedef struct(uint seekPos, ubyte sampleBank){
     FSeek( seekPos + instPropertiesPointer );
     InstProperties properties;
     REST;
+    SIEND;
 } PercussionInstrumentIndex;
 
 typedef struct(uint seekPos, ubyte sampleBank){
+    SIBE;
     SIT;
     local uint64 numRecords = 64;
     local uint64 j;
@@ -168,9 +187,11 @@ typedef struct(uint seekPos, ubyte sampleBank){
         PercussionInstrumentIndex myInstruments(seekPos, sampleBank);
         REST;
     }
+    SIEND;
 } PercussionInstrument;
 
 typedef struct(uint seekPos, ubyte sampleBank){
+    SIBE;
     SIT;
     ubyte startNoteNumbers[3];
     SIT;
@@ -182,4 +203,5 @@ typedef struct(uint seekPos, ubyte sampleBank){
     InstProperties properties;
     REST;
     InstrumentSample samples(seekPos, sampleBank)[3]<optimize=false>;
+    SIEND;
 } OtherInstrument;

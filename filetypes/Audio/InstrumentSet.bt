@@ -8,6 +8,7 @@
 */
 
 typedef struct {
+    SIBE;
     local uint64 i;
     /* 
     the value of Seek1 is valid relative to itself,
@@ -54,17 +55,17 @@ typedef struct {
             SAVE;
             FSeek( startof(this) + myInstrumentLocations[ i ] );
             //FSeek( AUDIOBANK + aBankOffset + myInstrumentLocations[ i ] );
-            //Printf("[instrument] setStart: %d; pointer: %d; now: %d; depth: %d\n", setStart, myInstrumentLocations[i], FTell(), restoreDepth);
             OtherInstrument myInstruments(startof(this), parentof(this).sampleBank);
             REST;
         } else {
-            //Printf("WARNING: On %dth set, found %dth instrument location set too low (0x%Lx)!\n", numII, i, myInstrumentLocations[ i ] );
+            //AssertUIntGTZero( myInstrumentLocations[ i ], "InstrumentSetData->myInstrumentLocations[]" );
         }
     }
-    //OtherInstrument myInstruments[numInstruments]<optimize=false>;
+    SIEND;
 } InstrumentSetData;
 
 typedef struct {
+    SIBE;
     SIT;
     uint offset; // relative to AUDIOBANK
     SIT;
@@ -134,9 +135,11 @@ typedef struct {
     FSeek( AUDIOBANK + offset );
     InstrumentSetData myData;
     REST;
+    SIEND;
 } InstrumentSet;
 
 typedef struct {
+    SIBE;
     SIT;
     ushort numInstrumentSets;
     SIT;
@@ -145,4 +148,5 @@ typedef struct {
 
     EXWarning("OPTIMIZE FIX: InstrumentSetTable->myInstrumentSets (InstrumentSet)");
     InstrumentSet myInstrumentSets[numInstrumentSets]<optimize=false>;
+    SIEND;
 } InstrumentSetTable;

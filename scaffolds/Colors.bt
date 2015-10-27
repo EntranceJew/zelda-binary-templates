@@ -1,5 +1,7 @@
+// extra colors 
 #define cOrange 0x00A5FF
 
+// color managers
 uint64 ColorTupToUInt(uint64 red, uint64 green, uint64 blue){
     local uint64 color;
     local string dat;
@@ -18,4 +20,35 @@ void SetBackColorTup(uint64 red, uint64 green, uint64 blue){
 void SetBackColorAuto(int color){
     SetBackColor( color );
     SetForeColor( ~color );
+}
+
+// provide a float between 0 and 1 and get a color
+uint64 FloatToRainbowColor(float i){
+	local float r, g, b;
+	if( i < 1.0/6.0 ){
+		r = 1.0;
+		g = i*6.0;
+		b = 0.0;
+	} else if( i >= 1.0/6.0 && i < 2.0/6.0 ){
+		r = (1.0/6.0-(i-1.0/6.0))*6.0;
+		g = 1.0;
+		b = 0.0;
+    } else if( i >= 2.0/6.0 && i < 3.0/6.0 ){
+		r = 0.0;
+		g = 1.0;
+		b = (i-2.0/6.0)*6.0;
+	} else if( i >= 3.0/6.0 && i < 4.0/6.0 ){
+		r = 0.0;
+		g = (1.0/6.0-(i-3.0/6.0))*6.0;
+		b = 1.0;
+	} else if( i >= 4.0/6.0 && i < 5.0/6.0 ){
+		r = (i-4.0/6.0)*6.0;
+		g = 0.0;
+		b = 1.0;
+	} else {
+		r = 1.0;
+		g = 0.0;
+		b = (1.0/6.0-(i-5.0/6.0))*6.0;
+	}
+	return ColorTupToUInt(r*255.0, g*255.0, b*255.0);
 }
