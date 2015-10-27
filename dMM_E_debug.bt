@@ -21,3 +21,6 @@
 
 // import the ROM structure
 #include "regions/dMM_E_debug/main.bt"
+
+//FSeek(03066000h);
+//ZScene clocktower;

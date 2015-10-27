@@ -1,6 +1,15 @@
 # To Do
 A handy file that lists everything that must be done, ever.
 
+## REALLY GOOD IDEAS
+* utilize the ability to pass generic structs around to create
+	a lookup function for startof(*) against the VFS bookmarks
+	therefore enabling easy access/reference
+* create a macro that uses the above, declared at the head of every
+	type/struct to change colors / add info to a stack
+* use the [data here](http://www.sweetscape.com/010editor/manual/CustomVariables.htm)
+	to write type-agnostic data reads (numbers are numbers)
+
 ## Stuff That Was Found But Not Documented Yet
 * Most if not all [unknown header commands](filetypes/Scene/HeaderCommand.bt) accept a number, two bytes of null, and then a scene-local [ZBank](filetypes/Banks.bt).
 * Nearly everything in [ootbank.bt](scraps/ootbank.bt), specifically where deathbasket's docs leave gaps that are bridged by spinout's.
