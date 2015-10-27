@@ -1,13 +1,19 @@
+#ifdef __LUA
+#include "010.h"
+#endif
+
 // change the state of 010
 BitfieldDisablePadding();
 
 // helpers for not making a mess
 // == scaffolds/*.bt
+#ifndef __LUA
 #include "scaffolds/Colors.bt"
 #include "scaffolds/Jumps.bt"
 #include "scaffolds/Significant.bt"
 #include "scaffolds/Unknown.bt"
 #include "scaffolds/Warning.bt"
+#endif
 
 // post-helper macros
 // turn on painting significant variables
@@ -51,4 +57,6 @@ SION;
 
 #include "filetypes/Scene/HeaderCommand.bt"
 
+#ifndef __LUA
 #include "filetypes/Scene/Scene.bt"
+#endif

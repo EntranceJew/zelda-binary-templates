@@ -15,7 +15,9 @@ int FlipIntBits(int theNumber, int numBits) {
 }
 
 typedef struct {
+#ifndef __LUA
     BitfieldDisablePadding();
+#endif
     byte bit1 : 1;
     byte bit2 : 1;
     byte bit3 : 1;
@@ -25,8 +27,13 @@ typedef struct {
     byte bit6 : 1;
     byte bit7 : 1;
     byte bit8 : 1;
-} BitEight <read=BitEightRead, size=1>;
+} BitEight 
+#ifndef __LUA
+<read=BitEightRead, size=1>
+#endif
+;
 
+#ifndef __LUA
 string BitEightRead(BitEight &be){
     local string s;
     SPrintf(s, "%d %d %d %d, %d %d %d %d", be.bit1, be.bit2, be.bit3, be.bit4, be.bit5, be.bit6, be.bit7, be.bit8);
@@ -50,3 +57,4 @@ uint64 ReadUByteBits(uint64 pos, uint64 bitStart, uint64 readSize){
     local ubyte outvalue = (( data >> (sizeof(data)*8 - (readSize + bitStart)) ) & mask);
     return outvalue;
 }
+#endif

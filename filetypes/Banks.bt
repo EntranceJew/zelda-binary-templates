@@ -6,10 +6,14 @@
 
 typedef struct {
     ubyte bankNo : 8;
-} ZBank <read=ZBankRead, size=1>;
+} ZBank 
+#ifndef __LUA
+<read=ZBankRead, size=1>
+#endif
+;
 
 //, write=ZBankWrite
-
+#ifndef __LUA
 string ZBankRead(ZBank &zb){
     switch(zb.bankNo){
         case 0x01:
@@ -32,11 +36,16 @@ string ZBankRead(ZBank &zb){
             return s;
     }
 };
+#endif
 
 typedef struct {
     ZBank zb;
     uint offset : 24;
-} ZBankPointer <read=ZBankPointerRead, size=4>;
+} ZBankPointer 
+#ifndef __LUA
+<read=ZBankPointerRead, size=4>
+#endif
+;
 
 typedef struct {
     //WARNING: this doesn't care if the exit bank is not at the same bank level
@@ -44,6 +53,7 @@ typedef struct {
     ZBankPointer end;
 } ZBankRange;
 
+#ifndef __LUA
 string ZBankPointerRead(ZBankPointer &zbp){
     local string s;
     SPrintf( s, "%s @ 0x%LX", ZBankRead(zbp.zb), zbp.offset);
@@ -61,6 +71,7 @@ int IsZBankLocal( ZBank &zb, int &thisBank ){
 int IsZBankPointerLocal( ZBankPointer &zbp, int &thisBank ){
     return IsZBankLocal( zbp.zb, thisBank );
 }
+#endif
 
 /*
 // Custom write function that allows changing

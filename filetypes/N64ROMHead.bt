@@ -1,8 +1,10 @@
 // TODO: Finish this (rom head)
 // Incomplete.
 typedef struct {
+#ifndef __LUA
     SetBackColor( cDkBlue );
     SetForeColor( cLtBlue );
+#endif
     ubyte endianess;
 
     ubyte d1releaseReg : 4;
@@ -46,7 +48,9 @@ typedef struct {
     */
     ubyte maskROMVersion;
 
+#ifndef __LUA
     SetBackColor( cLtBlue );
     SetForeColor( cDkBlue );
+#endif
     char bootCode[4032];
 } N64ROMHead;
