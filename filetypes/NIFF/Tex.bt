@@ -1,0 +1,76 @@
+typedef struct {
+    uint tex_img_width;
+    uint tex_img_height;
+    uint tex_tile_width;
+    uint tex_tile_height;
+    uint tex_offset_x;
+    uint tex_offset_y;
+    uint tex_img_index;
+} NIFF_TexData;
+
+typedef struct {
+    uint tex_tag;
+    Assert( tex_tag == TAG_TEX, "Invalid NIFF_Tex: Wrong Tag" );
+    uint this_tex_index;
+    uint tex_header_size;
+    uint tex_size;
+    // @TODO: Validate against NameList
+    uint tex_name_index;
+    // @TODO: enum
+    uint tex_type;
+    // @TODO: enum
+    uint tex_wrap_s;
+    // @TODO: enum
+    uint tex_wrap_t;
+    // @TODO: enum
+    uint tex_anim;
+    uint tex_data_area_size;
+    uint tex_anim_frame_late;
+    uint nintendo_extension_block_size;
+    uint user_extension_block_size;
+    NIFF_XEB_Generic texData(tex_data_area_size);
+    if( nintendo_extension_block_size != NINTENDO_EXT_BLOCK_NONE ){
+        NIFF_XEB_Generic nintendoExtensionBlock(nintendo_extension_block_size);
+    }
+    if( user_extension_block_size != USER_EXT_BLOCK_NONE ){
+        NIFF_XEB_Generic userExtensionBlock(user_extension_block_size);
+    }
+} NIFF_Tex;
+
+typedef struct {
+    uint tex_list_tag;
+    Assert( tex_list_tag == TAG_TEX_LIST, "Invalid NIFF_TexListHeader: Wrong Tag" );
+    uint tex_list_header_size;
+    uint tex_list_size;
+    uint tex_num;
+    uint nintendo_extension_block_size;
+    uint user_extension_block_size;
+    uint tex_num_byte[tex_num];
+} NIFF_TexListHeader;
+
+typedef struct {
+    NIFF_TexListHeader header;
+    Assert( header.tex_list_header_size == sizeof(header), "Invalid NIFF_TexListHeader: Size Mismatch" );
+    NIFF_Tex texs[header.tex_num]<optimize=false>;
+    local uint64 i;
+    local string warn;
+    local string thisName;
+    for( i = 0; i < header.tex_num; i++ ){
+        SPrintf( thisName, "Invalid NIFF_Tex[%d]: ", i );
+
+        SPrintf( warn, "%sSize Mismatch: Actual != Header", thisName );
+        Assert( header.tex_num_byte[i] == sizeof(texs[i]), warn );
+        SPrintf( warn, "%sSize Mismatch: Actual != Internal", thisName );
+        Assert( texs[i].tex_size == sizeof(texs[i]), warn );
+        SPrintf( warn, "%sSize Mismatch: Header != Internal", thisName );
+        Assert( header.tex_num_byte[i] == texs[i].tex_size, warn );
+        SPrintf( warn, "%sIndex Mismatch: Header != Internal", thisName );
+        Assert( i == texs[i].this_tex_index, warn );
+    }
+    if( header.nintendo_extension_block_size != NINTENDO_EXT_BLOCK_NONE ){
+        NIFF_XEB_Generic nintendoExtensionBlock(header.nintendo_extension_block_size);
+    }
+    if( header.user_extension_block_size != USER_EXT_BLOCK_NONE ){
+        NIFF_XEB_Generic userExtensionBlock(header.user_extension_block_size);
+    }
+} NIFF_TexList;

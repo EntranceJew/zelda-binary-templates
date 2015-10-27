@@ -7,6 +7,8 @@
 #include "filetypes/NIFF/Env.bt"
 #include "filetypes/NIFF/Cam.bt"
 #include "filetypes/NIFF/Light.bt"
+//...
+#include "filetypes/NIFF/Tex.bt"
 
 BigEndian();
 BitfieldDisablePadding();
@@ -116,6 +118,35 @@ typedef struct {
 
     NIFF_LightList light_list;
     Assert( light_list.header.light_list_size == sizeof(light_list), "Invalid NIFF_LightList: Size Mismatch" );
+
+    NIFF_XEB_Generic obj_list(header.obj_list_num_byte);
+
+    NIFF_XEB_Generic shape_list(header.shape_list_num_byte);
+    
+    NIFF_XEB_Generic vtx_list(header.vtx_list_num_byte);
+
+    //NIFF_XEB_Generic st_list(header.st_list_num_byte);
+
+    NIFF_XEB_Generic tri_list(header.tri_list_num_byte);
+
+    NIFF_XEB_Generic color_list(header.color_list_num_byte);
+    
+    //
+
+    NIFF_XEB_Generic vector_list(header.vector_list_num_byte);
+
+    NIFF_XEB_Generic st_list(header.st_list_num_byte);
+
+    NIFF_XEB_Generic part_list(header.part_list_num_byte);
+
+    NIFF_XEB_Generic mat_list(header.mat_list_num_byte);
+
+    NIFF_TexList tex_list;
+    Assert( tex_list.header.tex_list_size == sizeof(tex_list), "Invalid NIFF_TexList: Size Mismatch" );
+
+    //NIFF_XEB_Generic st_list(header.st_list_num_byte);
+
+    
 } NIFF;
 
 SetBackColor( cGray );
