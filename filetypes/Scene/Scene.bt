@@ -2,31 +2,27 @@ struct ZSceneHeader;
 struct ZSceneHeaderCommand;
 
 typedef struct ( ubyte &bankType ){ //ZSceneHeader
-	local uint breakout = 0;
-    local int iters = 0;
-	while ( breakout == 0 ){
-        ZSceneHeaderCommand headerCom( bankType );
-        if ( breakout == 1 ){
-            break;
-        }
-        iters++;
-    };
-} ZSceneHeader;
+
+} ZSceneHeaderBreader;
 
 typedef struct {
+    SIBE;
   	local uint64 headerStart = FTell();
     local ubyte bankType = 0x02;
     //ZSceneHeaderCommand commands[25];
     ZSceneHeader header( bankType );
     //FSeek(4C40h);
     //ZSceneHeader mysteryHeader;
+    SIEND;
 }  ZScene;
 
 typedef struct {
+    SIBE;
   	local uint64 headerStart = FTell();
     local ubyte bankType = 0x03;
     //ZSceneHeaderCommand commands[25];
     ZSceneHeader header( bankType );
     //FSeek(4C40h);
     //ZSceneHeader mysteryHeader;
+    SIEND;
 }  ZRoom;

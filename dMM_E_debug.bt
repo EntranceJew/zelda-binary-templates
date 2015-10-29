@@ -20,7 +20,16 @@
 #include "autoload.bt"
 
 // import the ROM structure
-#include "regions/dMM_E_debug/main.bt"
+//#include "regions/dMM_E_debug/main.bt"
 
-//FSeek(03066000h);
-//ZScene clocktower;
+FSeek(03066000h);
+ZScene clocktower;
+
+FSeek(0213B000h);
+ZScene Z2_20SICHITAI2;
+
+FSeek(0219E000h);
+ZScene Z2_LAST_BS;
+
+ReportBucket();
+//ClearBucket();

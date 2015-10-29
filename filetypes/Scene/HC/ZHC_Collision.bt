@@ -1,0 +1,349 @@
+typedef struct {
+    local string thisName = "ZHC_CollisionWaterBox";
+    SIBE;
+    SIT;
+    short minX;
+    SIT;
+    short topY;
+    SIT;
+    short minZ;
+    SIT;
+    short sizeX;
+    SIT;
+    short sizeZ;
+    SIT;
+    ubyte zeroes[4];
+    AssertUBytesNull(zeroes, thisName);
+    SIT;
+    enum <short> WATER_PROPS {
+        WATER_PROP_NORMAL       = 0x0100,
+        WATER_PROP_ABNORMAL     = 0x0102,
+        WATER_PROP_CAMERAFUCKER = 0x0105,
+    } maybeWaterPropertiesOrCameraEffects;
+
+    AnomEnum( 
+        EnumToString( maybeWaterPropertiesOrCameraEffects ),
+        maybeWaterPropertiesOrCameraEffects,
+        thisName+"->maybeWaterPropertiesOrCameraEffects"
+    );
+} ZHC_CollisionWaterBox;
+
+typedef struct {
+    SIBE;
+    SIT;
+    ushort type;
+    SIT;
+    ZVector verts;
+    SIT;
+    ZNormal normal;
+    SIT;
+    short displacement;
+    SIEND;
+} ZHC_CollisionPolyList;
+
+/*
+differences (quicksand-major):
+terrain_trigger_reset_enable
+terrain_hurt_fire_enable
+terrain_hookshot_enable
+unknown3 = 1 (else: 0)
+unknown4 = 15
+*/
+/*
+other notes (for both):
+specialEffects == 1
+TERRAIN_CAMERA_PROXIMITY_NOTSO_CLOSEUP
+1 \ 0 \15 \ TERRAIN_SLOPE_BURGOR \ TERRAIN_SOUND_DIRT
+*/
+
+typedef struct {
+    // This data closely resembles the NIFF_Mat data type (Material)
+    // Specifically: ambient/primary/fog lighting and user values per-poly
+    // Outside the typical "UserExpansionBlock"
+    local string thisName = "ZHC_CollisionPolyTypeList";
+    SIBE;
+
+    SIT; UNK;
+    ubyte unknown1 : 2;
+
+    SIT;
+    // if these two bits aren't set at the same time, instant transitions
+    // do not happen
+    enum <ubyte> TERRAIN_TRIGGER_TRANSITION {
+        TERRAIN_TRIGGER_TRANSITION_DESERTLOST = 0x3
+    } do_trigger_transit : 2;
+
+    SIT;
+    ubyte obj_set_or_exit_number : 4;
+
+    // == milestone: 8 bits
+
+    SIT;
+    enum <ubyte> TERRAIN_HANDS {
+        TERRAIN_HANDS_DO_NOTHING   = 0x0, // 0 0 0 0
+                                          // 0 0 0 1 0x1 ?
+                                          // 0 0 1 0 0x2 ?
+                                          // 0 0 1 1 0x3 ?
+                                          // 0 1 0 0 0x4 ?
+                                          // 0 1 0 1 0x5 ?
+        TERRAIN_HANDS_CLIMB_DOWN   = 0x6, // 0 1 1 0
+        TERRAIN_HANDS_CLIMB_DOWN2  = 0x7, // 0 1 1 1
+        TERRAIN_HANDS_ALLOW_CLIMB  = 0x8, // 1 0 0 0
+                                          // 1 0 0 1 0x9 ?
+        TERRAIN_HANDS_ALLOW_CRAWL  = 0xA, // 1 0 1 0
+                                          // 1 0 1 1 0xB ?
+                                          // 1 1 0 0 0xC ?
+                                          // 1 1 0 1 0xD ?
+        TERRAIN_HANDS_GRAB_SURFACE = 0xE, // 1 1 1 0
+                                          // 1 1 1 1 0xF ? 
+    } climbability : 4;
+
+    SIT; UNK;
+    ubyte unknown2 : 2;
+
+    SIT;
+    // the first bit impedes the second bit
+    enum <ubyte> TERRAIN_ANGER_JABBU {
+        TERRAIN_ANGER_JABBU_DISABLE = 0x0,
+        TERRAIN_ANGER_JABBU_ENABLE  = 0x1,
+    } do_anger_jabbu : 2;
+
+    // == milestone: 16 bits
+
+    SIT;
+    enum <ubyte> TERRAIN_TRIGGER_RESET {
+        TERRAIN_TRIGGER_RESET_DISABLE = 0x0,
+        TERRAIN_TRIGGER_RESET_ENABLE  = 0x1,
+    } do_out_of_bounds_reset : 1;
+
+    SIT;
+    // the second half of this is only used for quicksand?
+    enum <ubyte> TERRAIN_HURT_FIRE {
+        TERRAIN_HURT_FIRE_DISABLE = 0x0,
+        TERRAIN_HURT_FIRE_ENABLE  = 0x1,
+        TERRAIN_HURT_FIRE_DISABLE2= 0x2,
+        TERRAIN_HURT_FIRE_ENABLE2 = 0x3,
+    } do_trigger_hurt_fire : 2;
+
+    SIT;
+    // if exitTrigger isn't a valid exit then enabling this will crash
+    enum <ubyte> TERRAIN_WARP {
+        TERRAIN_WARP_DISABLE = 0x0,
+        TERRAIN_WARP_ENABLE  = 0x1,
+    } do_warp : 1;
+
+    SIT;
+    // 0 == disabled, exit to jump to if this poly triggers one
+    ubyte exitTrigger : 4;
+
+    // == milestone: 24 bits
+
+    SIT;
+    // anything above 6 is just a higher angle of 5
+    enum <ubyte> TERRAIN_CAMERA_PROXIMITY {
+        TERRAIN_CAMERA_PROXIMITY_NORMAL         = 0x00,
+        TERRAIN_CAMERA_PROXIMITY_HIGHBIRDSEYE   = 0x01,
+        TERRAIN_CAMERA_PROXIMITY_HIGHBIRDSEYE2  = 0x02,
+        TERRAIN_CAMERA_PROXIMITY_CLOSEUP        = 0x03,
+        TERRAIN_CAMERA_PROXIMITY_NOTSO_CLOSEUP  = 0x04,
+        TERRAIN_CAMERA_PROXIMITY_NORMAL2        = 0x05, // same as 0x5
+        TERRAIN_CAMERA_PROXIMITY_HIGHER         = 0x06,
+        TERRAIN_CAMERA_PROXIMITY_PROBABLYUNUSED = 0xFF,
+    } camera_modifier;
+
+    // == milestone: 32 bits
+
+    /*
+    AnomEnum( 
+        EnumToString( camera_modifier ),
+        camera_modifier,
+        thisName+"->camera_modifier"
+    );
+    */
+    SIT; UNK;
+    ubyte unknown3 : 4;
+
+    SIT;
+    enum WALLS_HURT {
+        WALLS_HURT_DISABLE = 0,
+        WALLS_HURT_ENABLE  = 1,
+    } do_walls_hurt : 1;
+
+    SIT; UNK;
+    ubyte unknown4 : 3;
+
+    // == milestone: 40 bits
+
+    SIT; UNK;
+    ubyte unknown5 : 4;
+
+    SIT; UNK;
+    ubyte unknown6 : 2;
+
+    SIT;
+    enum TERRAIN_HOOKSHOT {
+        TERRAIN_HOOKSHOT_DISABLE = 0x0,
+        TERRAIN_HOOKSHOT_ENABLE  = 0x1,
+    } hookshot : 1;
+
+    SIT; UNK;
+    ubyte unknown7 : 1;
+
+    // == milestone: 48 bits
+
+    SIT;
+    // Presumably, this is for trick walls that are 
+    // bombable or metal surfaces.
+    // WILL *OVERRIDE* SCENE ECHO SETTING
+    ubyte impact_sound_echo : 4;
+
+    SIT; UNK;
+    // this and the next unknown composed ambient settings
+    ubyte unknown8 : 4;
+
+    // milestone: 56 bits
+    
+    SIT; UNK;
+    ubyte unknown9 : 2;
+
+    SIT;
+    // this spans 2 bits because of how it wraps,
+    // only TERRAIN_SLOPE_ENABLE triggers sloping(?)
+    enum TERRAIN_SLOPE {
+        TERRAIN_SLOPE_DISABLE = 0x0,
+        TERRAIN_SLOPE_ENABLE  = 0x1,
+        TERRAIN_SLOPE_HOTDOG  = 0x2,
+        TERRAIN_SLOPE_BURGOR  = 0x3,
+    } slope : 2;
+
+    SIT;
+    // this is footstep sounds, but also the sound it makes
+    // if struck with a sword
+    enum TERRAIN_SOUND {
+        TERRAIN_SOUND_DIRT                  = 0x0,
+        TERRAIN_SOUND_SAND                  = 0x1,
+        TERRAIN_SOUND_STONE_DRY             = 0x2,
+        TERRAIN_SOUND_STONE_WET             = 0x3,
+        TERRAIN_SOUND_WATER_SHALLOW         = 0x4,
+        TERRAIN_SOUND_WATER_DEEP            = 0x5,
+        TERRAIN_SOUND_GRASS                 = 0x6,
+        TERRAIN_SOUND_LAVA_OR_GOO           = 0x7,
+        TERRAIN_SOUND_DIRT2                 = 0x8,
+        TERRAIN_SOUND_WOOD_PLANK            = 0x9,
+        TERRAIN_SOUND_DIRT_PACKED_OR_WOOD   = 0xA,
+        TERRAIN_SOUND_DIRT3                 = 0xB,
+        TERRAIN_SOUND_CERAMIC               = 0xC,
+        TERRAIN_SOUND_DIRT_LOOSE            = 0xD,
+        TERRAIN_SOUND_DIRT4                 = 0xE,
+        TERRAIN_SOUND_DIRT5                 = 0xF,
+    } terrainSound : 4;
+
+    // milestone: 64 bits
+} ZHC_CollisionPolyTypeList;
+
+typedef struct {
+    local string thisName = "ZHC_CollisionHeader";
+    SIBE;
+    SIT;
+    ZVector min;
+    SIT;
+    ZVector max;
+    SIT;
+    ushort numVerts;
+    SIT;
+    ubyte zeroes1[2];
+    AssertUBytesNull(zeroes1, thisName);
+    SIT;
+    ZBankPointer vertArrayOffset;
+    if( vertArrayOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(headerStart + vertArrayOffset.offset);
+        ZVector verts[numVerts];
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIT;
+    ushort numPolys;
+    SIT;
+    ubyte zeroes2[2];
+    AssertUBytesNull(zeroes2, thisName);
+    SIT;
+    ZBankPointer polyArrayOffset;
+    if( polyArrayOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(headerStart + polyArrayOffset.offset);
+        struct {
+            ZHC_CollisionPolyList polys[numPolys]<optimize=false>;
+        } AllThesePolyLists;
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIT;
+    ZBankPointer polyTypeArrayOffset;
+    if( polyTypeArrayOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(headerStart + polyTypeArrayOffset.offset);
+        struct {
+            ZHC_CollisionPolyTypeList polyTypes[numPolys]<optimize=false>;
+        } AllThesePolyTypeLists;
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIT;
+    ZBankPointer cameraDataOffset; //if not zeroes
+    if( cameraDataOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(headerStart + cameraDataOffset.offset);
+        ZHC_AltCamera cameraData;
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIT;
+    ushort numWaterBoxes; //if not zeroes
+    SIT;
+    ubyte zeroes3[2];
+    AssertUBytesNull(zeroes3, thisName);
+    
+    SIT;
+    ZBankPointer waterBoxArrayOffset;
+    if( numWaterBoxes ){
+        if( waterBoxArrayOffset.zb.bankNo == bankType ){
+            SAVE;
+            FSeek(headerStart + waterBoxArrayOffset.offset);
+            struct {
+                ZHC_CollisionWaterBox waterBoxes[numWaterBoxes]<optimize=false>;
+            } AllTheseWaterBoxes;
+            REST;
+        } else {
+            Assert( 0, "External Bank" );
+        }
+    }
+    SIEND;
+} ZHC_CollisionHeader;
+
+typedef struct {
+    local string thisName = "ZHC_CollisionHeader";
+    SIBE;
+    SIT;
+    ubyte command;
+    AssertNumberEquals(command, 0x03, thisName);
+
+    SIT;
+    ubyte zeroes[3];
+    AssertUBytesNull(zeroes, thisName);
+    
+    ZBankPointer listOffset;
+    if( listOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(headerStart + listOffset.offset);
+        ZHC_CollisionHeader collisionHeaders;
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIEND;
+} ZHC_CollisionList;

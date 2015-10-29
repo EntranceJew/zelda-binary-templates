@@ -1,0 +1,81 @@
+typedef struct {
+    local string thisName = "ZHC_Unknown1BData";
+    SIBE;
+    SIT;
+    ubyte uknknown1[2];
+    SIT;
+    ushort length;
+    // 0xFFFF = constant play
+    SIT;
+    ushort cameraToUse;
+    SIT;
+    ushort nextEntry;
+    SIT;
+    ubyte postPuzzleSFX;
+    SIT;
+    ubyte unknown2[3];
+    SIT;
+    ubyte postCameraPos;
+    SIT;
+    ubyte blackBarSize;
+    SIEND;
+} ZHC_Unknown1BData;
+
+/*
+0x1B - Used by actors to decide what camera to use/cutscene to play.
+ 
+uuuutttt bbbbcccc nnnnssuu uuuuddee
+ 
+tt = length (FFFF = constantly playing)
+bb = camera to use
+        FFF0 = Entering warp after defeating boss
+        FFF5 = Mask Transformation
+        FFF6 = opening a large chest
+        FFF7 = ???
+        FFF8 = ???
+        FFF9 = ???
+        FFFA = Song of Soaring
+        FFFB = using event item
+        FFFC = drinking bottle
+        FFFD = playing ocarina
+        FFFE = opening a small chest
+        FFFF = null
+        0000+= additional cameras (see 0x02 command)
+cc = cutscene to play
+        FFFF = null
+nn = next entry?
+ss = puzzle sound effect to play after
+dd = camera position after
+        00 = keep current position
+        01 = place behind link
+        02 = rotate until behind link
+ee = size of black bars
+        80 = max
+uu = unknown
+*/
+
+typedef struct {
+    local string thisName = "ZHC_Unknown1B";
+    SIBE;
+    SIT;
+    ubyte command;
+    AssertNumberEquals(command, 0x1B, thisName);
+
+    SIT;
+    ubyte numElms;
+    AssertUIntGTZero(numElms, thisName);
+    SIT;
+    ubyte zeroes[2];
+    AssertUBytesNull(zeroes, thisName);
+    
+    ZBankPointer listOffset;
+    if( listOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(startof(parentof(this)) + listOffset.offset);
+        ZHC_Unknown1BData unknown[numElms]<optimize=false>;
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIEND;
+} ZHC_Unknown1B;

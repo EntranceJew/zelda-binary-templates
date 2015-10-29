@@ -1,0 +1,48 @@
+typedef struct {
+    local string thisName = "ZHC_Environment";
+    SIBE;
+    SIT;
+    // Usually 0x462D39
+    ZColor ambient;
+    SIT;
+    ZColor diffuse1Color;
+    SIT;
+    ZByteVector diffuse1Dir;
+    SIT;
+    ZColor diffuse2Color;
+    SIT;
+    ZByteVector diffuse2Dir;
+    SIT;
+    ZColor fogColor;
+    SIT;
+    ushort fogStart; // & 0x3FF ?
+    SIT;
+    ushort drawDistance;
+    SIEND;
+} ZHC_Environment;
+
+typedef struct {
+    local string thisName = "ZHC_EnvironmentList";
+    SIBE;
+    SIT;
+    ubyte command;
+    AssertNumberEquals(command, 0x0F, thisName);
+
+    SIT;
+    ubyte numElms;
+    AssertUIntGTZero(numElms, thisName);
+    SIT;
+    ubyte zeroes[2];
+    AssertUBytesNull(zeroes, thisName);
+    
+    ZBankPointer listOffset;
+    if( listOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(startof(parentof(this)) + listOffset.offset);
+        ZHC_Environment environments[numElms]<optimize=false>;;
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIEND;
+} ZHC_EnvironmentList;

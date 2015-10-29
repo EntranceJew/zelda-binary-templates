@@ -20,4 +20,24 @@
 #include "autoload.bt"
 
 // import the ROM structure
-#include "regions/dOoTMQ_E_debug/main.bt"
+//#include "regions/dOoTMQ_E_debug/main.bt"
+
+// test hex this is the first quicksand tile in spot13
+// 0x29fa394
+
+// test hex this is the first quad that triggers a fadeaway
+// transition in spot13
+// 0x29fa314
+
+// test hex this is the largest quad to the left on
+// the platform to the hippie
+// 0x29fa294
+
+FSeek(29FA000h);
+ZScene spot13;
+
+FSeek(44040192);
+ZRoom spot13_room1;
+
+FSeek(44044288);
+ZRoom spot13_room2;

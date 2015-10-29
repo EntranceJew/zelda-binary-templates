@@ -1,0 +1,33 @@
+typedef struct {
+    local string thisName = "ZHC_Unknown1DData";
+    SIBE;
+    SIT;
+    ubyte unknown[1];
+    SIEND;
+} ZHC_Unknown1DData;
+
+typedef struct {
+    local string thisName = "ZHC_Unknown1D";
+    SIBE;
+    SIT;
+    ubyte command;
+    AssertNumberEquals(command, 0x1D, thisName);
+
+    SIT;
+    ubyte numElms;
+    //AssertUIntGTZero(numElms, thisName);
+    SIT;
+    ubyte zeroes[2];
+    AssertUBytesNull(zeroes, thisName);
+    
+    ZBankPointer listOffset;
+    if( listOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(startof(parentof(this)) + listOffset.offset);
+        ZHC_Unknown1DData unknown[numElms+1]<optimize=false>;
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIEND;
+} ZHC_Unknown1D;

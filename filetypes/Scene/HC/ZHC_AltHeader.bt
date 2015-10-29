@@ -1,0 +1,46 @@
+struct ZSceneHeader;
+
+typedef struct {
+    local string thisName = "ZHC_AltHeader";
+    SIBE;
+    SIT;
+    local uint64 numAltHeaders = 3;
+    local uint64 i = 0;
+    ZBankPointer altHeaderOffsets[numAltHeaders]<optimize=false>;
+    for( i = 0; i < numAltHeaders; i++){
+        if( altHeaderOffsets[i].zb.bankNo == bankType ){
+            FSeek(headerStart + altHeaderOffsets[i].offset);
+            ZSceneHeader myster( bankType );
+        } else {
+            Warning("External Bank");
+        }
+    };
+    SIEND;
+} ZHC_AltHeader;
+
+typedef struct {
+    local string thisName = "ZHC_AltHeaderList";
+    SIBE;
+    SIT;
+    ubyte command;
+    AssertNumberEquals(command, 0x18, thisName);
+
+    SIT;
+    ubyte zeroes[3];
+    AssertUBytesNull(zeroes, thisName);
+
+    //SIT;
+    //ubyte numElms;
+    //AssertUIntGTZero(numElms, thisName);
+
+    ZBankPointer listOffset;
+    if( listOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(startof(parentof(this)) + listOffset.offset);
+        ZHC_AltHeader altHeaders[1]<optimize=false>;;
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIEND;
+} ZHC_AltHeaderList;

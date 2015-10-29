@@ -1,0 +1,34 @@
+typedef struct {
+    local string thisName = "ZHC_Map";
+    SIBE;
+    SIT;
+    ZFileSystemRange room;
+    //@TODO: Block this region / map it to the VFS
+    SIEND;
+} ZHC_Map;
+
+typedef struct {
+    local string thisName = "ZHC_MapList";
+    SIBE;
+    SIT;
+    ubyte command;
+    AssertNumberEquals(command, 0x04, thisName);
+
+    SIT;
+    ubyte numElms;
+    AssertUIntGTZero(numElms, thisName);
+    SIT;
+    ubyte zeroes[2];
+    AssertUBytesNull(zeroes, thisName);
+
+    ZBankPointer listOffset;
+    if( listOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(headerStart + listOffset.offset);
+        ZHC_Map maps[numElms]<optimize=false>;
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIEND;
+} ZHC_MapList;

@@ -1,0 +1,20 @@
+typedef struct {
+    local string thisName = "ZHC_Time";
+    SIBE;
+    SIT;
+    ubyte command;
+    AssertNumberEquals(command, 0x10, thisName);
+
+    SIT;
+    ubyte zeroes1[3];
+    AssertUBytesNull(zeroes1, thisName);
+    SIT;
+    ushort startTime;
+    //0xFFFF == current time
+    SIT;
+    byte timeSpeed;
+    SIT;
+    ubyte zeroes2[1];
+    AssertUBytesNull(zeroes2, thisName);
+    SIEND;
+} ZHC_Time;

@@ -1,0 +1,51 @@
+typedef struct {
+    local string thisName = "ZHC_TransitionActor";    
+    SIBE;
+    SIT;
+    ubyte frontTriggerRoomSwitch;
+    SIT;
+    ubyte frontCameraTransitType;
+    //00, 0F, FF
+    SIT;
+    ubyte backTriggerRoomSwitch;
+    SIT;
+    ubyte backCameraTransitType;
+    //??
+
+    SIT;
+    ushort actorNumber;
+    SIT;
+    ZVector pos;
+    SIT;
+    ushort rotY;
+    SIT;
+    ushort actorVar;
+    SIEND;
+} ZHC_TransitionActor;
+
+
+typedef struct {
+    local string thisName = "ZHC_TransitionActorList";
+    SIBE;
+    SIT;
+    ubyte command;
+    AssertNumberEquals(command, 0x0E, thisName);
+
+    SIT;
+    ubyte numElms;
+    AssertUIntGTZero(numElms, thisName);
+    SIT;
+    ubyte zeroes[2];
+    AssertUBytesNull(zeroes, thisName);
+    
+    ZBankPointer listOffset;
+    if( listOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(startof(parentof(this)) + listOffset.offset);
+        ZHC_TransitionActor transitionActors[numElms]<optimize=false>;
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIEND;
+} ZHC_TransitionActorList;

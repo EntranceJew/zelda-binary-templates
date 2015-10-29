@@ -1,12 +1,21 @@
 typedef struct {
+    SIBE;
+    SIT;
     ushort actorNo;
     ZVector pos;
     // a value of 1 in the rotation is 2 degrees
+    SIT;
     ubyte rotX;
+    SIT;
     ubyte spawnTime1;
+    SIT;
     ubyte rotY;
+    SIT;
     ubyte unknown; // Unknown, related to the 0x1B command?
+    //AssertNumberEquals(unknown, 0, "ZHC_Actor->unknown");
+    SIT;
     ubyte rotZ;
+    SIT;
     ubyte spawnTime2;
     //spawnTime1, spawnTime2 = Spawn time flags.
     /*
@@ -28,5 +37,33 @@ typedef struct {
 
     Thus this actor will always spawn on days 0 and 1, the night of day 2, the morning of day 3, and the morning of day 4.
     */
+    SIT;
     ushort initVar;
-} ZActorList;
+    SIEND;
+} ZHC_Actor;
+
+typedef struct {
+    local string thisName = "ZHC_ActorList";
+    SIBE;
+    SIT;
+    ubyte command;
+    AssertNumberEquals(command, 0x01, thisName);
+
+    SIT;
+    ubyte numElms;
+    AssertUIntGTZero(numElms, thisName);
+    SIT;
+    ubyte zeroes[2];
+    AssertUBytesNull(zeroes, thisName);
+    
+    ZBankPointer listOffset;
+    if( listOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(startof(parentof(this)) + listOffset.offset);
+        ZHC_Actor actors[numElms]<optimize=false>;
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIEND;
+} ZHC_ActorList;

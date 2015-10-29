@@ -1,0 +1,91 @@
+//(11:20:18 PM) Playtendo: 0x02 command uses this format http://wiki.cloudmodding.com/oot/Collision_Format#Camera_Data
+//(11:20:22 PM) Playtendo: first unknown is the camera type
+typedef struct {
+    local string thisName = "ZHC_AltCameraData";
+    //https://docs.google.com/spreadsheets/d/1DEFqUYJNpGYVgSAdQ3LVoKZSn6nr-n4-9kUP8vCmXl4/edit#gid=505542003
+    //https://docs.google.com/spreadsheets/d/1REOAcw6ettmqhBP-kfIJGyVyDTUkYSUwfb0UX8HbR9k/edit#gid=0
+    SIBE;
+    SIT;
+    short unk1[5];
+    /*
+    ubyte unk1[2];
+
+    SIT;
+    ubyte camera_type; 
+    //00 = persp
+    //01 = orth
+
+    SIT;
+    ubyte unk2[9];
+    */
+
+    SIT;
+    short wat;
+    AssertNumberEquals(wat, 0, "Diseases");
+
+    SIT;
+    short unkX;
+    SIT;
+    short unkY;
+    SIT;
+    short unkZ;
+    SIEND;
+} ZHC_AltCameraData;
+
+typedef struct {
+    ZVector position;
+    ZVector rotation;
+    short w;
+    ubyte Fs[4];
+} ZHC_SkyboxCamera;
+
+typedef struct {
+    local string thisName = "ZHC_AltCamera";
+    SIBE;
+    SIT;
+    ushort unknown1;
+    SIT;
+    ushort unknown2;
+    SIT;
+    ZBankPointer point;
+    if( point.zb.bankNo == bankType && point.offset != 0 ){
+        SAVE;
+        FSeek(headerStart + point.offset);
+        ZHC_AltCameraData altCameraData;
+        REST;
+    } else if( point.zb.bankNo == 0 && point.offset == 0 ){
+        // nothing
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIEND;
+} ZHC_AltCamera;
+
+
+//(11:20:18 PM) Playtendo: 0x02 command uses this format http://wiki.cloudmodding.com/oot/Collision_Format#Camera_Data
+//(11:20:22 PM) Playtendo: first unknown is the camera type
+typedef struct {
+    local string thisName = "ZHC_AltCameraList";
+    SIBE;
+    SIT;
+    ubyte command;
+    AssertNumberEquals(command, 0x02, thisName);
+
+    SIT;
+    ubyte numElms;
+    AssertUIntGTZero(numElms, thisName);
+    SIT;
+    ubyte zeroes[2];
+    AssertUBytesNull(zeroes, thisName);
+    
+    ZBankPointer listOffset;
+    if( listOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(headerStart + listOffset.offset);
+        //ZHC_AltCamera altCameras[numElms]<optimize=false>;
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIEND;
+} ZHC_AltCameraList;

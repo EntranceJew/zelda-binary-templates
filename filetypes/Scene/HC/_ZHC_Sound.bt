@@ -1,0 +1,19 @@
+typedef struct {
+    local string thisName = "ZHC_Sound";
+    SIBE;
+    SIT;
+    ubyte command;
+    AssertNumberEquals(command, 0x15, thisName);
+
+    SIT;
+    ubyte reverb; //TODO: Histogram of usage.
+    SIT;
+    ubyte zeroes[4];
+    AssertUBytesNull(zeroes, thisName);
+    SIT;
+    ubyte nightSFX;
+    //TODO: Write resolver. http://wiki.cloudmodding.com/mm/Music_Values#Nighttime_SFX
+    SIT;
+    ubyte track;
+    SIEND;
+} ZHC_Sound;

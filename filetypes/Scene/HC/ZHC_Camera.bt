@@ -1,0 +1,15 @@
+typedef struct {
+    local string thisName = "ZHC_Camera";
+    SIBE;
+    SIT;
+    ubyte command;
+    //AssertNumberEquals(command, 0x19, thisName);
+    SIT;
+    ubyte cameraMovement; //TODO: Document values.
+    SIT;
+    ubyte zeroes[5];
+    AssertUBytesNull(zeroes, thisName);
+    SIT;
+    ubyte worldMapHighlightRegion; //TODO: Write resolver. http://wiki.cloudmodding.com/mm/Scenes_and_Rooms#Camera_Settings
+    SIEND;
+} ZHC_Camera;
