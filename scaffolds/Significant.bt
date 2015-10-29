@@ -22,8 +22,8 @@ steps:1 steps:2
         11/12
 6/6     12/12-
 */
-local uint64 colorGrades = 12; // how many major denominations of color we got
-local uint64 colorSteps  = 1; // how many color steps we have between said things
+local uint64 colorGrades = 4; // how many major denominations of color we got
+local uint64 colorSteps  = 4; // how many color steps we have between said things
 
 local int64 gradePos = 0; // stays between 1 and colorGrades
 local int64 stepPos = 0; // stays between 1 and colorSteps

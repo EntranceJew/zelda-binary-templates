@@ -1,0 +1,150 @@
+string EXSAnom(string reason){
+    local string out;
+    SPrintf(out, "%s: @ %08LXh", reason, FTell());
+    return out;
+};
+
+void Anom(uint64 cond, string msg){
+    if( !cond ){
+        Printf("*ANOMALY %s\n", msg);
+    }
+};
+
+// == NULL
+void AnomUBytesNull( ubyte b[], string msg ){
+    local uint64 i;
+    local string omsg;
+    for( i = 0; i < sizeof(b); i++ ){
+        if( b[i] != 0x00 ){
+            SPrintf(omsg, "%d of %d was not null in %s", i, sizeof(b), msg);
+            Anom( b[i] != 0x00, EXSAnom(omsg));
+        }
+    }
+};
+
+#define BUCKET_TYPE uint64
+#define BUCKET_SIZE 0xFFFF
+local BUCKET_TYPE __bucket[BUCKET_SIZE] = {0};
+void ClearBucket(){
+    local uint64 i;
+    for( i = 0; i < BUCKET_SIZE; i++ ){
+        __bucket[i] = 0;
+    }
+}
+
+void Bucket(BUCKET_TYPE value){
+    __bucket[value] += 1;
+}
+
+// are you analyzing whether or not something is a bitfield?
+// use this: http://bitwisecmd.com/
+// type in all the found numbers and visualize the bits
+// the following will automatically give you a url with
+// all unique values
+
+// a cheap way to increase the effectiveness of this sort
+// of analysis would be to comment out surrounding vars
+// and throw in some dummy ones bitfielded to the correct width
+// to narrow the scope of the variable you supply to Bucket()
+// e.g.
+
+/*
+ushort alignment1  : 3;
+ushort toBucket : 4;
+ushort alignment2  : 9;
+*/
+
+
+void ReportBucket(){
+    local uint64 i;
+    local BUCKET_TYPE max_index = 0;
+    local BUCKET_TYPE min_index = BUCKET_SIZE;
+    local string bitwise = "http://bitwisecmd.com/#";
+    local string nbitwise = bitwise;
+    for( i = 0; i < BUCKET_SIZE; i++){
+        if( __bucket[i] > 0 ){
+            //Printf("INDEX #%d: %d > 0\n", i, __bucket[]);
+            if( i > max_index ){
+                max_index = i;
+            }
+            if( i < min_index ){
+                min_index = i;
+            }
+        }
+    }
+    // below is an experimental sort, it ruins everything because
+    // I don't know how to retain key indexes
+    /*
+    local uint64 j;
+    local BUCKET_TYPE a;
+    local uint64 order[BUCKET_SIZE] = {0};
+    Printf("FUCK: %d\n", __bucket[0]);
+    Printf("BUCKET: MIN/MAX = %d/%d\n", min_index, max_index);
+    for (i = min_index; i <= max_index; i++){
+        for (j = i + 1; j <= max_index; j++){
+            if (__bucket[i] > __bucket[j]){
+                a =  __bucket[i];
+                __bucket[i] = __bucket[j];
+                __bucket[j] = a;
+
+            } else {
+                order[i] = i;
+            }
+        }
+    }
+    for( i = 0; i <= BUCKET_SIZE; i++ ){
+        if( __bucket[order[i]] > 0 ){
+            Printf("BUCKET: VALUE 0x%04LX HAPPENED %d TIME(S)!\n", i, __bucket[order[i]]);
+        }
+    }
+    */
+    for( i = min_index; i <= max_index; i++ ){
+        if( __bucket[i] > 0 ){
+            Printf("BUCKET: VALUE 0x%04LX HAPPENED %d TIME(S)!\n", i, __bucket[i]);
+            SPrintf( nbitwise, "%s0x%04LX,", nbitwise, i);
+        }
+    }
+    if( bitwise != nbitwise ){
+        Printf("%s\n", nbitwise);
+        CopyStringToClipboard(bitwise);
+    }
+}
+
+// == ZERO
+void AnomNotZero( uint a, string msg ){
+    local string omsg;
+    SPrintf(omsg, "%s %d != %d", msg, a, 0);
+    Anom( !a, EXSAnom(omsg));
+};
+
+
+void AnomUIntGTZero( uint a, string msg ){
+    local string omsg;
+    SPrintf(omsg, "%s %d was less not greater than zero", msg, a);
+    Anom( a > 0, EXSAnom(omsg));
+};
+
+void AnomUIntGTEZero( uint subject, string msg ){
+    local string omsg;
+    SPrintf(omsg, "%s %d was less not greater than or equal to zero", msg, subject);
+    Anom( subject >= 0, EXSAnom(omsg));
+};
+
+// == EQUALITY
+void AnomNumberEquals( uint subject, uint expectation, string msg ){
+    local string omsg;
+    SPrintf(omsg, "%s was %d which isn't %d", msg, subject, expectation);
+    Anom( subject == expectation, EXSAnom(omsg));
+};
+
+void AnomEnum( string e, uint64 d, string msg ){
+    local string omsg;
+    SPrintf(omsg, "%s had an unknown value 0x%04LX", msg, d);
+    Anom( e != "", EXSAnom(omsg));
+};
+
+void AnomNumberInBetween( uint subject, uint min, uint max, string msg ){
+    local string omsg;
+    SPrintf(omsg, "%s was %d which isn't between %d and %d", msg, subject, min, max);
+    Anom( subject >= min && subject <= max, EXSAnom(omsg));
+};

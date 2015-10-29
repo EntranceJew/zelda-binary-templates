@@ -4,6 +4,15 @@
     TODO: Find the main bank definition(s).
 */
 
+/*
+    list of would-be-nice-to-have-functions
+    * FindFirstBitO[n|ff](From[Lef|Righ]t)
+    * BiggestNumberForType
+    * GetMaskForBits(ubyte d[]{0,1,1,0})
+    * FindLowestCommonMask(ubyte d[])
+    * BitWeld(uint64 a, uint64 b, int start=-1) //append bits from a in front of b (at first available bit)
+*/
+
 // from stackexchange or some crap
 int FlipIntBits(int theNumber, int numBits) {
     local int mask = 1;
@@ -13,6 +22,9 @@ int FlipIntBits(int theNumber, int numBits) {
 
     return ~theNumber & mask;
 }
+
+// want your own byte array? check it out:
+// http://www.mathcs.emory.edu/~cheung/Courses/255/Syllabus/1-C-intro/bit-array.html
 
 typedef struct {
     BitfieldDisablePadding();

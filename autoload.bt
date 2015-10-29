@@ -9,6 +9,7 @@ BitfieldDisablePadding();
 #include "scaffolds/Significant.bt"
 #include "scaffolds/Unknown.bt"
 #include "scaffolds/Warning.bt"
+#include "scaffolds/Anomaly.bt"
 
 // post-helper macros
 // turn on painting significant variables

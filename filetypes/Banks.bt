@@ -5,7 +5,16 @@
 */
 
 typedef struct {
+#ifdef SIBE
+    SIBE;
+#endif
+#ifdef SIT
+    SIT;
+#endif 
     ubyte bankNo : 8;
+#ifdef SIEND
+    SIEND;
+#endif
 } ZBank <read=ZBankRead, size=1>;
 
 //, write=ZBankWrite
@@ -34,8 +43,17 @@ string ZBankRead(ZBank &zb){
 };
 
 typedef struct {
+#ifdef SIBE
+    SIBE;
+#endif
     ZBank zb;
+#ifdef SIT
+    SIT;
+#endif    
     uint offset : 24;
+#ifdef SIEND
+    SIEND;
+#endif
 } ZBankPointer <read=ZBankPointerRead, size=4>;
 
 typedef struct {
