@@ -2,6 +2,41 @@
 - Every time I open the tools window and save it crashes. :(
 
 #THINGS I WANT FROM 010 EDITOR:
+## Warnings
+- Errors are reported post-define expansion, this can throw one off.
+- Sometimes warnings don't generate newlines correctly. Any errors, assertions, or warnings 
+	![hiding my error message](http://i.imgur.com/L62erGQ.png)
+	You can always work around these by fighting convention with:
+	
+	```C
+	void NLAssert(uint64 cond, string msg){
+		if( !cond ){
+			Printf("\n");
+		}
+		Assert(cond, msg);
+	}
+	```
+	
+	And always placing newline prints at the beginning, but this does not work for text
+	printed via `Assert()` because it disregards newlines:
+	![somewhere in that text is the data I need](http://i.imgur.com/hocjhNa.png)
+	I don't see too much of a point to this because a failed assert is the last thing
+	anyone will see.
+	
+- Wrapping `Assert()` makes it difficult to actually jump to the beginning of the
+	offending code. This is in contrast of copying and pasting the same bit of code
+	everywhere. 
+## PreProcessor
+- Access to preprocessor macros like expanding the following to strings:
+	- __LINE__
+	- __FILE__
+	- __DIR__
+	- __FUNCTION__
+	- __LASTVAR__
+	- __LASTVARNAME__
+	- __LASTVARTYPE__
+	- __STRUCT__
+	Would reduce the number of use cases for wrapping prints heavily.
 ## Bookmarks
 - Bookmarks for structs with arguments fail because they are missing arguments,
 	this could be mitigated by providing a type-suggested UI based on a function
@@ -39,7 +74,68 @@
 	[complex objects](filetypes/Audio/InstrumentSet.bt)
 - There's no `string typeof()` function so handling a situation where we perform
 	an operation based on a parent is hard.
+## Structs
+- Can't declare a local struct, meaning:
+	- assemble complex structures without disk IO
+	- create a workable copy of data without transforming it
+	- pass around an organized set of data in lieu of objects/classes
+- Bitfield padding does not extend beyond structure boundaries, all data must be at least
+	a byte wide, otherwise [sophisticated hacks and workarounds are in order](filetypes/Texture/i4.bt). 
+	And even those have their practical limits.
+- Can't be bitfielded, even if its size reports itself as 1 and all elements declare which bits
+	they use accordingly.
+- Sizes can't be reported as a float or in quantities of bits. This is a major architecture thing,
+	but it's significant enough to warrant requesting due to the number of ways
+	people find places to hide significant bits in files.
+- A custom type spanning several bits or even overlapping with bits from another type cannot 
+	be created. This impacts densely packed data that necessitates a read/write function for
+	manipulation the most.
+- If a byte could be abstracted to a lower level unit like a bit array or if bitfielded arrays
+	applied the bitfielding to each element of the array without padding enabled this could be
+	worked around at some level.
+## Enums
+- You cannot pass a generic enum in a function. This makes generic trace functions difficult, example:
 
+	```C
+	void AssertKnownEnum( enum e, string msg ){
+		local string omsg;
+		local string enumerated = EnumToString( e );
+		SPrintf(omsg, "%s had an unknown value %d", msg, e);
+		Assert( enumerated != "", omsg);
+	}
+	```
+	
+	With its ideal call being:
+	
+	```C
+	enum <short> WATER_PROPS {
+        WATER_PROP_NORMAL       = 0x0100,
+        WATER_PROP_ABNORMAL     = 0x0102,
+        WATER_PROP_CAMERAMESSER = 0x0105,
+    } maybeWaterPropertiesOrCameraEffects;
+	
+	AssertKnownEnum( 
+        maybeWaterPropertiesOrCameraEffects,
+        thisName+"->maybeWaterPropertiesOrCameraEffects"
+    );
+	```
+	
+	- leaving the only workaround looking like:
+	
+	```C
+	void AssertKnownEnum2( string e, uint64 d, string msg ){
+		local string omsg;
+		SPrintf(omsg, "%s had an unknown value 0x%04LX", msg, d);
+		NLAssert( e != "", EXSWarning(omsg));
+	}
+	AssertKnownEnum2( 
+        EnumToString( maybeWaterPropertiesOrCameraEffects ),
+        maybeWaterPropertiesOrCameraEffects,
+        thisName+"->maybeWaterPropertiesOrCameraEffects"
+    );
+	```
+	
+	
 ## Attributes
 Currently, there's some asymetry in the availability of attribute functions at runtime:
 ```
@@ -206,6 +302,9 @@ My two most preferable use cases are through:
 	- This speeds up jumping to the nth entry in a long array of structs 
 - VarArg assertions and prints would be neat, Printf()-ing a struct should use the same read function
 	that a type gets for its display.
+- It's easy to go off the rails when you disable bitfield padding, this isn't usually a problem
+	but it does mean that when your struct ends a couple bits short, you can't use its size
+	to check if you goofed. [Sometimes this can get hairy.](filetypes/Scene/HC/ZHC_Collision.bt)
 
 # Search
 - Doing a regex search pulls the whole string into the value column, making an export mostly useless.

@@ -81,4 +81,16 @@ for( i = 0; i < 3; i++ ){
 # Size
 Despite [what the docs may say](http://www.sweetscape.com/010editor/manual/Sizeof.htm),
 	the sizeof() function works fine on complex structs IF they have a size function.
-	
+
+# Reading Locals
+The function attribute "read" has access to locals, accessed through structure attributes.
+
+# Structure Bloat
+Does generating an array of your custom structs create a line for each entry?
+Don't have time to make it on-demand?
+Stick that baby in a disposable struct and get some (not at all) free heirarchy:
+```C
+struct {
+	Items items[192];
+} AllOfTheseItems;
+```
