@@ -1,0 +1,47 @@
+typedef struct {
+    local string thisName = "ZHC_CutsceneData";
+    SIBE;
+
+    SIT;
+    ZBankPointer sceneOffset;
+    if( sceneOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(headerStart + sceneOffset.offset);
+        // @TODO: Parse cutscene data.
+        ubyte u_r_here;
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+
+    SIT; UNK;
+    ubyte unknown[4];
+
+    SIEND;
+} ZHC_CutsceneData;
+
+typedef struct {
+    local string thisName = "ZHC_Cutscene";
+    SIBE;
+    SIT;
+    ubyte command;
+    AssertNumberEquals(command, 0x17, thisName);
+
+    SIT;
+    ubyte numElms;
+    AssertUIntGTZero(numElms, thisName);
+    SIT;
+    ubyte zeroes[2];
+    AssertUBytesNull(zeroes, thisName);
+    
+    ZBankPointer listOffset;
+    if( listOffset.zb.bankNo == bankType ){
+        SAVE;
+        FSeek(headerStart + listOffset.offset);
+        ZHC_CutsceneData cutsceneData[numElms]<optimize=false>;
+        REST;
+    } else {
+        Assert( 0, "External Bank" );
+    }
+    SIEND;
+} ZHC_Cutscene;

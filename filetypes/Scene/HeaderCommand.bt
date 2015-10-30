@@ -307,6 +307,7 @@ typedef struct ( ubyte &bankType ) { //ZSceneHeaderCommand
     */
                 break;
             case 0x17:
+                ZHC_Cutscene cutscenes;
                 ZHC_Generic generic;
     /*
                 // Cutscenes
