@@ -20,12 +20,13 @@ typedef struct {
         WATER_PROP_ABNORMAL     = 0x0102,
         WATER_PROP_CAMERAFUCKER = 0x0105,
     } maybeWaterPropertiesOrCameraEffects;
-
+    /*
     AnomEnum( 
         EnumToString( maybeWaterPropertiesOrCameraEffects ),
         maybeWaterPropertiesOrCameraEffects,
         thisName+"->maybeWaterPropertiesOrCameraEffects"
     );
+    */
 } ZHC_CollisionWaterBox;
 
 typedef struct {

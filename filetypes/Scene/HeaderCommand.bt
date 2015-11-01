@@ -36,12 +36,27 @@ typedef struct {
 } ZHC_Generic;
 
 /*
+subtypes under fire:
+ZHC_Actor
+* doesn't abstract the time variable in a human readable way
+
 shorthand support list:
 0x00    ZHC_StartPosList
 0x01    ZHC_ActorList
+...
+0x04    ZHC_MapList
+
+types under fire:
+0x1E    ZHC_Unknown1E
+* whatever it is, it should always supply a number of elements
+* it always has a bank attached to it.
+* the data it points to can't be determined due to other data
+* not occupying the area densely enough
+
+known unsupported list:
 0x02    ZHC_AltCameraList
 0x03    ZHC_CollisionList
-0x04    ZHC_MapList
+
 ...
 0x0E    ZHC_TransitionActorList
 0x0F    ZHC_EnvironmentList
@@ -80,34 +95,13 @@ typedef struct ( ubyte &bankType ) { //ZSceneHeaderCommand
                 break;
             case 0x03:
                 ZHC_CollisionList collisionList;
-                /*
-                SetBackColor( cGreen );
-                // Collision Hull
-                ubyte zeroes[3];
-                ZBankPointer listOffset;
-                if( listOffset.zb.bankNo == bankType ){
-                    local uint64 returnTo = FTell();
-                    FSeek(headerStart + listOffset.offset);
-                    //ZCollisionHeader collisionHead;
-                    FSeek(returnTo);
-                } else {
-                    Warning("External Bank");
-                }
-                // TODO: Inline file. http://wiki.cloudmodding.com/oot/Collision_Format
-                */
                 break;
             case 0x04:
                 ZHC_MapList mapList;
                 break;
             case 0x05:
-                ZHC_Generic generic;
-                /*
-                SetBackColor( cLtGreen );
-                NotImplemented(this);
-                ubyte idk[7];
-                */
+                ZHC_Wind windInfo;
                 break;
-    //            return "Weather Info";
             case 0x06:
                 ZHC_Generic generic;
     /*
@@ -358,8 +352,8 @@ typedef struct ( ubyte &bankType ) { //ZSceneHeaderCommand
                 //ZHC_Unknown1D unknown;
                 break;
             case 0x1E:
-                ZHC_Generic generic;
-                //ZHC_Unknown1E unknown;
+                //ZHC_Generic generic;
+                ZHC_Unknown1E unknown;
                 break;
             default:
                 ZHC_Generic generic;

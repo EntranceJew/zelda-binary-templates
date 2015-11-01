@@ -7,5 +7,5 @@
 // Purpose:
 //--------------------------------------
 local string s;
-SPrintf(s, "0x%Lx", GetCursorPos());
+SPrintf(s, "0x%08LX", GetCursorPos());
 CopyStringToClipboard(s);

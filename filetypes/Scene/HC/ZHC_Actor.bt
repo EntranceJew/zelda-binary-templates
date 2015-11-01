@@ -45,6 +45,7 @@ typedef struct {
 typedef struct {
     local string thisName = "ZHC_ActorList";
     SIBE;
+
     SIT;
     ubyte command;
     AssertNumberEquals(command, 0x01, thisName);
@@ -52,14 +53,17 @@ typedef struct {
     SIT;
     ubyte numElms;
     AssertUIntGTZero(numElms, thisName);
+
     SIT;
     ubyte zeroes[2];
     AssertUBytesNull(zeroes, thisName);
     
+    SIT;
     ZBankPointer listOffset;
+
     if( listOffset.zb.bankNo == bankType ){
         SAVE;
-        FSeek(startof(parentof(this)) + listOffset.offset);
+        FSeek(headerStart + listOffset.offset);
         ZHC_Actor actors[numElms]<optimize=false>;
         REST;
     } else {

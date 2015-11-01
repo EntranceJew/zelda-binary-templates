@@ -19,8 +19,13 @@ typedef struct {
 } ZVector;
 
 typedef struct {
-    // These are signed.
     ubyte x;
     ubyte y;
     ubyte z;
 } ZByteVector;
+
+typedef struct {
+    byte x;
+    byte y;
+    byte z;
+} ZUByteVector;

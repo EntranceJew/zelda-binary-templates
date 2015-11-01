@@ -4,10 +4,11 @@ typedef struct {
 } ZFileSystemRange;
 
 typedef struct {
-    uint virtual_start;
-    uint virtual_end;
-    uint physical_start;
-    uint physical_end;
-//    char controlCode;
-//    ubyte tabwidth;
+    // the "v" means virtual, relative to the ROM
+    uint vStart;
+    uint vEnd;
+
+    // the "p" means physical, relative to the N64 memory map
+    uint pStart;
+    uint pEnd;
 } ZFileSystemEntry;

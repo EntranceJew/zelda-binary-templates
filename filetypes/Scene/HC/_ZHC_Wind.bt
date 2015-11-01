@@ -1,0 +1,25 @@
+typedef struct {
+    local string thisName = "ZHC_Wind";
+    SIBE;
+
+    SIT;
+    ubyte command;
+    AssertNumberEquals(command, 0x05, thisName);
+
+    SIT;
+    ubyte zeroes1[3];
+    AssertUBytesNull(zeroes1, thisName);
+
+    SIT;
+    // TODO: figure out what this thing is all about
+    // in their documented order, with emphasis on the latter item:
+    // east/west,
+    // down/up,
+    // north/south
+    ZUByteVector windDirection;
+
+    SIT;
+    ubyte windMagnitude;
+
+    SIEND;
+} ZHC_Wind;

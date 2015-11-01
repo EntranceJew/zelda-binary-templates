@@ -15,7 +15,7 @@ typedef struct {
     ZBankPointer listOffset;
     if( listOffset.zb.bankNo == bankType ){
         SAVE;
-        FSeek(startof(parentof(this)) + listOffset.offset);
+        FSeek(headerStart + listOffset.offset);
         ZHC_Actor starts[numElms]<optimize=false>;
         REST;
     } else {

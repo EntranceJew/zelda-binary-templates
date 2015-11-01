@@ -1,9 +1,17 @@
+struct ZRoom;
+
 typedef struct {
     local string thisName = "ZHC_Map";
     SIBE;
     SIT;
-    ZFileSystemRange room;
-    //@TODO: Block this region / map it to the VFS
+    ZFileSystemRange roomPos;
+    //@TODO: Validate against the VFS
+
+    SAVE;
+    FSeek(roomPos.start);
+    ZRoom room;
+    REST;
+
     SIEND;
 } ZHC_Map;
 

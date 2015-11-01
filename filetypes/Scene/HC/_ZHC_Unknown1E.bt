@@ -15,7 +15,7 @@ typedef struct {
 
     SIT;
     ubyte numElms;
-    //AssertUIntGTZero(numElms, thisName);
+    AssertUIntGTZero(numElms, thisName);
     SIT;
     ubyte zeroes[2];
     AssertUBytesNull(zeroes, thisName);
@@ -23,8 +23,8 @@ typedef struct {
     ZBankPointer listOffset;
     if( listOffset.zb.bankNo == bankType ){
         SAVE;
-        FSeek(startof(parentof(this)) + listOffset.offset);
-        ZHC_Unknown1EData unknown[numElms+1]<optimize=false>;
+        FSeek(headerStart + listOffset.offset);
+        ZHC_Unknown1EData unknown[numElms]<optimize=false>;
         REST;
     } else {
         Assert( 0, "External Bank" );

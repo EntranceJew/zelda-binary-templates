@@ -1,10 +1,6 @@
 struct ZSceneHeader;
 struct ZSceneHeaderCommand;
 
-typedef struct ( ubyte &bankType ){ //ZSceneHeader
-
-} ZSceneHeaderBreader;
-
 typedef struct {
     SIBE;
   	local uint64 headerStart = FTell();
