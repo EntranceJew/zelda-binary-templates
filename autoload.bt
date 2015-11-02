@@ -19,6 +19,7 @@ SION;
 // == filetypes/*.bt
 #include "filetypes/Banks.bt"
 #include "filetypes/Bits.bt"
+#include "filetypes/Entrances.bt"
 #include "filetypes/FileSystem.bt"
 #include "filetypes/N64ROMHead.bt"
 #include "filetypes/Simple.bt"

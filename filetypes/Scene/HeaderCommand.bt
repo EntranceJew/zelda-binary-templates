@@ -25,11 +25,12 @@ typedef struct {
 } ZPathList;
 
 
-
+/*
 typedef struct {
     uint startPosition; // references room start position list
     uint roomToLoad; // TODO: Find room references?
 } ZEntrance;
+*/
 
 typedef struct {
     ubyte unknown[8];

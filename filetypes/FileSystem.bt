@@ -3,12 +3,20 @@ typedef struct {
     uint end;
 } ZFileSystemRange;
 
+local uint numVFSFiles = 1;
+local uint existingVFSStarts[FileSize()];
 typedef struct {
     // the "v" means virtual, relative to the ROM
     uint vStart;
+    existingVFSStarts[vStart] = numVFSFiles;
     uint vEnd;
 
     // the "p" means physical, relative to the N64 memory map
     uint pStart;
     uint pEnd;
-} ZFileSystemEntry;
+    numVFSFiles++;
+} ZFileSystemEntry<size=16>;
+
+uint IsValidFile(uint vstart){
+    return existingVFSStarts[vstart];
+}

@@ -1,0 +1,154 @@
+/*
+// this struct is for the OoT scene table
+typedef struct {
+    uint vStart;
+    uint vEnd;
+    uint vTitleStart;
+    uint vTitleEnd;
+    
+    // UNK;
+    // Unknown (is either 0x01 or 0x02 for some dungeons, otherwise 0x00)
+    ubyte maybeBankDef;
+
+    // UNK;
+    // Scene configuration", responsible for initializing and filling RAM segments; used ex. for camera effects, dynamic textures
+    //
+    //  0x15 = screen pulses a la Jabu-Jabu's Belly
+    //  0x33 = screen shakes a la Ganon's Castle (collapsing)
+    //  0x34 = same as 0x33
+    //  0x35 - 0x37 = crashes
+    //  0x3D+ = crashes
+
+    // UNK;
+    // Unknown (is unique value between 0x02 and 0x0A for some dungeons)
+    ubyte maybeDungeonNumber;
+
+    // UNK;
+    // Nothing? (always 0x00)
+    ubyte unknown;
+} ZSceneTableEntry;
+*/
+
+// this struct is for the MM scene table
+typedef struct {
+    uint vStart;
+    uint vEnd;
+    ubyte unknown[4];
+    ubyte zeroes[4];
+} SceneTableEntry;
+
+typedef struct {
+    local string thisName = "ZEntranceTable";
+    ubyte sceneNumber;
+    ubyte entranceInScene;
+    // Additionally, this value affects dynamic exits
+    // Is used to determine which Fairy Fountain you've entered (see below).
+    ubyte transitionControl;
+    ubyte transitionAnimation;
+} ZEntrance<size=4>;
+
+/*
+sseevvtt
+s is the Scene number to load
+e sets what "entrance" within the scene to spawn at. 
+v is a variable used to control certain behaviors (ex. whether to cut the music short) when transitioning to a new entrance
+t sets the transition animation that plays when transitioning to a new entrance. It's important to note that dust transition effect requires a specific object file in both the start scene and the destination scene in order to work without throwing one or more graphic exceptions.
+*/
+
+// twili's code is weird so we need to know what index we're at
+// 0x00DECD40 where it starts
+// 0x00BDE540 what we're gonna bounce it against
+// 0x00227300 what to bounce (scene name string pointer)
+// 0x80227300 unfiltered RAM pointer / bounce
+// 0x00E05840 where we end up (scene name string)
+// 0x00EBC300 where we end up if we advance from the code file start
+// 0x003DE540 unfiltered - 0x00800000 [ram start]
+// 0x00A27300
+#define EXITBOUNCEHACK 0x00BDE540
+typedef struct {
+    local string thisName = "ZExitTable";
+    SIBE;
+
+    SIT;
+    ubyte numSpawnPoints;
+
+    SIT;
+    ubyte zeroes[3];
+    AssertUBytesNull(zeroes, thisName);
+
+    SIT;
+    ZBankPointer ramPointerScene;
+
+    local uint64 walk = 0;
+    if( ramPointerScene.offset > 0 ){
+        SAVE;
+        FSeek(ramPointerScene.offset + EXITBOUNCEHACK);
+        ZBankPointer theScenePointer[numSpawnPoints];
+        for( walk = 0; walk < numSpawnPoints; walk++ ){
+            SAVE;
+            FSeek(theScenePointer[walk].offset + EXITBOUNCEHACK);
+            ZEntrance entrances;
+            REST;
+        }
+        REST;
+    } else {
+        //Assert(false, "bad scene");
+    }
+
+    SIT;
+    ZBankPointer ramPointerSceneName;
+
+    if( ramPointerSceneName.offset > 0 ){
+        SAVE;
+        FSeek(ramPointerSceneName.offset + EXITBOUNCEHACK);
+        string theSceneName;
+        REST;
+    } else {
+        //Assert(false, "bad scene name");
+    }
+
+    SIEND;
+} ZExitTable;
+
+
+typedef struct {
+    SIBE;
+
+    SIT;
+    ubyte sceneNumber;
+
+    SIT;
+    ubyte presetPlayerSpawnPoint;
+
+    SIT;
+    ubyte fadeInEffect;
+
+    SIT;
+    ubyte fadeOutEffect;
+
+    SIEND;
+} ZSpawnEntries;
+
+/*
+exit table stuff:
+(10:46:53 AM) Twili: the exit table is at 0xDECD38
+(10:47:19 AM) Twili: 0xBDE540 is a value added to the lower 24 bits of some ram pointers to get the rom equivalent
+(10:47:38 AM) Twili: 0xDEB2B0 is the scene table
+
+(10:48:32 AM) Twili: the exit table has this structure
+(10:48:48 AM) Twili: XX 00 00 00 YY YY YY YY ZZ ZZ ZZ ZZ
+(10:48:59 AM) Twili: XX = number of spawn points
+(10:49:08 AM) Twili: YY YY YY YY = ram pointer to scene name
+(10:49:26 AM) Twili: ZZ ZZ ZZ ZZ = ram pointer to spawn pointer table
+
+(10:49:42 AM) Twili: there are as many spawn pointers as XX
+(10:49:57 AM) Twili: and they point to the spawn entries
+(10:50:03 AM) Twili: AA BB CC DD
+(10:50:10 AM) Twili: AA = scene number
+(11:03:52 AM) wareya: 10:50 <@Twili> BB = preset link spawn point in the scene file
+(11:03:52 AM) wareya: 10:50 <@Twili> CC = fade in effect
+(10:51:39 AM) Twili: DD = fade out effect
+(10:50:13 AM) Twili: some are negative, though
+(10:50:36 AM) Twili: so you have to multiply by -1
+(10:50:43 AM) Twili: if they're negative
+*/

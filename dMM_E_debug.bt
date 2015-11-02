@@ -7,20 +7,85 @@
 
 // very significant identifiers that cannot
 // be determined dynamically from the rom data yet
-#define AUDIOBANK  0x0002B2D0
-#define AUDIOSEQ   0x000516C0
-#define AUDIOTABLE 0x000A2B40
-#define ATBL_END   0x005EB2B0
-#define CODEFILE   0x00C95000
-#define INSTRUMENT 0x00E0F7E0
-#define SEQTABLE   0x00E0FC90
-#define SAMPLES    0x00E104A0
+#define VFS           0x00024F60
+#define AUDIOBANK     0x0002B2D0
+#define AUDIOSEQ      0x000516C0
+#define AUDIOTABLE    0x000A2B40
+#define ATBL_END      0x005EB2B0
+#define CODEFILE      0x00C95000
+#define SCENETABLE    0x00DEB2B0
+//#define ENTRANCETABLE 0x00??????
+#define EXITTABLE     0x00DECD38
+#define SCENENAMES    0x00E05840
+#define INSTRUMENT    0x00E0F7E0
+#define SEQTABLE      0x00E0FC90
+#define SAMPLES       0x00E104A0
+#define CODEFILEEND   0x00E12600
 
 // helpers & known types
 #include "autoload.bt"
 
 // import the ROM structure
 //#include "regions/dMM_E_debug/main.bt"
+
+SetBackColor(cDkGreen);
+FSeek(VFS);
+local uint64 seekPos = FTell();
+while( ReadUInt(seekPos) != VFS ){
+    seekPos += sizeof(ZFileSystemEntry);
+}
+local uint64 numVFSEntries = (ReadUInt(seekPos+4) - VFS) / sizeof(ZFileSystemEntry);
+ZFileSystemEntry vfs[numVFSEntries];
+
+FSeek(SCENETABLE);
+struct {
+    SceneTableEntry sceneTable[113]<optimize=false>;
+} AllTheseScenes;
+
+FSeek(EXITTABLE);
+struct {
+    ZExitTable exits[110]<optimize=false>;
+} AllTheseExits;
+
+/*
+// the following code walks the number of scenes
+// maps some things
+// but it skips a lot of details
+typedef struct {
+    string sceneName;
+} SceneName;
+
+local uint64 x = 0;
+local uint64 y = 0;
+local byte scene = 0;
+for( y = 0; y < 110; y++ ){
+    FSeek(EXITTABLE+5+12*y);
+    int pointerD : 24;
+    FSeek(FTell()+1);
+    int namePointerD : 24;
+    if( pointerD > 0 ){
+        FSeek(namePointerD+EXITBOUNCEHACK);
+        SceneName sceneName;
+        //Printf("%s @ 0x%08LX\n", sceneName.sceneName, namePointerD+EXITBOUNCEHACK);
+        FSeek(pointerD+1+EXITBOUNCEHACK);
+        int pointerD2 : 24;
+        FSeek(pointerD2+EXITBOUNCEHACK);
+        ubyte _scene;
+        if(_scene>127){
+            //Printf("sceen should be negative\n");
+            scene = 256-_scene;
+        } else {
+            scene = _scene;
+        }
+        FSeek(SCENETABLE+16*scene);
+        uint pointerD3;
+        uint namePointerD3;
+        if(IsValidFile(pointerD3)){
+			Printf("%08LX %08LX %-20s %02LX\n",pointerD3,namePointerD3,sceneName.sceneName,scene);
+		}
+    }
+}
+*/
 
 FSeek(03066000h);
 ZScene clocktower;
@@ -30,6 +95,9 @@ ZScene Z2_20SICHITAI2;
 
 FSeek(0219E000h);
 ZScene Z2_LAST_BS;
+
+FSeek(021AF000h);
+ZScene Z2_HAKASHITA;
 
 ReportBucket();
 //ClearBucket();
