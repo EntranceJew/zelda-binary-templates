@@ -1,0 +1,50 @@
+/*
+    Read a MM message table and relate it to the text table.
+    Does not work for the credits yet, as that hinges on
+    interpreting OoT ANSI text mode.
+
+    Does not yet provide easy-to-manipulate text.
+*/
+
+typedef struct{
+    ubyte textBoxType;
+    ubyte textBoxYPos;
+    ubyte textBoxIcon;
+    ushort nextMessageNumber;
+    ushort rupeeCost;
+    ubyte FF[4];
+    local ubyte breakout = 0;
+    local ubyte read = 0;
+    local uint64 scanPos = 0;
+    while( !breakout ){
+        read = ReadUByte(FTell()+scanPos);
+        switch(read){
+            // 0xBF is the stopword in MM only
+            case 0xBF:
+                breakout = 1;
+                break;
+        }
+        scanPos++;
+    }
+    uchar text[scanPos];
+} ZMessage;
+
+typedef struct(uint64 messageBank){
+    ushort messageNumber;
+    ubyte zeroes[2];
+    ubyte fontIndex;
+    uint offset : 24;
+
+    SAVE;
+    FSeek( messageBank + offset );
+    ZMessage message;
+    REST;
+} ZMessageTableEntry;
+
+typedef struct(uint64 messageBank){
+    local ushort numMessages = 0;
+    while( ReadUShort(FTell() + 8*numMessages) != 0xFFFF ){
+        numMessages++;
+    }
+    ZMessageTableEntry messages(messageBank)[numMessages]<optimize=false>;
+} ZMessageTable;
