@@ -94,3 +94,35 @@ struct {
 	Items items[192];
 } AllOfTheseItems;
 ```
+
+# Identifying Data At A Glance (Zelda Specific)
+## Alignment & Colors
+u data-ing good
+http://i.imgur.com/zHacyVR.png
+u probably fucked something up
+http://i.imgur.com/ZPpHoLp.png
+almost there, hard edges
+http://i.imgur.com/Z1iVEVs.png
+
+to fuck the data up like this:
+jump to `TERRAIN_TRIGGER_RESET` and `TERRAIN_HURT_FIRE` inside `ZHC_Collision`
+and remove only one of their bitfield paddings for light fuckuppery
+remove them both to take them off the fuckin' rails
+
+### Keep In Mind
+* Not all data is guaranteed to align, there are cases of structures with
+	3 integers and no padding.
+
+# Identifying Data At A Glance (Zelda Specific)
+Sometimes there are some patterns you can keep a look out for.
+
+## RAM Pointers
+Often, data in the code block will contain hex data that looks like `80 15 91 D8`.
+Any four-byte sequence that starts with `80` is likely a RAM pointer, as `80` is where
+the addresses start for RAM in the N64 memory map. 
+
+## File Offsets
+Sometimes, you'll see data like `01 E1 93 D1`. 
+The debug ROMs, when decompressed, have their final byte at `03 FF FF FF`.
+Any data lower than that has the potential of being a pointer to other data directly.
+(This is usually looked up against the VFS to find the physical address in non-compressed ROMs.)

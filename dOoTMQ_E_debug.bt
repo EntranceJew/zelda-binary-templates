@@ -7,14 +7,17 @@
 
 // very significant identifiers that cannot
 // be determined dynamically from the rom data yet
-#define AUDIOBANK  0x00019030
-#define AUDIOSEQ   0x00044DF0
-#define AUDIOTABLE 0x00094870
-#define ATBL_END   0x004E5C00
-#define CODEFILE   0x00A94000
-#define INSTRUMENT 0x00BCC270
-#define SEQTABLE   0x00BCC6A0
-#define SAMPLES    0x00BCCD90
+#define AUDIOBANK     0x00019030
+#define AUDIOSEQ      0x00044DF0
+#define AUDIOTABLE    0x00094870
+#define ATBL_END      0x004E5C00
+#define CODEFILE      0x00A94000
+#define ENTRANCETABLE 0x00B9F360
+#define SCENETABLE    0x00BA0BB0
+#define INSTRUMENT    0x00BCC270
+#define SEQTABLE      0x00BCC6A0
+#define SAMPLES       0x00BCCD90
+#define CODEFILEEND   0x00BCEF30
 
 // helpers & known types
 #include "autoload.bt"
@@ -41,3 +44,18 @@ ZRoom spot13_room1;
 
 FSeek(44044288);
 ZRoom spot13_room2;
+
+// sample of polyType from inside jabu jabu's belly:
+// 00 01 00 00 00 00 30 03
+
+// sample of polyType from desert sandpit with jabu flag?
+// 30 01 80 04 00 00 0F C1
+
+// sample of other, nearby sand that doesn't do that
+// 00 00 E0 04 05 4C 0F C1
+
+// sample of water temple that is steep and slopey
+// 24 00 00 03 00 00 B8 12
+
+FSeek(0x230B000);
+ZScene the_entire_water_temple;
