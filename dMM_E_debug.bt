@@ -12,6 +12,10 @@
 #define AUDIOSEQ      0x000516C0
 #define AUDIOTABLE    0x000A2B40
 #define ATBL_END      0x005EB2B0
+#define MSG_1         0x00C71000
+#define MSG_2         0x00C7A000
+#define MSG_3         0x00C83000
+#define MSG_4         0x00C8C000
 #define CODEFILE      0x00C95000
 #define SCENETABLE    0x00DEB2B0
 //#define ENTRANCETABLE 0x00??????
@@ -36,6 +40,34 @@ while( ReadUInt(seekPos) != VFS ){
 }
 local uint64 numVFSEntries = (ReadUInt(seekPos+4) - VFS) / sizeof(ZFileSystemEntry);
 ZFileSystemEntry vfs[numVFSEntries];
+
+typedef struct(uint64 size){
+    ubyte textBoxType;
+    ubyte textBoxYPos;
+    ubyte textBoxIcon;
+    ushort nextMessageNumber;
+    ushort rupeeCost;
+    ubyte FF[4];
+    uchar message[size];
+} ZMessage;
+
+typedef struct{
+    ushort messageNumber;
+    ubyte zeroes[2];
+    ubyte fontIndex;
+    uint offset : 24;
+} ZMessageTableEntry;
+
+// note: we can seek until we get messageNumber == 0xFFFF
+FSeek(MSG_1);
+ZMessageTableEntry messages1[4590];
+local uint64 msgi = 0;
+for( msgi = 0; msgi < 4590; msgi++ ){
+    SAVE;
+    FSeek( 0x00AB0000 + messages1[msgi].offset );
+    ZMessage messages_1(messages1[msgi+1].offset - messages1[msgi].offset - 11);
+    REST;
+}
 
 FSeek(SCENETABLE);
 struct {
