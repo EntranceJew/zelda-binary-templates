@@ -55,15 +55,10 @@ v is a variable used to control certain behaviors (ex. whether to cut the music 
 t sets the transition animation that plays when transitioning to a new entrance. It's important to note that dust transition effect requires a specific object file in both the start scene and the destination scene in order to work without throwing one or more graphic exceptions.
 */
 
-// twili's code is weird so we need to know what index we're at
 // 0x00DECD40 where it starts
 // 0x00BDE540 what we're gonna bounce it against
 // 0x00227300 what to bounce (scene name string pointer)
-// 0x80227300 unfiltered RAM pointer / bounce
 // 0x00E05840 where we end up (scene name string)
-// 0x00EBC300 where we end up if we advance from the code file start
-// 0x003DE540 unfiltered - 0x00800000 [ram start]
-// 0x00A27300
 #define EXITBOUNCEHACK 0x00BDE540
 typedef struct {
     local string thisName = "ZExitTable";
