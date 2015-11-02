@@ -4,6 +4,12 @@
     interpreting OoT ANSI text mode.
 
     Does not yet provide easy-to-manipulate text.
+    This will fail if an inline text command uses an argument 
+    that contains the stopcommand, only way around that is
+    to parse the text.
+
+    The suggested implementation is a "text" struct,
+    and a "command" struct. Maybe multiple command structs.
 */
 
 typedef struct{
