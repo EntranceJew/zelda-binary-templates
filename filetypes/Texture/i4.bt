@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 // a hack to allow our in-memory read to stay aligned with 
 // the actual bitfield, only works if an image dimension evens-out
 local uint64 _i4toggle_hack = 0;

@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 typedef struct {
     short x;
     short y;

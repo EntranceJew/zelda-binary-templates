@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 //(11:20:18 PM) Playtendo: 0x02 command uses this format http://wiki.cloudmodding.com/oot/Collision_Format#Camera_Data
 //(11:20:22 PM) Playtendo: first unknown is the camera type
 typedef struct {

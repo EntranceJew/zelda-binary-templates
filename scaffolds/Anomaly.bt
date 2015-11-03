@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 string EXSAnom(string reason){
     local string out;
     SPrintf(out, "%s: @ %08LXh", reason, FTell());

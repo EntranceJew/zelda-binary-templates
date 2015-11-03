@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 // NIFF v1.0 structure tags
 
 #define TAG_HEADER                   0x00000000

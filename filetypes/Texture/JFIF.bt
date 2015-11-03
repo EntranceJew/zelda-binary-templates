@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 enum <ubyte> JFIFPixelDensity {
     NotSpecified        = 0x00,
     PixelsPerInch       = 0x01,

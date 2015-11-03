@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 typedef struct (uint noArgs){
     SIT;
     ubyte command;

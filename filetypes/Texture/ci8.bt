@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 typedef struct{
     local ubyte hX = ReadUByte(FTell());
     SetBackColorTup( hX, hX, hX );

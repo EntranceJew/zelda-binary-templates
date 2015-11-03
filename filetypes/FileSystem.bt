@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 typedef struct {
     uint start;
     uint end;

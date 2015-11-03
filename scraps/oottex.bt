@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 // TODO: Fix bitwise alignment sadness.
 // TODO: Combine palette visualization lookup.
 // TODO: Test out the jay peg, why not?

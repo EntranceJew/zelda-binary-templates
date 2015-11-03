@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 typedef struct {
     uint tex_img_width;
     uint tex_img_height;

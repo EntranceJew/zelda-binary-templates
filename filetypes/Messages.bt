@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 /*
     Read a MM message table and relate it to the text table.
     Does not work for the credits yet, as that hinges on

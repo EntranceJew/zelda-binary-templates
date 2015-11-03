@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 Block makerom(00000000h, 00001060h)<name="makerom">;
 Block boot(00001060h, 00023F00h)<name="boot">;
 Block dmadata(00024F60h, 00006370h)<name="dmadata">;

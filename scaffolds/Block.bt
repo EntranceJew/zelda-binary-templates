@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 local int colorFlop = 0;
 typedef struct Block( uint64 startPoint, uint64 blockRange){
     Printf( "block range: %d\n", blockRange );

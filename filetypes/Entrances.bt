@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 /*
 // this struct is for the OoT scene table
 typedef struct {

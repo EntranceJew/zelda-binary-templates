@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 struct {
     N64ROMHead makerom;
 

@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 typedef struct {
     local string thisName = "ZHC_TransitionActor";    
     SIBE;

@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 // 8 bits per channel, allowing values 0 through 255
 // for each individual channel.
 // TODO: Implement pseudo-alpha drawing.

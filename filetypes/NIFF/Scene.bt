@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 typedef struct( uint64 size ) {
     if( NIFF2 ){
         uint scene_chain_root_link_num;

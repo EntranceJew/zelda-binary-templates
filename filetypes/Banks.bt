@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 /*
     We don't actually know what the main bank does / us.
     Here are some types relating to it, though.

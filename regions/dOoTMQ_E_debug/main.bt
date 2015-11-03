@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 struct {
     FSeek( SAMPLES );
     SampleTable sampleTable;

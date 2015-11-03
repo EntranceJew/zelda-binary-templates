@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 #include "filetypes/NIFF/NIFFFlags.bt"
 #include "filetypes/NIFF/NIFFTags.bt"
 

@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 string EXSWarning(string reason){
     local string out;
     SPrintf(out, "%s: @ 0x%Lx\n", reason, FTell());

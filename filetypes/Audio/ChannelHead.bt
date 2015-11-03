@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 typedef struct{
     local ubyte op;
     local int breakout = 0;

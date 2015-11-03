@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 enum <uint> CAM_TYPE {
     PERSP = CAM_TYPE_PERSP,
     ORTHO = CAM_TYPE_ORTHO

@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 // main identifiers
 #define GAME    "OoTMQ"
 #define REGION  "E"

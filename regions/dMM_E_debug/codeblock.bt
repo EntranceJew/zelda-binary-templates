@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 BitfieldDisablePadding();
 
 #include "filetypes/Banks.bt"

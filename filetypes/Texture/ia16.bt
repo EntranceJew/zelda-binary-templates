@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 typedef struct{
     // visualize it
     local ubyte hC = ReadUByte(FTell());

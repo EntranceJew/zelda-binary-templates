@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 // TODO: Finish this (rom head)
 // Incomplete.
 typedef struct {

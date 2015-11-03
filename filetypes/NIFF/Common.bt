@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 #define GENERIC_NONE 0xFFFFFFFF
 
 typedef struct {

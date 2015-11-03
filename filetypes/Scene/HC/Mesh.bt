@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 typedef struct {
     // Simple mesh format; render all display lists specified.
     ubyte opaqueDisplayList[4]; // can be zero

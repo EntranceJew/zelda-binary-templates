@@ -1,3 +1,4 @@
+// -*- mode: c;-*-
 typedef struct {
     ubyte red;
     ubyte green;
