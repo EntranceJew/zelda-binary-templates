@@ -58,6 +58,84 @@ struct {
     ZExitTable exits[110]<optimize=false>;
 } AllTheseExits;
 
+typedef struct {
+    uchar magic[3];
+    uchar dest;
+    uint uncompressedSize;
+    ubyte zeroes[8];
+    local uint64 src = FTell();
+    // provide a buffer
+    local ubyte dst[uncompressedSize];
+
+    //current read/write positions
+    local int srcPlace = 0, dstPlace = 0;
+    //number of valid bits left in "code" byte
+    local uint validBitCount = 0; 
+    local ubyte currCodeByte;
+    local ubyte byte1, byte2;
+    local uint dist, copySource, numBytes;
+    local int i;
+    while(dstPlace < uncompressedSize){
+        //read new "code" byte if the current one is used up
+        if(validBitCount == 0){
+            currCodeByte = ReadUByte(src + srcPlace);
+            ++srcPlace;
+            validBitCount = 8;
+        }
+    
+        if((currCodeByte & 0x80) != 0){
+            //straight copy
+            dst[dstPlace] = ReadUByte(src + srcPlace);
+            dstPlace++;
+            srcPlace++;
+        } else {
+            //RLE part
+            byte1 = ReadUByte(src + srcPlace);
+            byte2 = ReadUByte(src + srcPlace + 1);
+            srcPlace += 2;
+    
+            dist = ((byte1 & 0xF) << 8) | byte2;
+            copySource = dstPlace - (dist + 1);
+    
+            numBytes = byte1 >> 4;
+            if(numBytes == 0){
+                numBytes = ReadUByte(src + srcPlace) + 0x12;
+                srcPlace++;
+            } else {
+                numBytes += 2;
+            }
+            
+            //copy run
+            for( i = 0; i < numBytes; ++i ){
+                dst[dstPlace] = dst[copySource];
+                copySource++;
+                dstPlace++;
+            }
+        }
+    
+        //use next bit from "code" byte
+        currCodeByte <<= 1;
+        validBitCount-=1;    
+    }
+    ubyte rawData[srcPlace];
+} Yaz;
+
+typedef struct{
+    uint headerSize;
+    local uint numRecords = (headerSize/4)-1;
+    uint fileStarts[numRecords];
+    local uint64 jumpPos = FTell();
+    local uint i;
+    for( i = 0; i < numRecords; i++ ){
+        Yaz file;
+        //Assert(sizeof(file) == fileStarts[i], "weird sized yaz");
+        FSeek(jumpPos + fileStarts[i]);
+    }
+} YazArc;
+
+FSeek(0x009C3000);
+YazArc arc1;
+
 /*
 // the following code walks the number of scenes
 // maps some things
