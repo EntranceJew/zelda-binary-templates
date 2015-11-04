@@ -134,7 +134,46 @@ typedef struct{
 } YazArc;
 
 FSeek(0x009C3000);
-YazArc arc1;
+YazArc arc;
+
+FSeek(0x009C4310);
+YazArc arc;
+
+FSeek(0x009CD660);
+YazArc arc;
+
+FSeek(0x009DB2F0);
+YazArc arc;
+
+FSeek(0x009E7D40);
+YazArc arc;
+
+FSeek(0x009F54E0);
+YazArc arc;
+
+FSeek(0x00A02F20);
+YazArc arc;
+
+FSeek(0x00A04840);
+YazArc arc;
+
+FSeek(0x00A06330);
+YazArc arc;
+
+FSeek(0x00A08200);
+YazArc arc;
+
+FSeek(0x00A09E70);
+YazArc arc;
+
+FSeek(0x00A4F140);
+YazArc arc;
+
+//FSeek(0x00A53A00);
+//YazArc arc;
+
+FSeek(0x00A5F000);
+YazArc arc;
 
 /*
 // the following code walks the number of scenes

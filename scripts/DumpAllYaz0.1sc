@@ -1,0 +1,56 @@
+//--------------------------------------
+//--- 010 Editor v6.0.3 Script File
+//
+// File:        DumpAllYaz0
+// Author:      EntranceJew
+// Revision:    1.0
+// Purpose:     Dump all yaz0 archives from a ROM where they are all named "arc".
+//--------------------------------------
+local string wheredump = InputDirectory( "Where to dump these files?" );
+local uint64 startFile = GetFileNum();
+local string dirToMake;
+local string fileToWrite;
+local uint64 ui = 0;
+local uint64 fi = 0;
+local uint64 thisFile = 0;
+local uint64 writePos = 0;
+local uint64 sizeToWrite = 0;
+local int didMakeDir;
+local ubyte dst[0xFFFF]; // hail satan
+local int writeStatus = 0;
+while( exists(arc[ui]) ){
+    SPrintf(dirToMake, "%d_0x%08LX", ui, startof(arc[ui]));
+    Assert(
+        MakeDir(wheredump + "/" + dirToMake),
+        "Could not make dir."
+    );
+
+    fi = 0;
+    while( exists(arc[ui].file[fi]) ){
+        SPrintf(fileToWrite, "%d_0x%08LX.bin", fi, startof(arc[ui].file[fi]));
+
+        sizeToWrite = arc[ui].file[fi].uncompressedSize;
+
+        Assert( sizeToWrite <= 0xFFFF, "write is bigger than our buffer");
+
+        writePos = 0;
+        while( exists(arc[ui].file[fi].dst[writePos]) ){
+            dst[writePos] = arc[ui].file[fi].dst[writePos];
+            writePos++;
+        }
+        thisFile = FileNew("Hex", true);
+        WriteBytes(dst, 0, sizeToWrite);
+        writeStatus = FileSave(wheredump + "/" + dirToMake + "/" + fileToWrite);
+    
+        Assert(
+             writeStatus >= 0,
+            "Could not write file."
+        );
+        FileClose();
+        FileSelect(startFile);
+
+        fi++;
+    }
+    ui++;
+}
+FileSelect(startFile);
