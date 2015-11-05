@@ -1,0 +1,492 @@
+// main identifiers
+#define GAME    "OoTMQ"
+#define REGION  "E"
+#define VIDEO   "PAL"
+#define DEFLATE 1
+#define DEBUG   1
+
+#include "scaffolds/Colors.bt"
+#include "scaffolds/Block.bt"
+#include "scaffolds/Jumps.bt"
+#include "scaffolds/Significant.bt"
+#include "scaffolds/Unknown.bt"
+#include "scaffolds/Warning.bt"
+#include "scaffolds/Anomaly.bt"
+
+typedef enum <ubyte> {
+    Item_Deku_Sticks = 0,
+    Item_Deku_Nuts = 1,
+    Item_Bombs = 2,
+    Item_Fairy_Bow = 3,
+    Item_Fire_Arrow = 4,
+    Item_Dins_Fire = 5,
+    Item_Fairy_Slingshot = 6,
+    Item_Fairy_Ocarina = 7,
+    Item_Ocarina_of_Time = 8,
+    Item_Bombchu = 9,
+    Item_Hookshot = 10,
+    Item_Longshot = 11,
+    Item_Ice_Arrow = 12,
+    Item_Farores_Wind = 13,
+    Item_Boomerang = 14,
+    Item_Lens_of_Truth = 15,
+    Item_Magic_Beans = 16,
+    Item_Megaton_Hammer = 17,
+    Item_Light_Arrow = 18,
+    Item_Nayrus_Love = 19,
+    Item_Empty_Bottle = 20,
+    Item_Red_Potion = 21,
+    Item_Green_Potion = 22,
+    Item_Blue_Potion = 23,
+    Item_Bottled_Fairy = 24,
+    Item_Fish = 25,
+    Item_Milk_full = 26,
+    Item_Rutos_Letter = 27,
+    Item_Blue_Fire = 28,
+    Item_Bug = 29,
+    Item_Big_Poe = 30,
+    Item_Milk_half = 31,
+    Item_Poe = 32,
+    Item_Weird_Egg = 33,
+    Item_Cucco = 34,
+    Item_Zeldas_Letter = 35,
+    Item_Keaton_Mask = 36,
+    Item_Skull_Mask = 37,
+    Item_Spooky_Mask = 38,
+    Item_Bunny_Hood = 39,
+    Item_Goron_Mask = 40,
+    Item_Zora_Mask = 41,
+    Item_Gerudo_Mask = 42,
+    Item_Mask_of_Truth = 43,
+    Item_SOLD_OUT = 44,
+    Item_Pocket_Egg = 45,
+    Item_Pocket_Cucco = 46,
+    Item_Cojiro = 47,
+    Item_Odd_Mushroom = 48,
+    Item_Odd_Potion = 49,
+    Item_Poachers_Saw = 50,
+    Item_Gorons_Sword_broken = 51,
+    Item_Prescription = 52,
+    Item_Eye_Ball_Frog = 53,
+    Item_Eye_Drops = 54,
+    Item_Claim_Check = 55,
+    Item_Fairy_Bow_plus_Fire_Arrow = 56,
+    Item_Fairy_Bow_plus_Ice_Arrow = 57,
+    Item_Fairy_Bow_plus_Light_Arrow = 58,
+    Item_Kokiri_Sword = 59,
+    Item_Master_Sword = 60,
+    Item_Biggoron_Sword = 61,
+    Item_None = 255
+} INVENTORY_ITEMS;
+
+typedef enum <ubyte> {
+    Slot_Deku_Stick = 0,
+    Slot_Deku_Nut = 1,
+    Slot_Bombs = 2,
+    Slot_Fairy_Bow = 3,
+    Slot_Fire_Arrow = 4,
+    Slot_Dins_Fire = 5,
+    Slot_Fairy_Slingshot = 6,
+    Slot_Ocarina = 7,
+    Slot_Bombchu = 8,
+    Slot_Hookshot_Longshot = 9,
+    Slot_Ice_Arrow = 10,
+    Slot_Farores_Wind = 11,
+    Slot_Boomerang = 12,
+    Slot_Lens_of_Truth = 13,
+    Slot_Magic_Beans = 14,
+    Slot_Megaton_Hammer = 15,
+    Slot_Light_Arrow = 16,
+    Slot_Nayrus_Love = 17,
+    Slot_Bottle_1 = 18,
+    Slot_Bottle_2 = 19,
+    Slot_Bottle_3 = 20,
+    Slot_Bottle_4 = 21,
+    Slot_Adult_Trade_Item = 22,
+    Slot_Child_Trade_Item = 23,
+    Slot_None = 255
+} INVENTORY_SLOTS;
+
+typedef struct {
+    enum INVENTORY_ITEMS b_button_item;
+    enum INVENTORY_ITEMS c_left_button_item;
+    enum INVENTORY_ITEMS c_down_button_item;
+    enum INVENTORY_ITEMS c_right_button_item;
+    enum INVENTORY_SLOTS c_left_button_slot;
+    enum INVENTORY_SLOTS c_down_button_slot;
+    enum INVENTORY_SLOTS c_right_button_slot;
+    ubyte zeroes; //Aligns the data
+
+    enum <ubyte> TUNIC {
+        no_tunic,
+        kokiri_tunic = 1,
+        goron_tunic = 2,
+        zora_tunic = 3
+    } tunic : 4;
+    enum <ubyte> BOOTS {
+        no_boots,
+        kokiri_boots = 1,
+        iron_boots = 2,
+        hover_boots = 3
+    } boots : 4;
+
+    enum <ubyte> SWORD {
+        no_sword,
+        kokiri_sword = 1,
+        master_sword = 2,
+        biggoron_sword = 3
+    } sword : 4;
+    enum <ubyte> SHIELD {
+        no_shield,
+        deku_shield = 1,
+        hylian_shield = 2,
+        mirror_shield = 3
+    } shield : 4;
+} ZSaveEquippedData;
+
+typedef struct {
+    local string thisName = "ZSaveData";
+    SetBackColor(cDkGreen);
+    uint entrance_index; //Stores the Entrance Link starts/respawns at.
+    uint age;
+    uint cutscene_offset;
+    uint16 time_of_day;
+    ubyte unknown0[14];
+    char file_validation[6];
+    uint16 death_counter;
+    char file_name[8];
+    ubyte disk_drive_flag;
+    ubyte zeroes1[1]; //Disk Drive Flag only use the first byte, so this one is just unread padding
+    AssertUBytesNull(zeroes1, thisName);
+    uint16 heart_containers; //16 per heart
+    uint16 health; //16 per heart
+    enum <ubyte> MAGIC_METER_SIZE {
+        no_magic_meter,
+        normal_magic_meter = 1,
+        double_magic_meter = 2
+    } magic_meter_size;
+    ubyte magic;
+    uint16 rupees;
+    uint16 giants_knife_amount; //How many hits left you have on giants knife before it breaks
+    SetBackColor(cLtYellow);
+    ubyte unknown1[6]; //Navi Timer?
+    SetBackColor(cDkGreen);
+    ubyte biggoron_sword_flag; //If set, the giants knife will act as biggoron sword
+    SetBackColor(cLtYellow);
+    ubyte unknown2; //Could just be padding, since the biggoron sword flag only use one byte
+    SetBackColor(cDkGreen);
+    ZSaveEquippedData stored_child_equipment;
+    SetBackColor(cDkGreen);
+    ZSaveEquippedData stored_adult_equipment; //Needs to be verified, the previous record may be used for both! This could be unused
+    SetBackColor(cLtYellow);
+    ubyte unknown3[20]; //???
+    SetBackColor(cDkGreen);
+    ZSaveEquippedData currentEquipment;
+    SetBackColor(cDkGreen);
+    ubyte zeroes2[2];
+    AssertUBytesNull(zeroes2, thisName);
+
+    struct { //Which item you have in each slot
+        enum INVENTORY_ITEMS deku_stick;
+        enum INVENTORY_ITEMS deku_nut;
+        enum INVENTORY_ITEMS bombs;
+        enum INVENTORY_ITEMS fairy_bow;
+        enum INVENTORY_ITEMS fire_arrow;
+        enum INVENTORY_ITEMS dins_fire;
+        enum INVENTORY_ITEMS fairy_slingshot;
+        enum INVENTORY_ITEMS ocarina;
+        enum INVENTORY_ITEMS bombchus;
+        enum INVENTORY_ITEMS hookshot_longshot;
+        enum INVENTORY_ITEMS ice_arrow;
+        enum INVENTORY_ITEMS farores_wind;
+        enum INVENTORY_ITEMS boomerang;
+        enum INVENTORY_ITEMS lens_of_truth;
+        enum INVENTORY_ITEMS magic_beans;
+        enum INVENTORY_ITEMS megaton_hammer;
+        enum INVENTORY_ITEMS light_arrow;
+        enum INVENTORY_ITEMS nayrus_love;
+        enum INVENTORY_ITEMS bottle_1;
+        enum INVENTORY_ITEMS bottle_2;
+        enum INVENTORY_ITEMS bottle_3;
+        enum INVENTORY_ITEMS bottle_4;
+        enum INVENTORY_ITEMS adult_trade_item;
+        enum INVENTORY_ITEMS child_trade_item;
+    } inventory_slot_item_ids;
+
+    SetBackColor(cDkGreen);
+
+    struct { //How much ammo you have in each slot
+        ubyte deku_stick;
+        ubyte deku_nut;
+        ubyte bombs;
+        ubyte fairy_bow;
+        ubyte fire_arrow;
+        ubyte dins_fire;
+        ubyte fairy_slingshot;
+        ubyte ocarina;
+        ubyte bombchus;
+        ubyte hookshot_longshot;
+        ubyte ice_arrow;
+        ubyte farores_wind;
+        ubyte boomerang;
+        ubyte lens_of_truth;
+        ubyte magic_beans;
+    } inventory_slot_item_amount;
+
+    SetBackColor(cDkGreen);
+
+    ubyte magic_beans_available; //The amount of Magic Beans available for purchase.
+
+    struct {
+        ubyte kokiri_tunic : 1;
+        ubyte goron_tunic : 1;
+        ubyte zora_tunic : 1;
+        ubyte unused_tunic_flag : 1;
+        ubyte kokiri_boots : 1;
+        ubyte iron_boots : 1;
+        ubyte hover_boots : 1;
+        ubyte unused_boots_flag : 1;
+
+        ubyte kokiri_sword : 1;
+        ubyte master_sword : 1;
+        ubyte biggoron_sword : 1;
+        ubyte unused_sword_flag : 1;
+        ubyte deku_shield : 1;
+        ubyte hylian_shield : 1;
+        ubyte mirror_shield : 1;
+        ubyte unused_shield_flag : 1;
+
+        ubyte zeroes1[3];
+
+        ubyte unused_bullet_bag_flag : 1 <comment="Setting this bit will result in a bugged bullet bag.">;
+        enum <ubyte> DEKU_STICK_CAPACITY {
+            no_deku_stick_capacity,
+            deku_stick_capacity_10 = 1,
+            deku_stick_capacity_20 = 2,
+            deku_stick_capacity_30 = 3
+        } deku_stick_capacity : 3;
+        enum <ubyte> DEKU_NUT_CAPACITY {
+            no_deku_nut_capacity,
+            deku_nut_capacity_20 = 1,
+            deku_nut_capacity_30 = 2,
+            deku_nut_capacity_40 = 3
+        } deku_nut_capacity : 3;
+        ubyte zeroes2 : 1;
+
+        ubyte unused_strength_upgrade_flag : 1 <comment="Setting this bit will result in a bugged strength upgrade.">;
+        enum <ubyte> DIVE_METER {
+            no_scale,
+            silver_scale = 1,
+            gold_scale = 2
+        } dive_meter : 3;
+        enum <ubyte> WALLET {
+            default_wallet,
+            adults_wallet = 1,
+            giants_wallet = 2
+        } wallet : 2;
+        enum <ubyte> BULLET_BAG {
+            no_bullet_bag,
+            bullet_bag_30 = 1,
+            bullet_bag_40 = 2,
+            bullet_bag_50 = 3
+        } bullet_bag : 2;
+
+        enum <ubyte> QUIVER {
+            no_quiver,
+            quiver_30 = 1,
+            quiver_40 = 2,
+            quiver_50 = 3
+        } quiver : 3;
+        enum <ubyte> BOMB_BAG {
+            no_bomb_bag,
+            bomb_bag_20 = 1,
+            bomb_bag_30 = 2,
+            bomb_bag_40 = 3
+        } bomb_bag : 3;
+        enum <ubyte> STRENGTH_UPGRADE {
+            no_strength_upgrade,
+            goron_bracelet = 1,
+            silver_gauntlets = 2,
+            golden_gauntlets = 3
+        } strength_upgrade : 2;
+
+    } equipment_data;
+
+    SetBackColor(cDkGreen);
+
+    struct {
+        enum <ubyte> HEART_PIECES {
+            HEART_PIECES_NONE,
+            HEART_PIECES_ONE = 0x10,
+            HEART_PIECES_TWO = 0x20,
+            HEART_PIECES_THREE = 0x30
+        } heart_pieces <format=hex>;
+
+        ubyte song_of_time : 1;
+        ubyte song_of_storms : 1;
+        ubyte kokiri_emerald : 1;
+        ubyte gorons_ruby : 1;
+        ubyte zoras_sapphire : 1;
+        ubyte stone_of_agony : 1;
+        ubyte gerudos_card : 1;
+        ubyte gold_skulltula_display : 1;
+
+        ubyte serenade_of_water : 1;
+        ubyte requiem_of_spirit : 1;
+        ubyte nocturne_of_shadow : 1;
+        ubyte prelude_of_light : 1;
+        ubyte zeldas_lullaby : 1;
+        ubyte eponas_song : 1;
+        ubyte sarias_song : 1;
+        ubyte suns_song : 1;
+
+        ubyte forest_medallion : 1;
+        ubyte fire_medallion : 1;
+        ubyte water_medallion : 1;
+        ubyte spirit_medallion : 1;
+        ubyte shadow_medallion : 1;
+        ubyte light_medallion : 1;
+        ubyte minuet_of_forest : 1;
+        ubyte bolero_of_fire : 1;
+    } quest_status_data;
+
+    SetBackColor(cDkGreen);
+
+    struct {
+        ubyte boss_key : 1;
+        ubyte compass : 1;
+        ubyte map : 1;
+        ubyte unused : 5;
+    } dungeon_items[20];
+
+    SetBackColor(cDkGreen);
+
+    /*
+    enum <ubyte> DUNGEON_ITEM {
+        NONE,
+        BOSS_KEY = 1,
+        COMPASS = 2,
+        BOSS_KEY_COMPASS = 3,
+        MAP = 4,
+        BOSS_KEY_MAP = 5,
+        COMPASS_MAP = 6,
+        BOSS_KEY_COMPASS_MAP = 7
+    } dungeon_items[20] <format=hex>;
+    */
+
+    ubyte small_key_amount[20] <comment="255 will hide small key amount.">;
+
+    uint16 gold_skulltula_amount;
+    SetBackColor(cLtYellow);
+    uint16 unknown4; //???
+    SetBackColor(cDkGreen);
+
+    struct {
+        uint chest_flags <format=hex>;
+        uint switches <format=hex>;
+        uint room_clear_flags <format=hex>;
+        uint collectible_flags <format=hex>;
+        uint unused;
+        uint64 visited_rooms <format=hex>;
+    } scene_data[101];
+
+    SetBackColor(cLtYellow);
+
+    ubyte unknown5[0x284]; //???
+
+    SetBackColor(cDkGreen);
+
+    struct {
+        float x_coordinate;
+        float y_coordinate;
+        float z_coordinate;
+        float y_axis_rotation;
+        SetBackColor(cLtYellow);
+        ubyte unknown[4];
+        SetBackColor(cDkGreen);
+        uint entrance_index;
+        uint map_index;
+        uint is_set;
+    } farores_wind_data;
+
+    SetBackColor(cLtYellow);
+
+    ubyte unknown6[0x18]; //???
+
+    SetBackColor(cDkGreen);
+
+    ubyte skulltula_flags[0x18] <format=hex>;
+
+    SetBackColor(cLtYellow);
+
+    ubyte unknown7[0x4]; //???
+
+    SetBackColor(cDkGreen);
+
+    uint horseback_archery_highscore;
+
+    SetBackColor(cLtYellow);
+
+    ubyte unknown8[0x8]; //???
+
+    SetBackColor(cDkGreen);
+
+    uint horse_race_record_time;
+    uint marathon_race_record_time;
+
+    SetBackColor(cLtYellow);
+
+    ubyte unknown9[0x6C]; //Event flags are somewhere in here
+
+    SetBackColor(cDkGreen);
+
+    uint world_map_exploration_data <format=hex>;
+
+    SetBackColor(cLtYellow);
+
+    ubyte unknown10[0x4];
+
+    SetBackColor(cDkGreen);
+
+    ubyte scarecrows_song_long[0x364];
+
+    SetBackColor(cLtYellow);
+
+    ubyte unknown11[0x20];
+
+    SetBackColor(cDkGreen);
+
+    ubyte scarecrows_song[0x80];
+
+    SetBackColor(cLtYellow);
+
+    ubyte unknown12[4]; //It is read when changing scarecrow's song
+    ubyte unknown13[0xA];
+
+    SetBackColor(cDkGreen);
+
+    uint16 checksum <format=hex>;
+
+    ubyte unused_end[0xFD]; //This data is saved from the SRAM, but is never loaded by the game
+
+} ZSaveData;
+
+struct {
+    FSeek( 0x00000020 );
+    ZSaveData saveData1;
+
+    FSeek( 0x00001470 );
+    ZSaveData saveData2;
+
+    FSeek( 0x000028C0 );
+    ZSaveData saveData3;
+
+    FSeek( 0x00003D10 );
+    ZSaveData saveData1Backup;
+
+    FSeek( 0x00005160 );
+    ZSaveData saveData2Backup;
+
+    FSeek( 0x000065B0 );
+    ZSaveData saveData3Backup;
+} Save;
