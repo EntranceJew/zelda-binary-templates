@@ -36,6 +36,8 @@
 //#include "regions/dMM_E_debug/main.bt"
 
 SetBackColor(cDkGreen);
+FSeek(0x00E95E70);
+DummyOverlay En_Dodongo(0x000033E0);
 FSeek(VFS);
 local uint64 seekPos = FTell();
 while( ReadUInt(seekPos) != VFS ){

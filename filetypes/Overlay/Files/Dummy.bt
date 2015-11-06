@@ -1,0 +1,23 @@
+// -*- mode: c;-*-
+typedef struct(uint64 size){
+    SIBE;
+
+    SAVE;
+    FSeek(startof(this)+size-ReadUInt(startof(this)+size-4));
+    OverlayHeader header;
+    REST;
+    
+    SIT;
+    ubyte textBlockData[header.textBlock];
+
+    SIT;
+    ubyte dataBlockData[header.dataBlock];
+
+    SIT;
+    ubyte rodataBlockData[header.textBlock];
+
+    SIT;
+    ubyte bssBlockData[header.bssBlock];
+
+    SIEND;
+} DummyOverlay;

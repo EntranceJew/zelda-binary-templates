@@ -23,6 +23,10 @@
 // helpers & known types
 #include "autoload.bt"
 
+// Overlay files need to know their end so they can
+// find where their footer starts.
+FSeek(0x00C27940);
+OvlMapMarkData ovl_map_mark_data(0x00C2E420 - FTell());
 // import the ROM structure
 //#include "regions/dOoTMQ_E_debug/main.bt"
 

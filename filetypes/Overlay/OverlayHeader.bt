@@ -1,0 +1,13 @@
+// -*- mode: c;-*-
+typedef struct{
+    // the following are sizes
+    uint textBlock;
+    uint dataBlock;
+    uint rodataBlock;
+    uint bssBlock;
+    //Count of one-word long entries of relocation data.
+    //Relocation block immediately follows this table.
+    uint relocationBlock;
+    uint relocationPointers[relocationBlock];
+    uint overlayHeaderPointer;
+} OverlayHeader;

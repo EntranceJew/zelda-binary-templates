@@ -35,6 +35,11 @@ SION;
 #include "filetypes/Audio/Sequence.bt"
 #include "filetypes/Audio/SequenceHead.bt"
 #include "filetypes/Audio/ChannelHead.bt"
+// == filetypes/Overlay/*.bt
+#include "filetypes/Overlay/OverlayHeader.bt"
+// == filetypes/Overlay/Files/*.bt
+#include "filetypes/Overlay/Files/Dummy.bt"
+#include "filetypes/Overlay/Files/map_marker_data.bt"
 // == filetypes/Texture/*.bt
 #include "filetypes/Texture/ci4.bt"
 #include "filetypes/Texture/ci8.bt"

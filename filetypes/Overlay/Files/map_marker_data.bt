@@ -1,0 +1,90 @@
+// -*- mode: c;-*-
+#define SIZE_MAPDATA 114
+#define MAX_ICONS 12
+typedef struct{
+    //if the flag is not set, then we draw
+    ubyte chestFlag;
+    // cordinates for minimap, top-left
+    ubyte x;
+    ubyte y;
+    /*
+    The minimap textures in map_i_static are 96x85 in size.
+    The set coordinate will position the icon from the top-left corner,
+    rather than the center.
+
+    Since the chest icon is 7x7 in size,
+    to center a chest icon at point 48,50,
+    subtract 4 from both x and y positions (44,46).
+    */
+}MapMarkIcon;
+
+enum <ubyte> MAP_ICON {
+    MAP_ICON_TREASURE = 0x00,
+    MAP_ICON_BOSS     = 0x01,
+    MAP_ICON_NOTHING  = 0xFF
+};
+
+
+typedef struct{
+    MAP_ICON mapIcon;
+    if( mapIcon == MAP_ICON_NOTHING ){
+        ubyte zeroes[SIZE_MAPDATA - 1];
+        AssertUBytesNull(zeroes, "map icon set to none, but entire room wasn't empty");
+    } else {
+        ubyte numIcons;
+        Assert( numIcons <= MAX_ICONS, "more icons than we can handle" );
+        MapMarkIcon icons[numIcons];
+        local uint numZeroes = sizeof(MapMarkIcon) * (MAX_ICONS - numIcons);
+        ubyte zeroes[numZeroes];
+        AssertUBytesNull(zeroes, "max icon number is wrong");
+    }
+}MapMarkData;
+
+typedef struct{
+    while( 1 ){
+        if( ReadUByte() == MAP_ICON_NOTHING ){
+            break;
+        }
+        MapMarkData mapMark;
+    }
+    ubyte FF;
+    ubyte zeroes[SIZE_MAPDATA - (FTell()-startof(this))];
+    AssertUBytesNull(zeroes, "room too full, probably [no cases like this]");
+}MapMarkScanner;
+
+typedef struct(uint64 size){
+    SAVE;
+    FSeek(startof(this)+size-ReadUInt(startof(this)+size-4));
+    OverlayHeader header;
+    REST;
+    
+    SAVE;
+    FSeek(startof(this)+header.textBlock+header.dataBlock-(4*header.relocationBlock));
+    uint dungeonMiniMapStarts[header.relocationBlock];
+    REST;
+
+
+    local uint64 ustart;
+    local uint parts, count, part_size;
+    while( exists(dungeonMiniMapStarts[parts]) ){
+        if( exists(dungeonMiniMapStarts[parts+1]) ){
+            part_size = (dungeonMiniMapStarts[parts+1]-dungeonMiniMapStarts[parts]);
+            ustart    = startof(this)+(dungeonMiniMapStarts[parts]-dungeonMiniMapStarts[0]);
+        } else {
+            // we don't know how big this is gonna be
+            // but we can find out
+            ustart    = ustart + sizeof(dungeonMiniMaps[parts-1]) + (part_size%SIZE_MAPDATA);      
+            part_size = startof(header) - ustart;
+        }
+        count = (part_size-(part_size%SIZE_MAPDATA))/SIZE_MAPDATA;
+
+        FSeek(ustart);
+        SAVE;
+        struct(uint zcount) {
+            MapMarkScanner miniMaps[zcount]<optimize=false>;
+        } dungeonMiniMaps(count);
+        REST;
+        
+        parts++;
+    }
+} OvlMapMarkData;
