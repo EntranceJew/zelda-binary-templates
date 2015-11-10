@@ -1,13 +1,63 @@
 // -*- mode: c;-*-
+// http://www.cs.umd.edu/class/sum2003/cmsc311/Notes/Mips/load32.html
+// http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html
+
 typedef struct{
+    enum <ubyte> RELO_SECTION {
+        RELO_SECTION_TEXT   = 0x0,
+        RELO_SECTION_DATA   = 0x1,
+        RELO_SECTION_RODATA = 0x2,
+        RELO_SECTION_BSS    = 0x3,
+    } section :  4;
+    enum <ubyte> RELO_TYPE {
+        RELO_TYPE_32BITPTR    = 0x2,
+        RELO_TYPE_JUMPTARGET  = 0x4,
+        RELO_TYPE_LUI_ORI_PT1 = 0x5,
+        RELO_TYPE_LUI_ORI_PT2 = 0x6,
+    } type    :  4;
+    uint  offset  : 24;
+} ZRelocationPointer;
+
+typedef struct(uint64 startPos){
+    local string thisName = "OverlayHeader";
+    SIBE;
+
     // the following are sizes
+
+    SIT;
+    // mips r4000 machine code
     uint textBlock;
+
+    SIT;
+    // Read/Write data (variables)
+    // This can also include inline model data,
+    // as seen in element arrows and Ganon to name a few.
     uint dataBlock;
+
+    SIT;
+    // Read-Only Data
+    // Usually contains text used with the n64 debugging print function
+    // (0x80002130) and thus contains empty format strings.
     uint rodataBlock;
+
+        
+    SIT;
+    // Zero-Initialized Data
+    // BSS data is rarely used in actor overlays.
+    // Space is allocated immediately after the overlay file.
     uint bssBlock;
-    //Count of one-word long entries of relocation data.
-    //Relocation block immediately follows this table.
+
+    SIT;
+    // Count of one-word long entries of relocation data.
+    // Relocation block immediately follows this table.
     uint relocationBlock;
-    uint relocationPointers[relocationBlock];
+
+    SIT;
+    // Remaps virtual ram to ram	
+    ZRelocationPointer relocationPointers[relocationBlock];
+
+    SIT;
+    FSeek(startPos);
     uint overlayHeaderPointer;
+    SIEND;
 } OverlayHeader;
