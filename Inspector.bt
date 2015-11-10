@@ -47,8 +47,10 @@ FSeek( pos ); time_t   _tt   <name="time_t">;
 
 #include "filetypes/Bits.bt"
 #include "filetypes/Banks.bt"
+#include "filetypes/Memory.bt"
 
 BitfieldDisablePadding();
 FSeek( pos ); ZBank          _zb     <name="ZBank">;
 FSeek( pos ); ZBankPointer   _zbp    <name="ZBankPointer">;
 FSeek( pos ); BitEight       _be     <name="BitEight">;
+FSeek( pos ); Ram            _ram    <name="Ram">;

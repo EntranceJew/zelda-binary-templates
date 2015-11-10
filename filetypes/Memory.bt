@@ -1,0 +1,38 @@
+// -*- mode: c;-*-
+#define PRAM_START 0x80000000
+#define PRAM_LOW   0x803FFFFF
+#define PRAM_HIGH  0x807FFFFF
+
+#define VRAM_START 0x80800000
+#define VRAM_END   0x80FFFFFF
+
+typedef struct {
+    uint memoryAddress;
+} Ram<read=ReadRam>;
+
+string ReadRam( Ram &f ){
+    local string s;
+    local string wasBigSize;
+    if( 
+        f.memoryAddress >= PRAM_START  &&
+        f.memoryAddress < VRAM_START
+    ){
+        if( f.memoryAddress <= PRAM_LOW ){
+            wasBigSize = "Physical, Low";
+        } else if( 
+            f.memoryAddress > PRAM_LOW &&
+            f.memoryAddress <= PRAM_HIGH 
+        ){
+            wasBigSize = "Physical, High";
+        }
+    } else if(
+        f.memoryAddress >= VRAM_START  &&
+        f.memoryAddress < VRAM_END
+    ){
+        wasBigSize = "Virtual";
+    } else {
+        return "Invalid";
+    }
+    SPrintf(s, "0x%08LX (%s)", f.memoryAddress, wasBigSize);
+    return s;
+}

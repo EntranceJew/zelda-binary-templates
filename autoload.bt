@@ -22,6 +22,7 @@ SION;
 #include "filetypes/Bits.bt"
 #include "filetypes/Entrances.bt"
 #include "filetypes/FileSystem.bt"
+#include "filetypes/Memory.bt"
 #include "filetypes/Messages.bt"
 #include "filetypes/N64ROMHead.bt"
 #include "filetypes/Simple.bt"
