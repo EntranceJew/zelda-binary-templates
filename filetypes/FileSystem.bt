@@ -18,6 +18,15 @@ typedef struct {
     numVFSFiles++;
 } ZFileSystemEntry<size=16>;
 
+typedef struct {
+    local uint64 seekPos = FTell();
+    while( ReadUInt(seekPos) != startof(this) ){
+        seekPos += sizeof(ZFileSystemEntry);
+    }
+    local uint64 numVFSEntries = (ReadUInt(seekPos+4) - startof(this)) / sizeof(ZFileSystemEntry);
+    ZFileSystemEntry vfs[numVFSEntries];
+} ZFileSystemTable;
+
 uint IsValidFile(uint vstart){
     return existingVFSStarts[vstart];
 }
