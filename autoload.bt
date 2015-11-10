@@ -43,6 +43,7 @@ SION;
 #include "filetypes/Overlay/Dummy.bt"
 #include "filetypes/Overlay/Actor.bt"
 // == filetypes/Overlay/Files/*.bt
+#include "filetypes/Overlay/Files/En_GirlA.bt"
 #include "filetypes/Overlay/Files/map_marker_data.bt"
 // == filetypes/Texture/*.bt
 #include "filetypes/Texture/ci4.bt"

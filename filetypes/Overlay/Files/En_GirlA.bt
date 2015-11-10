@@ -1,0 +1,50 @@
+// -*- mode: c;-*-
+typedef struct {
+    ushort objectNumber;
+    ushort shaderNumber;
+    /*
+    (2:00:47 PM) mzxrules: the "shader" variable should be the same as the "get item model identifier" shown here:
+    http://wiki.cloudmodding.com/oot/Get_Items_(ovl_player_actor)#Format
+    (2:13:05 PM) mzxrules: the thing here is that there is no "shader"
+    (2:13:50 PM) mzxrules: what's going on is that there's a special table that stores a list of offsets that point into different obj files for the get item object files
+    (2:14:15 PM) mzxrules: the shader or get item model id is an index into that table
+    (2:15:25 PM) mzxrules: lemmy try and find a frame in which this will make sense
+    (2:16:14 PM) mzxrules: the link instance allocates a special block of memory that is used to store "title cards"
+    (2:17:16 PM) mzxrules: and get item object files (call 'm gi objects because of how they're named)
+    (2:18:30 PM) mzxrules: when link is to hold an item over his head, the game uses the get item table to fetch the overlay, and set the get item model id
+    (2:18:36 PM) mzxrules: object, not overlay bleh
+    (2:19:48 PM) mzxrules: the model id exists because 1) different objects are allocated into the same space, so it helps differentiate, 2) one object file can contain multiple models, like the rupee for example
+    (2:20:55 PM) mzxrules: so if you're loading the rupee obj, the model id determines what rupee it will look like
+    (2:21:07 PM) mzxrules: understand?
+    */
+    uint   ramPointer;
+    // does not equal the price of buying something
+    ushort itemPrice;
+    ushort quantity;
+    ushort descriptionMessageID;
+    ushort purchasedMessageID;
+    ubyte  zeroes[2];
+    uint   ramPointers2[3];
+} ZShopData;
+
+typedef struct(uint64 size){
+    SIBE;
+
+    SIT;
+    SAVE;
+    FSeek(startof(this)+size-ReadUInt(startof(this)+size-4));
+    OverlayHeader header(startof(this)+size-4);
+    REST;
+
+    SIT;
+    ubyte textBlockData[header.textBlock];
+
+    SIT;
+    //ZShopData shopEntries[header.dataBlock/sizeof(ZShopData)];
+    ubyte dataBlockData[header.dataBlock];
+
+    SIT;
+    ubyte rodataBlockData[header.rodataBlock];
+
+    SIEND;
+} En_GirlA;
