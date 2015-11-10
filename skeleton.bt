@@ -1,0 +1,48 @@
+// -*- mode: c;-*-
+#ifdef VFS
+    FSeek( VFS );
+    ZFileSystemTable vfsTable;
+#endif
+
+#ifdef ACTORSTABLE
+#ifdef NUMACTORS
+    FSeek( ACTORSTABLE );
+    struct {
+        ZActorTableEntry actorsTable[NUMACTORS]<optimize=false>;
+    } AllTheseActors;
+#endif
+#endif
+
+#ifdef SCENETABLE
+#ifdef NUMSCENES
+    FSeek( SCENETABLE );
+    struct {
+        SceneTableEntry sceneTable[113]<optimize=false>;
+    } AllTheseScenes;
+#endif
+#endif
+
+#ifdef EXITTABLE
+#ifdef NUMEXITS
+    FSeek( EXITTABLE );
+    struct {
+        ZExitTable exitTable[NUMEXITS]<optimize=false>;
+    } AllTheseExits;
+#endif
+#endif
+
+#ifdef SAMPLES
+    FSeek( SAMPLES );
+    SampleTable sampleTable;
+#endif
+
+#ifdef INSTRUMENT
+    FSeek( INSTRUMENT );
+    InstrumentSetTable instrumentSetTable;
+#endif
+
+#ifdef SEQTABLE
+    FSeek( SEQTABLE );
+    SequenceTable sequenceTable;
+#endif
+
