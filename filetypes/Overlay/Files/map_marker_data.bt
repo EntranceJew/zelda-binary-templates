@@ -53,10 +53,7 @@ typedef struct{
 }MapMarkScanner;
 
 typedef struct(uint64 size){
-    SAVE;
-    FSeek(startof(this)+size-ReadUInt(startof(this)+size-4));
-    OverlayHeader header;
-    REST;
+    OVERLAYHEAD;
     
     SAVE;
     FSeek(startof(this)+header.textBlock+header.dataBlock-(4*header.relocationBlock));

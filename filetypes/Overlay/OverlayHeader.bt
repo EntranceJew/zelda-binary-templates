@@ -2,6 +2,11 @@
 // http://www.cs.umd.edu/class/sum2003/cmsc311/Notes/Mips/load32.html
 // http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html
 
+#define OVERLAYHEAD SAVE; \
+                    FSeek(startof(this)+size-ReadUInt(startof(this)+size-4)); \
+                    OverlayHeader header(startof(this)+size-4); \
+                    REST;
+
 typedef struct{
     enum <ubyte> RELO_SECTION {
         RELO_SECTION_TEXT   = 0x0,
@@ -54,7 +59,7 @@ typedef struct(uint64 startPos){
 
     SIT;
     // Remaps virtual ram to ram	
-    ZRelocationPointer relocationPointers[relocationBlock];
+    ZRelocationPointer relocationPointers[relocationBlock]<optimize=false>;
 
     SIT;
     FSeek(startPos);

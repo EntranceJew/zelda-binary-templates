@@ -31,10 +31,7 @@ typedef struct(uint64 size){
     SIBE;
 
     SIT;
-    SAVE;
-    FSeek(startof(this)+size-ReadUInt(startof(this)+size-4));
-    OverlayHeader header(startof(this)+size-4);
-    REST;
+    OVERLAYHEAD;
 
     SIT;
     ubyte textBlockData[header.textBlock];
