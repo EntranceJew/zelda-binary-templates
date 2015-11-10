@@ -1,0 +1,37 @@
+// -*- mode: c;-*-
+typedef struct {
+    ushort actorNum;
+    ubyte actorType;
+    // if FF then does not despawn on room switch
+    ubyte roomNumber;
+    ubyte unknown[4];
+    ushort objectNumber;
+    ubyte zeroes[2];
+    uint instanceSize;
+} ZActorInitVars;
+
+typedef struct {
+    uint vromStart;
+    uint vromEnd;
+    uint vramStart;
+    uint vramEnd;
+
+    uint ramAddrOfActor;
+    uint vramAddrOfActorInstanceStart;
+    uint vromActorFileName;
+    ubyte unknown[2];
+    ubyte numActorInstancesOfTypeInRAM;
+    ubyte unknown2[1];
+
+    if( vromStart && vromEnd ){
+        SAVE;
+        FSeek(vromStart);
+        DummyOverlay myOverlay(vromEnd-vromStart);
+        REST;
+
+        SAVE;
+        FSeek(vromStart+(vramAddrOfActorInstanceStart-vramStart));
+        ZActorInitVars init;
+        REST;
+    }
+} ZActorTableEntry;

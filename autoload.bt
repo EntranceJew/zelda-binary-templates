@@ -40,8 +40,9 @@ SION;
 #include "filetypes/Compressed/Yaz0.bt"
 // == filetypes/Overlay/*.bt
 #include "filetypes/Overlay/OverlayHeader.bt"
+#include "filetypes/Overlay/Dummy.bt"
+#include "filetypes/Overlay/Actor.bt"
 // == filetypes/Overlay/Files/*.bt
-#include "filetypes/Overlay/Files/Dummy.bt"
 #include "filetypes/Overlay/Files/map_marker_data.bt"
 // == filetypes/Texture/*.bt
 #include "filetypes/Texture/ci4.bt"
