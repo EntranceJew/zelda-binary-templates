@@ -18,164 +18,60 @@
 #define MSG_2         0x00C7A000
 #define MSG_3         0x00C83000
 #define MSG_4         0x00C8C000
+
 #define CODEFILE      0x00C95000
+// unk
+#define ACTORSTABLE   0x00DD5A50
+// unk
+#define ACTIONSTRINGS 0x00DDB22C
+// unk
+#define OBJECTTABLE   0x00DE9D58
+// unk
 #define SCENETABLE    0x00DEB2B0
-//#define ENTRANCETABLE 0x00??????
+#define SCENELOOKUP   0x00DEB9C0
+// unk
 #define EXITTABLE     0x00DECD38
+// unk
 #define CREDITSTABLE  0x00DEEE28
+// unk
+#define OBJNAMES      0x00DFE500
+// unk
 #define SCENENAMES    0x00E05840
+// unk
+
 #define INSTRUMENT    0x00E0F7E0
+
 #define SEQTABLE      0x00E0FC90
+
 #define SAMPLES       0x00E104A0
+
 #define CODEFILEEND   0x00E12600
+
+// quantities of things
+#define NUMVFSITEMS   1591
+#define NUMACTORS     691
+#define NUMSCENES     113
+#define NUMEXITS      110
 
 // helpers & known types
 #include "autoload.bt"
 
 // import the ROM structure
-//#include "regions/dMM_E_debug/main.bt"
+#include "skeleton.bt"
 
-SetBackColor(cDkGreen);
-FSeek(0x00E95E70);
-DummyOverlay En_Dodongo(0x000033E0);
-FSeek(VFS);
-local uint64 seekPos = FTell();
-while( ReadUInt(seekPos) != VFS ){
-    seekPos += sizeof(ZFileSystemEntry);
-}
-local uint64 numVFSEntries = (ReadUInt(seekPos+4) - VFS) / sizeof(ZFileSystemEntry);
-ZFileSystemEntry vfs[numVFSEntries];
+//FSeek(0x00DD5A50);
+
+FSeek(0x00E80DF0);
+En_GirlA en_girla(0x22D0);
+//
+//ZShopData boners;
 
 FSeek(MSG_1);
 ZMessageTable nes_message_static(MSG_1_START);
 
+FSeek(0x00E82540);
+Ram honk;
 
-FSeek(SCENETABLE);
-struct {
-    SceneTableEntry sceneTable[113]<optimize=false>;
-} AllTheseScenes;
-
-FSeek(EXITTABLE);
-struct {
-    ZExitTable exits[110]<optimize=false>;
-} AllTheseExits;
-
-typedef struct {
-    uchar magic[3];
-    uchar dest;
-    uint uncompressedSize;
-    ubyte zeroes[8];
-    local uint64 src = FTell();
-    // provide a buffer
-    local ubyte dst[uncompressedSize];
-
-    //current read/write positions
-    local int srcPlace = 0, dstPlace = 0;
-    //number of valid bits left in "code" byte
-    local uint validBitCount = 0; 
-    local ubyte currCodeByte;
-    local ubyte byte1, byte2;
-    local uint dist, copySource, numBytes;
-    local int i;
-    while(dstPlace < uncompressedSize){
-        //read new "code" byte if the current one is used up
-        if(validBitCount == 0){
-            currCodeByte = ReadUByte(src + srcPlace);
-            ++srcPlace;
-            validBitCount = 8;
-        }
-    
-        if((currCodeByte & 0x80) != 0){
-            //straight copy
-            dst[dstPlace] = ReadUByte(src + srcPlace);
-            dstPlace++;
-            srcPlace++;
-        } else {
-            //RLE part
-            byte1 = ReadUByte(src + srcPlace);
-            byte2 = ReadUByte(src + srcPlace + 1);
-            srcPlace += 2;
-    
-            dist = ((byte1 & 0xF) << 8) | byte2;
-            copySource = dstPlace - (dist + 1);
-    
-            numBytes = byte1 >> 4;
-            if(numBytes == 0){
-                numBytes = ReadUByte(src + srcPlace) + 0x12;
-                srcPlace++;
-            } else {
-                numBytes += 2;
-            }
-            
-            //copy run
-            for( i = 0; i < numBytes; ++i ){
-                dst[dstPlace] = dst[copySource];
-                copySource++;
-                dstPlace++;
-            }
-        }
-    
-        //use next bit from "code" byte
-        currCodeByte <<= 1;
-        validBitCount-=1;    
-    }
-    ubyte rawData[srcPlace];
-} Yaz;
-
-typedef struct{
-    uint headerSize;
-    local uint numRecords = (headerSize/4)-1;
-    uint fileStarts[numRecords];
-    local uint64 jumpPos = FTell();
-    local uint i;
-    for( i = 0; i < numRecords; i++ ){
-        Yaz file;
-        //Assert(sizeof(file) == fileStarts[i], "weird sized yaz");
-        FSeek(jumpPos + fileStarts[i]);
-    }
-} YazArc;
-
-FSeek(0x009C3000);
-YazArc arc;
-
-FSeek(0x009C4310);
-YazArc arc;
-
-FSeek(0x009CD660);
-YazArc arc;
-
-FSeek(0x009DB2F0);
-YazArc arc;
-
-FSeek(0x009E7D40);
-YazArc arc;
-
-FSeek(0x009F54E0);
-YazArc arc;
-
-FSeek(0x00A02F20);
-YazArc arc;
-
-FSeek(0x00A04840);
-YazArc arc;
-
-FSeek(0x00A06330);
-YazArc arc;
-
-FSeek(0x00A08200);
-YazArc arc;
-
-FSeek(0x00A09E70);
-YazArc arc;
-
-FSeek(0x00A4F140);
-YazArc arc;
-
-//FSeek(0x00A53A00);
-//YazArc arc;
-
-FSeek(0x00A5F000);
-YazArc arc;
 
 /*
 // the following code walks the number of scenes
