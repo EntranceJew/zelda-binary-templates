@@ -18,6 +18,7 @@
     FSeek( SCENETABLE );
     struct {
         SceneTableEntry sceneTable[113]<optimize=false>;
+        SceneTableEntry sceneTable[NUMSCENES]<optimize=false>;
     } AllTheseScenes;
 #endif
 #endif

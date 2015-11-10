@@ -8,11 +8,13 @@
 
 // very significant identifiers that cannot
 // be determined dynamically from the rom data yet
+#define VFS           0x00012F70
 #define AUDIOBANK     0x00019030
 #define AUDIOSEQ      0x00044DF0
 #define AUDIOTABLE    0x00094870
 #define ATBL_END      0x004E5C00
 #define CODEFILE      0x00A94000
+#define ACTORSTABLE   0x00B8D440
 #define ENTRANCETABLE 0x00B9F360
 #define SCENETABLE    0x00BA0BB0
 #define INSTRUMENT    0x00BCC270
@@ -20,15 +22,22 @@
 #define SAMPLES       0x00BCCD90
 #define CODEFILEEND   0x00BCEF30
 
+// quantities of things
+#define NUMACTORS     471
+#define NUMSCENES     331
+
 // helpers & known types
 #include "autoload.bt"
+
+// import the ROM structure
+#include "skeleton.bt"
 
 // Overlay files need to know their end so they can
 // find where their footer starts.
 FSeek(0x00C27940);
 OvlMapMarkData ovl_map_mark_data(0x00C2E420 - FTell());
 // import the ROM structure
-//#include "regions/dOoTMQ_E_debug/main.bt"
+
 
 // test hex this is the first quicksand tile in spot13
 // 0x29fa394
