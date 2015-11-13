@@ -1,0 +1,32 @@
+// -*- mode: c;-*-
+typedef struct {
+    uint vromStart;
+    uint vromEnd;
+
+    if( vromStart && vromEnd ){
+        SAVE;
+        FSeek(vromStart);
+        SIT;
+        ubyte data[vromEnd-vromStart];
+        REST;
+    }
+} ZObjectTableEntry;
+
+typedef struct {
+    SIBE;
+
+    SIT;
+    short childLinkObjectNumber;
+    
+    SIT;
+    short adultLinkObjectNumber;
+
+    SIT;
+    uint  numberOfObjects;
+
+    SIT;
+    ZObjectTableEntry objects[numberOfObjects]<optimize=false>;
+
+    SIEND;
+} ZObjectTable;
+    

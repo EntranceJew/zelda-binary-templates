@@ -41,6 +41,7 @@ SION;
 // == filetypes/Overlay/*.bt
 #include "filetypes/Overlay/OverlayHeader.bt"
 #include "filetypes/Overlay/Dummy.bt"
+#include "filetypes/Overlay/Object.bt"
 #include "filetypes/Overlay/Actor.bt"
 // == filetypes/Overlay/Files/*.bt
 #include "filetypes/Overlay/Files/En_GirlA.bt"

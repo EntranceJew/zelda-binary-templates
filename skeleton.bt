@@ -13,6 +13,11 @@
 #endif
 #endif
 
+#ifdef OBJECTSTABLE
+    FSeek( OBJECTSTABLE );
+    ZObjectTable objectTable;
+#endif
+
 #ifdef SCENETABLE
 #ifdef NUMSCENES
     FSeek( SCENETABLE );
