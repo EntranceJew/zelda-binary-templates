@@ -1,0 +1,10 @@
+// -*- mode: c;-*-
+
+enum <ubyte> DISPLAY_LIST_COMMAND {
+    //gsDPNoOpTag      = 0x00,
+    //gsSPVertex       = 0x01,
+    //gsSPModifyVertex = 0x02,
+    gsSPMatrix         = 0xDA,
+    // ...
+    gsSPEndDisplayList = 0xDF,
+};

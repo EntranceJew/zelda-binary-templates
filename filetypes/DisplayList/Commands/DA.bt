@@ -1,0 +1,82 @@
+// -*- mode: c;-*-
+// Adds a new matrix from mtxaddr to the appropriate matrix stack.
+typedef struct {
+    local string thisName = "DisplayListCommand_DF";
+    SIBE;
+
+    SIT;
+    DISPLAY_LIST_COMMAND commandType;
+    AssertNumberEquals(commandType, 0xDA, thisName);
+
+    SIT; UNK;
+    ubyte threeEight;
+    AssertNumberEquals(threeEight, 0x38, thisName);
+
+    SIT; UNK;
+    ubyte zero;
+    AssertNumberEquals(zero, 0x00, thisName);
+
+    SIT;
+    ubyte unusedBits : 5;
+    AssertNumberEquals(unusedBits, 0x00, thisName);
+
+    SIT;
+    /*
+    MODELVIEW selects the modelview matrix stack 
+    (meaning the new matrix is a modelview matrix),
+    while PROJECTION refers to the projection matrix "stack".
+    Since the projection matrix "stack" is not actually a stack,
+    rather a single matrix, the PUSH option is always ignored 
+    for new projection matrices.
+    */
+    enum <ubyte> G_MTX_VIEWTYPE {
+        G_MTX_MODELVIEW  = 0x00,
+        G_MTX_PROJECTION = 0x01,
+    } viewType : 1;
+    
+    SIT;
+    /*
+    If MUL is specified, the new matrix is multiplied by the
+    top of the stack before being placed according to PUSH/NOPUSH.
+    Specifically the matrix product of new matrix * top of the stack
+    (XXX verify this is the right order,
+    since matrix multiplication ain't commutative).
+    LOAD means no multiplication is done against the new matrix.
+    */
+    enum <ubyte> G_MTX_LOADTYPE {
+        G_MTX_MUL        = 0x00,
+        G_MTX_LOAD       = 0x01,
+    } loadType : 1;
+
+    SIT;
+    /*
+    If PUSH is specified, then the matrix will be added to
+    the top of the stack as a new stack element. If there is no room
+    on the stack, this option is ignored and NOPUSH behavior occurs
+    instead. NOPUSH means the top matrix of the stack will be overwritten
+    with the new matrix.
+    */
+    // the following is inverted from the documentation because how
+    // the data is stored with this flag reversed
+    enum <ubyte> G_MTX_PUSHTYPE {
+        G_MTX_PUSH       = 0x00,
+        G_MTX_NOPUSH     = 0x01,
+    } pushType : 1;
+
+    SIT;
+    uint ramAddr;
+
+    local string read = ReadDisplayListCommand_DA( this );
+    SIEND;
+} DisplayListCommand_DA<read=ReadDisplayListCommand_DA>;
+
+string ReadDisplayListCommand_DA( DisplayListCommand_DA &command ){
+    local string out = "";
+    SPrintf(out, " %s | %s | %s, 0x%08LX ",
+        EnumToString(command.viewType),
+        EnumToString(command.loadType),
+        EnumToString(command.pushType),
+        command.ramAddr
+    );
+    return EnumToString(command.commandType) + "(" + out + ");";
+}

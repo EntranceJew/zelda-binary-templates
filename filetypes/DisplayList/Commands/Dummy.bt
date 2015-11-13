@@ -1,0 +1,29 @@
+// -*- mode: c;-*-
+typedef struct {
+    local string thisName = "DisplayListCommand_Dummy";
+    SIBE;
+
+    SIT;
+    DISPLAY_LIST_COMMAND commandType;
+
+    SIT;
+    ubyte unknown[7];
+
+    local string read = ReadDisplayListCommand_Dummy( this );
+    SIEND;
+} DisplayListCommand_Dummy<read=ReadDisplayListCommand_Dummy>;
+
+string ReadDisplayListCommand_Dummy( DisplayListCommand_Dummy &command ){
+    local string out = "";
+    SPrintf(out, " 0x%02LX, 0x%02LX%02LX%02LX%02LX%02LX%02LX%02LX ",
+        command.commandType,
+        command.unknown[0],
+        command.unknown[1],
+        command.unknown[2],
+        command.unknown[3],
+        command.unknown[4],
+        command.unknown[5],
+        command.unknown[6]
+    );
+    return "unknownCommand(" + out + ");";
+}

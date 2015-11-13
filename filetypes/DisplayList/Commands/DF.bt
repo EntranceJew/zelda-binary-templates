@@ -1,0 +1,22 @@
+// -*- mode: c;-*-
+typedef struct {
+    local string thisName = "DisplayListCommand_DF";
+    SIBE;
+
+    SIT;
+    DISPLAY_LIST_COMMAND commandType;
+    AssertNumberEquals(commandType, 0xDF, thisName);
+
+    SIT;
+    ubyte zeroes[7];
+    AssertUBytesNull(zeroes, thisName+"->zeroes");
+
+    local string read = ReadDisplayListCommand_DF( this );
+    SIEND;
+} DisplayListCommand_DF<read=ReadDisplayListCommand_DF>;
+
+string ReadDisplayListCommand_DF( DisplayListCommand_DF &command ){
+    local string out = "";
+    SPrintf(out, "%s", command.zeroes);
+    return EnumToString(command.commandType) + "(" + out + ");";
+}

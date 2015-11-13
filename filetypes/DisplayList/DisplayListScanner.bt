@@ -1,0 +1,19 @@
+// -*- mode: c;-*-
+typedef struct {
+    local ubyte breakout = 0;
+    while( !breakout ){
+        switch( ReadUByte() ){
+            case gsSPMatrix: 
+                DisplayListCommand_DA dlcom;
+                break;
+            // ...
+            case gsSPEndDisplayList: // 0xDF
+                DisplayListCommand_DF dlcom;
+                breakout = 1;
+                break;
+            default:
+                DisplayListCommand_Dummy dlcom;
+                break;
+        }
+    }
+} DisplayListScanner;

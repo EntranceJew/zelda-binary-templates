@@ -124,6 +124,24 @@ ZScene Z2_LAST_BS;
 
 FSeek(021AF000h);
 ZScene Z2_HAKASHITA;
+// colorize everything we want to peep
+SetBackColor(cOrange);
+FSeek(0x01F1F000);
+ubyte paint[0x01F2A510-0x01F1F000];
 
+// the mayor
+FSeek(0x01F1F000);
+//FSeek(0x01F1F000 + );
+
+ubyte imTheMayor;
+
+FSeek(0x01F25928); // last display list before a texture
+
+
+DisplayListScanner displayScan;
+
+
+FSeek(0x01F2A510);
+ubyte notTheMayor;
 ReportBucket();
 //ClearBucket();

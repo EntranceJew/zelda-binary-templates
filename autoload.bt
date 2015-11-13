@@ -38,6 +38,14 @@ SION;
 #include "filetypes/Audio/ChannelHead.bt"
 // == filetypes/Compressed/*.bt
 #include "filetypes/Compressed/Yaz0.bt"
+// == filetypes/DisplayList/*.bt
+#include "filetypes/DisplayList/DisplayList.bt"
+#include "filetypes/DisplayList/Commands/DA.bt"
+//...
+#include "filetypes/DisplayList/Commands/DF.bt"
+//...
+#include "filetypes/DisplayList/Commands/Dummy.bt"
+#include "filetypes/DisplayList/DisplayListScanner.bt"
 // == filetypes/Overlay/*.bt
 #include "filetypes/Overlay/OverlayHeader.bt"
 #include "filetypes/Overlay/Dummy.bt"
