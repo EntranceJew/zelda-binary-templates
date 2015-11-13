@@ -2,21 +2,23 @@
 BigEndian();
 
 local uint checksum_offset = 0x100A;
-local ubyte buffer[0x4000];
 void update_checksum( uint start, int owl )
 {
     local uint16 checksum = 0;
     local uint pos;
-    for( pos = start; pos < start + checksum_offset; pos++ )
+    for( pos = start; pos < start + checksum_offset; pos++ ) {
         checksum += (ubyte) ReadByte( pos );
-    if( owl )
+    }
+    if( owl ) {
         checksum += 0x24;
+    }
     WriteShort( pos, checksum );
 }
 
 void copy_save( uint from, uint to, int owl )
 {
     local uint size = owl ? 0x4000 : 0x2000;
+    local ubyte buffer[size];
     ReadBytes( buffer, from, size );
     WriteBytes( buffer, to, size );
 }
