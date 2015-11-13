@@ -1,0 +1,27 @@
+// -*- mode: c;-*-
+BigEndian();
+
+local uint checksum_offset = 0x1352;
+local ubyte buffer[0x1450];
+void update_checksum( uint start )
+{
+    local uint16 checksum = 0;
+    local uint pos;
+    for( pos = start; pos < start + checksum_offset; pos += 2 )
+        checksum += (uint16) ReadShort( pos );
+    WriteShort( pos, checksum );
+}
+
+void copy_save( uint from, uint to )
+{
+    ReadBytes( buffer, from, sizeof(buffer) );
+    WriteBytes( buffer, to, sizeof(buffer) );
+}
+
+update_checksum( 0x0020 );
+update_checksum( 0x1470 );
+update_checksum( 0x28C0 );
+
+copy_save( 0x0020, 0x3D10 );
+copy_save( 0x1470, 0x5160 );
+copy_save( 0x28C0, 0x65B0 );
