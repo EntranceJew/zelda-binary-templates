@@ -204,7 +204,9 @@ typedef struct {
     ubyte text_skip_timer; // Prevents skipping text for a period
     UNK; ubyte unknown0; // Something to do with picking up items?
     enum <uint> {
-        // TODO
+        no_cutscene = 0x0000,
+        in_cutscene = 0xFFFD
+        // 0xFFEF to 0xFFFF might be used here, but i've only seen 0xFFFD
     } cutscene_offset <format=hex>;
     uint16 time_of_day <format=hex>;
     enum <uint16> {
@@ -293,7 +295,7 @@ typedef struct {
         no_tunic,
         kokiri_tunic = 1,
         goron_tunic = 2,
-        zora_tunic = 3 // verify?
+        zora_tunic = 3
     } tunic : 4;
     enum <ubyte> {
         no_shield,
@@ -464,7 +466,8 @@ typedef struct {
     // all used but the last, i think
     ubyte small_key_amount[9] <comment="255 will hide small key amount.">;
 
-    ubyte doubled_hearts; // normally 0 or 20 but anything inbetween works fine
+    // normally 0 or 20 but anything inbetween works fine
+    ubyte doubled_hearts;
 
     // maybe unused fairies too
     ubyte fairies[10];
@@ -529,7 +532,7 @@ typedef struct {
     int16 epona_y;
     int16 epona_z;
     int16 epona_angle;
-    uint16 checksum <format=hex>; // plus 0x24 for owl saves
+    uint16 checksum <format=hex>;
 } ZSaveData;
 
 typedef struct {
@@ -544,7 +547,7 @@ typedef struct {
     uint16 rupee_accumulator;
 
     ubyte hot_spring_water_statuses[6];
-    ubyte hot_spring_water_timers[0xC0]; // TODO: reverse engineer
+    ubyte hot_spring_water_timers[6*32]; // TODO: reverse engineer
 
     ubyte pictograph_picture[100*112]; // 1 byte per pixel
 } ZSaveDataOwl;
