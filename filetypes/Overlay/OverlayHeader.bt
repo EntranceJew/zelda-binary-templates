@@ -13,12 +13,13 @@ typedef struct{
         RELO_SECTION_DATA   = 0x1,
         RELO_SECTION_RODATA = 0x2,
         RELO_SECTION_BSS    = 0x3,
-    } section :  4;
+    } section :  2;
+    ubyte unknown : 2;
     enum <ubyte> RELO_TYPE {
         RELO_TYPE_32BITPTR    = 0x2,
         RELO_TYPE_JUMPTARGET  = 0x4,
-        RELO_TYPE_LUI_ORI_PT1 = 0x5,
-        RELO_TYPE_LUI_ORI_PT2 = 0x6,
+        RELO_TYPE_MIPS_LUI    = 0x5,
+        RELO_TYPE_MIPS_ORI    = 0x6,
     } type    :  4;
     uint  offset  : 24;
 } ZRelocationPointer;

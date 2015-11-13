@@ -1,4 +1,7 @@
 // -*- mode: c;-*-
+// to find this data in MM, see:
+// http://wiki.cloudmodding.com/mm/Notes:Shop_Item_Modifying
+
 typedef struct {
     ushort objectNumber;
     ushort shaderNumber;
