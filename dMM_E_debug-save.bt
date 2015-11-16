@@ -248,15 +248,15 @@ typedef struct { // How much ammo you have in each slot
 } ZSaveZSaveInventorySlotItemAmount;
 
 typedef enum <ubyte> {
-    sound_stereo = 0,
-    sound_mono = 1,
-    sound_headset = 2,
-    sound_surround = 3
+    sound_stereo,
+    sound_mono,
+    sound_headset,
+    sound_surround
 } ZSaveSoundSetting;
 
 typedef enum <ubyte> {
-    target_switch = 0,
-    target_hold = 1
+    target_switch,
+    target_hold
 } ZSaveTargetStyle;
 
 typedef enum <ubyte> {
@@ -310,8 +310,8 @@ typedef enum <uint16> {
 } ZSaveOwlID;
 
 typedef enum <uint> {
-    day = 0,
-    night = 1
+    day,
+    night
 } ZSaveDayNight;
 
 typedef enum <int> {
@@ -321,17 +321,17 @@ typedef enum <int> {
 } ZSaveTimeSpeed;
 
 typedef enum <ubyte> {
-    trans_fierce_deity = 0,
-    trans_goron = 1,
-    trans_zora = 2,
-    trans_deku = 3,
-    trans_human = 4
+    trans_fierce_deity,
+    trans_goron,
+    trans_zora,
+    trans_deku,
+    trans_human
 } ZSaveTransformation;
 
 typedef enum <ubyte> {
     no_magic_meter,
-    normal_magic_meter = 1,
-    double_magic_meter = 2
+    normal_magic_meter,
+    double_magic_meter
 } ZSaveMagicMeterSize;
 
 typedef struct {
@@ -354,50 +354,50 @@ typedef enum <ubyte> {
 } ZSaveBoots;
 typedef enum <ubyte> {
     no_tunic,
-    kokiri_tunic = 1,
-    goron_tunic = 2,
-    zora_tunic = 3
+    kokiri_tunic,
+    goron_tunic,
+    zora_tunic
 } ZSaveTunic;
 typedef enum <ubyte> {
     no_shield,
-    heros_shield = 1,
-    mirror_shield = 2,
+    heros_shield,
+    mirror_shield
 } ZSaveShield;
 typedef enum <ubyte> {
     no_sword,
-    kokiri_sword = 1,
-    razor_sword = 2,
-    gilded_sword = 3
+    kokiri_sword,
+    razor_sword,
+    gilded_sword
 } ZSaveSword;
 
 typedef enum <uint> {
     no_deku_nut_capacity,
-    deku_nut_capacity_20 = 1,
-    deku_nut_capacity_30 = 2,
-    deku_nut_capacity_40 = 3
+    deku_nut_capacity_20,
+    deku_nut_capacity_30,
+    deku_nut_capacity_40
 } ZSaveUpgradeNuts;
 typedef enum <uint> {
     no_deku_stick_capacity,
-    deku_stick_capacity_10 = 1,
-    deku_stick_capacity_20 = 2,
-    deku_stick_capacity_30 = 3
+    deku_stick_capacity_10,
+    deku_stick_capacity_20,
+    deku_stick_capacity_30
 } ZSaveUpgradeSticks;
 typedef enum <uint> {
     default_wallet,
-    adults_wallet = 1,
-    giants_wallet = 2
+    adults_wallet,
+    giants_wallet
 } ZSaveUpgradeWallet;
 typedef enum <uint> {
     no_bomb_capacity,
-    bomb_capacity_20 = 1,
-    bomb_capacity_30 = 2,
-    bomb_capacity_40 = 3
+    bomb_capacity_20,
+    bomb_capacity_30,
+    bomb_capacity_40
 } ZSaveUpgradeBombs;
 typedef enum <uint> {
     no_quiver,
-    quiver_30 = 1,
-    quiver_40 = 2,
-    quiver_50 = 3
+    quiver_30,
+    quiver_40,
+    quiver_50
 } ZSaveUpgradeArrows;
 
 typedef struct {
