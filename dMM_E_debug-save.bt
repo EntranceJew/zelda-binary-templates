@@ -552,6 +552,68 @@ typedef struct {
     ubyte pictograph_picture[100*112]; // 1 byte per pixel
 } ZSaveDataOwl;
 
+typedef struct {
+    UNK; uint16 unknown0;
+    UNK; ubyte unknown1;
+    enum <ubyte> {
+        sound_stereo = 0,
+        sound_mono = 1,
+        sound_headset = 2,
+        sound_surround = 3
+    } sound_setting;
+    UNK; ubyte unknown2;
+    enum <ubyte> {
+        target_switch = 0,
+        target_hold = 1
+    } target_style;
+    UNK; uint16 unknown3;
+    UNK; uint unknown4;
+    uint16 time_of_day <format=hex>;
+
+    uint16 owl_id;
+    uint day_night;
+    int time_speed;
+    uint day;
+    uint days_elapsed;
+    ubyte transformation;
+    UNK; ubyte unknown5;
+    ubyte have_tatl;
+    ubyte owl_save;
+    char file_validation[6];
+    uint16 song_of_time_count;
+    char file_name[8];
+    uint16 heart_containers <format=hex>;
+    uint16 health <format=hex>;
+    ubyte magic_meter_size;
+    ubyte magic <format=hex>;
+    uint16 rupees;
+    uint navi_timer;
+    ubyte has_normal_magic;
+    ubyte has_double_magic;
+    uint16 double_defense;
+    UNK; uint16 unknown6;
+    uint16 owls_hit;
+    UNK; uint unknown7 <format=hex>;
+
+    ZSaveItemsEquipped items_human;
+    ZSaveItemsEquipped items_goron;
+    ZSaveItemsEquipped items_zora;
+    ZSaveItemsEquipped items_deku;
+    ubyte unused;
+    InventorySlot c_left_button_slot;
+    InventorySlot c_down_button_slot;
+    InventorySlot c_right_button_slot;
+    UNK; uint unknown8<format=hex>;
+    UNK; uint unknown9<format=hex>;
+    UNK; uint unknown10<format=hex>;
+    ubyte boots : 4;
+    ubyte tunic : 4;
+    ubyte shield : 4;
+    ubyte sword : 4;
+    UNK; uint16 unknown11;
+    InventoryItem ocarina;
+} ZSaveDataFooter;
+
 struct {
     FSeek( 0x000000 );
     ZSaveData saveData1;
@@ -576,4 +638,7 @@ struct {
 
     FSeek( 0x014000 );
     ZSaveDataOwl saveDataOwl2Backup;
+
+    FSeek( 0x018000 );
+    ZSaveDataFooter saveDataFooter;
 } Save;
