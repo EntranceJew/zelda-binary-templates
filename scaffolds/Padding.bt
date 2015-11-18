@@ -1,0 +1,42 @@
+// -*- mode: c;-*-
+// no macro functions
+#define CALIGN16 ColumnAlign(16)
+#define CALIGN12 ColumnAlign(12)
+#define CALIGN8  ColumnAlign(8)
+#define CALIGN4  ColumnAlign(4)
+
+typedef struct (uint64 place) {
+    local string thisName = "ColumnAlign";
+    SIBE;
+
+    local int64 size = place-(FTell() % 16);
+    if( size < 0 ){
+        size = 16 + size;
+    }
+
+    SIT;
+    ubyte zeroes[size];
+    AssertUBytesZero(
+        zeroes,
+        parentof(this).thisName + "->ColumnAlign"
+    );
+    SIEND;
+} ColumnAlign;
+
+typedef struct {
+    local string thisName = "NullEater";
+    SIBE;
+    
+    local uint64 size = 0;
+    while( ReadUByte(FTell()+size) != 0 ){
+        size++;
+    }
+    
+    SIT;
+    ubyte zeroes[size];
+    // If this test ever fails,
+    // call the cops.
+    AssertUBytesZero( zeroes, "NullEater" );
+
+    SIEND;
+} NullEater;

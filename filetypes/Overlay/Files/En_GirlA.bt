@@ -3,7 +3,12 @@
 // http://wiki.cloudmodding.com/mm/Notes:Shop_Item_Modifying
 
 typedef struct {
+    SIBE;
+
+    SIT;
     ushort objectNumber;
+    
+    SIT;
     ushort shaderNumber;
     /*
     (2:00:47 PM) mzxrules: the "shader" variable should be the same as the "get item model identifier" shown here:
@@ -20,14 +25,25 @@ typedef struct {
     (2:20:55 PM) mzxrules: so if you're loading the rupee obj, the model id determines what rupee it will look like
     (2:21:07 PM) mzxrules: understand?
     */
-    uint   ramPointer;
+    SIT;
+    Ram   ramPointer;
     // does not equal the price of buying something
+
+    SIT;
     ushort itemPrice;
+    SIT;
     ushort quantity;
+    SIT;
     ushort descriptionMessageID;
+    SIT;
     ushort purchasedMessageID;
+    SIT;
     ubyte  zeroes[2];
-    uint   ramPointers2[3];
+    SIT;
+    ushort getItemIndex;
+    SIT;
+    Ram   ramPointers2[3];
+    SIEND;
 } ZShopData;
 
 typedef struct(uint64 size){
@@ -40,8 +56,46 @@ typedef struct(uint64 size){
     ubyte textBlockData[header.textBlock];
 
     SIT;
+    //ubyte dataBlockData[header.dataBlock];
+    //FSeek(startof(textBlockData)+sizeof(textBlockData));
+
+    SIT;
+    uint unknown[4];
+
+    SIT;
+    local uint numRams = 54;
+    local uint numShopEntries = 50;
+    if( GAME == "MM" ){
+        numRams = 47;
+        numShopEntries = 43;
+    }
+    Ram ramMaybe[numRams];
+
+    if( GAME != "MM" ){
+        SIT;
+        ushort whats[8];
+    
+        SIT;
+        ushort moreWhat[5];
+    
+        SIT;
+        ubyte zeroes[2];
+    }
+
+    SIT;
+    ZShopData shopEntries[numShopEntries];
     //ZShopData shopEntries[header.dataBlock/sizeof(ZShopData)];
-    ubyte dataBlockData[header.dataBlock];
+    
+    if( GAME != "MM" ){
+        SIT;
+        ushort evenMoreWhat[8];
+    
+        SIT;
+        ubyte zeroes2[12];
+    } else {
+        SIT;
+        ubyte zeroes2[4];
+    }
 
     SIT;
     ubyte rodataBlockData[header.rodataBlock];

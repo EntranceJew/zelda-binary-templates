@@ -1,6 +1,7 @@
 // -*- mode: c;-*-
 // http://www.cs.umd.edu/class/sum2003/cmsc311/Notes/Mips/load32.html
 // http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html
+// http://vhouten.home.xs4all.nl/mipsel/r3000-isa.html
 
 #define OVERLAYHEAD SAVE; \
                     FSeek(startof(this)+size-ReadUInt(startof(this)+size-4)); \
