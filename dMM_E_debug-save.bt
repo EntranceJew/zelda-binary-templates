@@ -8,6 +8,10 @@
 
 #include "autoload.bt"
 
+#define KNOWN SetBackColor(0x62A132) // Green
+#define UNKNOWN SetBackColor(0x7DE3FF) // Yellow
+#define UNUSED SetBackColor(0xA265B8) // Purple
+
 typedef struct {
     ubyte bit_7 : 1;
     ubyte bit_6 : 1;
@@ -472,11 +476,16 @@ typedef enum <ubyte> {
 
 typedef struct {
     local string thisName = "ZSaveDataInternal";
+    KNOWN;
     uint entrance_index <format=hex>; // Stores the Entrance Link starts/respawns at
     ZSaveWearingMask wearing_mask;
     ubyte opening_flag; // Has completed intro
     ubyte text_skip_timer; // Prevents skipping text for a period
-    UNK; ubyte unknown0; // Something to do with picking up items?
+
+    UNKNOWN;
+    ubyte unknown0; // Something to do with picking up items?
+
+    KNOWN;
     ZSaveCutsceneOffset cutscene_offset;
     uint16 time_of_day <format=hex>;
     ZSaveOwlID owl_id;
@@ -485,7 +494,11 @@ typedef struct {
     uint day;
     uint days_elapsed;
     ZSaveTransformation transformation;
-    UNK; ubyte unknown1; // spring_flag?
+
+    UNKNOWN;
+    ubyte unknown1; // spring_flag?
+
+    KNOWN;
     ubyte have_tatl; // boolean
     ubyte owl_save; // boolean
     char file_validation[6];
@@ -500,28 +513,43 @@ typedef struct {
     ubyte has_normal_magic; // boolean
     ubyte has_double_magic; // boolean
     uint16 double_defense; // boolean? actually seems unused in MM
-    UNK; uint16 unknown2;
-    ZSaveOwlsHit owls_hit;
-    UNK; uint unknown3 <format=hex>;
 
+    UNKNOWN;
+    uint16 unknown2;
+
+    KNOWN;
+    ZSaveOwlsHit owls_hit;
+
+    UNKNOWN;
+    uint unknown3 <format=hex>;
+
+    KNOWN;
     ZSaveItemsEquipped items_human; // also used for fierce deity
     ZSaveItemsEquipped items_goron;
     ZSaveItemsEquipped items_zora;
     ZSaveItemsEquipped items_deku;
+    UNUSED;
     ubyte unused; // this is where the b button slot would be
+    KNOWN;
     ZSaveInventorySlot c_left_button_slot;
     ZSaveInventorySlot c_down_button_slot;
     ZSaveInventorySlot c_right_button_slot;
 
-    UNK; uint unknown4<format=hex>;
-    UNK; uint unknown5<format=hex>;
-    UNK; uint unknown6<format=hex>;
+    UNKNOWN;
+    uint unknown4<format=hex>;
+    uint unknown5<format=hex>;
+    uint unknown6<format=hex>;
+
+    KNOWN;
     ZSaveBoots boots : 4;
     ZSaveTunic tunic : 4;
     ZSaveShield shield : 4;
     ZSaveSword sword : 4;
-    UNK; uint16 unknown7;
 
+    UNKNOWN;
+    uint16 unknown7;
+
+    KNOWN;
     ZSaveInventorySlotItemIDs inventory_slot_item_ids;
     ZSaveInventorySlotItemAmount inventory_slot_item_amount;
 
@@ -547,10 +575,16 @@ typedef struct {
     char unknown_name1[8];
     char unknown_name2[8];
 
-    UNK; ubyte unknown9[0x37A];
-    ZSaveSceneFlags scene_flags[0x78];
-    UNK; ubyte unknown10[0xD4];
+    UNKNOWN;
+    ubyte unknown9[0x37A];
 
+    KNOWN;
+    ZSaveSceneFlags scene_flags[0x78];
+
+    UNKNOWN;
+    ubyte unknown10[0xD4];
+
+    KNOWN;
     // only the first 4 words wind up being used
     // but the code supports up to 7 words
     GenericBitfield minimaps[7*4] <format=hex>;
@@ -558,20 +592,27 @@ typedef struct {
     uint16 skulltulas_woodfall;
     uint16 skulltulas_great_bay;
 
-    UNK; ubyte unknown12[0x1A];
+    UNKNOWN;
+    ubyte unknown12[0x1A];
 
+    KNOWN;
     uint16 banked_rupees;
 
-    UNK; ubyte unknown13[0x18];
+    UNKNOWN;
+    ubyte unknown13[0x18];
 
+    KNOWN;
     GenericBitfield week_event_reg[100];
 
     GenericBitfield area_arrival[4] <format=hex>;
     GenericBitfield cloud_clear[4] <format=hex>;
 
     ubyte scarecrows_song[0x80]; // TODO: find info on this format
-    UNK; ubyte unknown14[2];
 
+    UNKNOWN;
+    ubyte unknown14[2];
+
+    KNOWN;
     ubyte bombers_caught;
     ubyte bombers_order[5]; // unrelated to bombers code
     ZSaveLotteryCodes lottery_codes[3];
@@ -589,17 +630,22 @@ typedef struct {
 
 typedef struct {
     local string thisName = "ZSaveData";
+    KNOWN;
     ZSaveDataInternal _;
     // nothing past this point is loaded by the game
+    UNUSED;
     uint unused_end[0x3FD];
 } ZSaveData;
 
 typedef struct {
     local string thisName = "ZSaveDataOwl";
+    KNOWN;
     ZSaveDataInternal _;
 
+    KNOWN;
     GenericBitfield event_inf[8];
 
+    KNOWN;
     ubyte rock_sirloin; // boolean
     ubyte b_button_enabled; // boolean
     uint16 bubble_timer;
@@ -610,18 +656,30 @@ typedef struct {
 
     ubyte pictograph_picture[100*112]; // 1 byte per pixel
 
+    UNUSED;
     uint unused_end[0xD8];
 } ZSaveDataOwl;
 
 typedef struct {
     local string thisName = "ZSaveDataFooter";
-    UNK; uint16 unknown0;
-    UNK; ubyte unknown1;
+    UNKNOWN;
+    uint16 unknown0;
+    ubyte unknown1;
+
+    KNOWN;
     ZSaveSoundSetting sound_setting;
-    UNK; ubyte unknown2;
+
+    UNKNOWN;
+    ubyte unknown2;
+
+    KNOWN;
     ZSaveTargetStyle target_style;
-    UNK; uint16 unknown3;
-    UNK; uint unknown4;
+
+    UNKNOWN;
+    uint16 unknown3;
+    uint unknown4;
+
+    KNOWN;
     uint16 time_of_day <format=hex>;
     ZSaveOwlID owl_id;
     ZSaveDayNight day_night;
@@ -629,7 +687,7 @@ typedef struct {
     uint day;
     uint days_elapsed;
     ZSaveTransformation transformation;
-    UNK; ubyte unknown5;
+    ubyte unknown5;
     ubyte have_tatl;
     ubyte owl_save;
     char file_validation[6];
@@ -644,9 +702,9 @@ typedef struct {
     ubyte has_normal_magic;
     ubyte has_double_magic;
     uint16 double_defense;
-    UNK; uint16 unknown6;
+    uint16 unknown6;
     ZSaveOwlsHit owls_hit;
-    UNK; uint unknown7 <format=hex>;
+    uint unknown7 <format=hex>;
 
     ZSaveItemsEquipped items_human;
     ZSaveItemsEquipped items_goron;
@@ -657,17 +715,18 @@ typedef struct {
     ZSaveInventorySlot c_down_button_slot;
     ZSaveInventorySlot c_right_button_slot;
 
-    UNK; uint unknown8<format=hex>;
-    UNK; uint unknown9<format=hex>;
-    UNK; uint unknown10<format=hex>;
+    uint unknown8<format=hex>;
+    uint unknown9<format=hex>;
+    uint unknown10<format=hex>;
     ZSaveBoots boots : 4;
     ZSaveTunic tunic : 4;
     ZSaveShield shield : 4;
     ZSaveSword sword : 4;
-    UNK; uint16 unknown11;
+    uint16 unknown11;
 
     ZSaveInventorySlotItemIDs inventory_slot_item_ids;
 
+    UNUSED;
     uint unused_end[0x1FD8];
 } ZSaveDataFooter;
 
