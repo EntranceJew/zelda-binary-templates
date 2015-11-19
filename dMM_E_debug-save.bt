@@ -471,7 +471,7 @@ typedef enum <ubyte> {
 } ZSaveSpiderHouseMaskOrder;
 
 typedef struct {
-    local string thisName = "ZSaveData";
+    local string thisName = "ZSaveDataInternal";
     uint entrance_index <format=hex>; // Stores the Entrance Link starts/respawns at
     ZSaveWearingMask wearing_mask;
     ubyte opening_flag; // Has completed intro
@@ -584,11 +584,19 @@ typedef struct {
     int16 epona_z;
     int16 epona_angle;
     uint16 checksum <format=hex>;
-} ZSaveData<size=0x2000>;
+
+} ZSaveDataInternal;
+
+typedef struct {
+    local string thisName = "ZSaveData";
+    ZSaveDataInternal _;
+    // nothing past this point is loaded by the game
+    uint unused_end[0x3FD];
+} ZSaveData;
 
 typedef struct {
     local string thisName = "ZSaveDataOwl";
-    ZSaveData regular_save;
+    ZSaveDataInternal _;
 
     GenericBitfield event_inf[8];
 
@@ -601,7 +609,9 @@ typedef struct {
     ubyte hot_spring_water_timers[6*32]; // TODO: reverse engineer
 
     ubyte pictograph_picture[100*112]; // 1 byte per pixel
-} ZSaveDataOwl<size=0x4000>;
+
+    uint unused_end[0xD8];
+} ZSaveDataOwl;
 
 typedef struct {
     local string thisName = "ZSaveDataFooter";
@@ -657,7 +667,9 @@ typedef struct {
     UNK; uint16 unknown11;
 
     ZSaveInventorySlotItemIDs inventory_slot_item_ids;
-} ZSaveDataFooter<size=0x8000>;
+
+    uint unused_end[0x1FD8];
+} ZSaveDataFooter;
 
 struct {
     ZSaveData saveData1;
