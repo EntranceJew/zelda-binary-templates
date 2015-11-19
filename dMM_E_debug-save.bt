@@ -218,7 +218,7 @@ typedef struct { // Which item you have in each slot
     ZSaveInventoryItem mask_captains;
     ZSaveInventoryItem mask_giants;
     ZSaveInventoryItem mask_fierce_deity;
-} ZSaveZSaveInventorySlotItemIDs;
+} ZSaveInventorySlotItemIDs;
 
 typedef struct { // How much ammo you have in each slot
     ubyte ocarina;
@@ -245,7 +245,7 @@ typedef struct { // How much ammo you have in each slot
     ubyte bottle_4;
     ubyte bottle_5;
     ubyte bottle_6;
-} ZSaveZSaveInventorySlotItemAmount;
+} ZSaveInventorySlotItemAmount;
 
 typedef enum <ubyte> {
     sound_stereo,
@@ -444,18 +444,18 @@ typedef struct {
 typedef struct {
     // TODO: verify
     ubyte unused : 5;
-    ubyte boss_key : 1;
-    ubyte compass : 1;
     ubyte map : 1;
+    ubyte compass : 1;
+    ubyte boss_key : 1;
 } ZSaveDungeonItems;
 
 typedef struct {
     // inferring from OoT, which is probably different:
-    uint flags0 <format=hex>; // chest_flags?
-    uint flags1 <format=hex>; // switches?
-    uint flags2 <format=hex>; // room_clear_flags?
-    uint flags3 <format=hex>; // collectible_flags?
-    uint flags4 <format=hex>; // visited_rooms?
+    uint flags0 <format=binary>; // chest_flags?
+    uint flags1 <format=binary>; // switches?
+    uint flags2 <format=binary>; // room_clear_flags?
+    uint flags3 <format=binary>; // collectible_flags?
+    uint flags4 <format=binary>; // visited_rooms?
 } ZSaveSceneFlags;
 
 typedef struct {
@@ -464,10 +464,10 @@ typedef struct {
     ubyte digit3;
 } ZSaveLotteryCodes;
 typedef enum <ubyte> {
-    red = 0,
-    blue = 1,
-    green = 2,
-    yellow = 3
+    red,
+    blue,
+    green,
+    yellow
 } ZSaveSpiderHouseMaskOrder;
 
 typedef struct {
@@ -522,8 +522,8 @@ typedef struct {
     ZSaveSword sword : 4;
     UNK; uint16 unknown7;
 
-    ZSaveZSaveInventorySlotItemIDs inventory_slot_item_ids;
-    ZSaveZSaveInventorySlotItemAmount inventory_slot_item_amount;
+    ZSaveInventorySlotItemIDs inventory_slot_item_ids;
+    ZSaveInventorySlotItemAmount inventory_slot_item_amount;
 
     ZSaveUpgrades upgrade_data;
 
@@ -533,7 +533,7 @@ typedef struct {
     // debug save has boss/compass/map in all 10
 
     // all used but the last, i think
-    ubyte small_key_amount[9] <comment="255 will hide small key amount.">;
+    byte small_key_amount[9] <comment="-1 hides the small key amount">;
 
     // normally 0 or 20 but anything inbetween works fine
     ubyte doubled_hearts;
@@ -584,7 +584,7 @@ typedef struct {
     int16 epona_z;
     int16 epona_angle;
     uint16 checksum <format=hex>;
-} ZSaveData;
+} ZSaveData<size=0x2000>;
 
 typedef struct {
     local string thisName = "ZSaveDataOwl";
@@ -601,9 +601,10 @@ typedef struct {
     ubyte hot_spring_water_timers[6*32]; // TODO: reverse engineer
 
     ubyte pictograph_picture[100*112]; // 1 byte per pixel
-} ZSaveDataOwl;
+} ZSaveDataOwl<size=0x4000>;
 
 typedef struct {
+    local string thisName = "ZSaveDataFooter";
     UNK; uint16 unknown0;
     UNK; ubyte unknown1;
     ZSaveSoundSetting sound_setting;
@@ -655,34 +656,17 @@ typedef struct {
     ZSaveSword sword : 4;
     UNK; uint16 unknown11;
 
-    ZSaveZSaveInventorySlotItemIDs inventory_slot_item_ids;
-} ZSaveDataFooter;
+    ZSaveInventorySlotItemIDs inventory_slot_item_ids;
+} ZSaveDataFooter<size=0x8000>;
 
 struct {
-    FSeek( 0x000000 );
     ZSaveData saveData1;
-
-    FSeek( 0x002000 );
     ZSaveData saveData1Backup;
-
-    FSeek( 0x004000 );
     ZSaveData saveData2;
-
-    FSeek( 0x006000 );
     ZSaveData saveData2Backup;
-
-    FSeek( 0x008000 );
     ZSaveDataOwl saveDataOwl1;
-
-    FSeek( 0x00C000 );
     ZSaveDataOwl saveDataOwl1Backup;
-
-    FSeek( 0x010000 );
     ZSaveDataOwl saveDataOwl2;
-
-    FSeek( 0x014000 );
     ZSaveDataOwl saveDataOwl2Backup;
-
-    FSeek( 0x018000 );
     ZSaveDataFooter saveDataFooter;
 } Save;
