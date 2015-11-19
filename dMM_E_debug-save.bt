@@ -408,12 +408,12 @@ typedef struct {
     uint unused0 : 9;
     ZSaveUpgradeNuts deku_nut_capacity : 3;
     ZSaveUpgradeSticks deku_stick_capacity : 3;
-    uint unused1 : 3; // bullet_bag?
-    ZSaveUpgradeWallet wallet : 2;
-    uint unused2 : 3; // dive_meter?
-    uint unused3 : 3; // strength_upgrade?
-    ZSaveUpgradeBombs : 3;
-    ZSaveUpgradeArrows : 3;
+    ubyte bullet_bag_capacity : 3;
+    ZSaveUpgradeWallet wallet_size : 2;
+    ubyte dive_meter : 3;
+    ubyte strength_upgrade : 3;
+    ZSaveUpgradeBombs bomb_bag_capacity : 3;
+    ZSaveUpgradeArrows quiver_capacity : 3;
 } ZSaveUpgrades;
 
 typedef struct {
@@ -446,7 +446,6 @@ typedef struct {
 } ZSaveQuestStatus;
 
 typedef struct {
-    // TODO: verify
     ubyte unused : 5;
     ubyte map : 1;
     ubyte compass : 1;

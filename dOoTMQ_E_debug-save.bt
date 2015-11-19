@@ -5,13 +5,11 @@
 #define DEFLATE 1
 #define DEBUG   1
 
-#include "scaffolds/Colors.bt"
-#include "scaffolds/Block.bt"
-#include "scaffolds/Jumps.bt"
-#include "scaffolds/Significant.bt"
-#include "scaffolds/Unknown.bt"
-#include "scaffolds/Warning.bt"
-#include "scaffolds/Anomaly.bt"
+#include "autoload.bt"
+
+#define KNOWN SetBackColor(0x62A132) // Green
+#define UNKNOWN SetBackColor(0x7DE3FF) // Yellow
+#define UNUSED SetBackColor(0xA265B8) // Purple
 
 typedef enum <ubyte> {
     Item_Deku_Sticks = 0,
@@ -77,7 +75,7 @@ typedef enum <ubyte> {
     Item_Master_Sword = 60,
     Item_Biggoron_Sword = 61,
     Item_None = 255
-} INVENTORY_ITEMS;
+} ZSaveInventoryItems;
 
 typedef enum <ubyte> {
     Slot_Deku_Stick = 0,
@@ -105,388 +103,413 @@ typedef enum <ubyte> {
     Slot_Adult_Trade_Item = 22,
     Slot_Child_Trade_Item = 23,
     Slot_None = 255
-} INVENTORY_SLOTS;
+} ZSaveInventorySlots;
+
+typedef enum <ubyte> {
+    no_boots,
+    kokiri_boots,
+    iron_boots,
+    hover_boots
+} ZSaveBoots;
+typedef enum <ubyte> {
+    no_tunic,
+    kokiri_tunic,
+    goron_tunic,
+    zora_tunic
+} ZSaveTunic;
+typedef enum <ubyte> {
+    no_shield,
+    kokiri_shield,
+    hylian_shield,
+    mirror_shield
+} ZSaveShield;
+typedef enum <ubyte> {
+    no_sword,
+    kokiri_sword,
+    master_sword,
+    biggoron_sword
+} ZSaveSword;
 
 typedef struct {
-    enum INVENTORY_ITEMS b_button_item;
-    enum INVENTORY_ITEMS c_left_button_item;
-    enum INVENTORY_ITEMS c_down_button_item;
-    enum INVENTORY_ITEMS c_right_button_item;
-    enum INVENTORY_SLOTS c_left_button_slot;
-    enum INVENTORY_SLOTS c_down_button_slot;
-    enum INVENTORY_SLOTS c_right_button_slot;
-    ubyte zeroes; //Aligns the data
+    ZSaveInventoryItems b_button_item;
+    ZSaveInventoryItems c_left_button_item;
+    ZSaveInventoryItems c_down_button_item;
+    ZSaveInventoryItems c_right_button_item;
+    ZSaveInventorySlots c_left_button_slot;
+    ZSaveInventorySlots c_down_button_slot;
+    ZSaveInventorySlots c_right_button_slot;
 
-    enum <ubyte> TUNIC {
-        no_tunic,
-        kokiri_tunic = 1,
-        goron_tunic = 2,
-        zora_tunic = 3
-    } tunic : 4;
-    enum <ubyte> BOOTS {
-        no_boots,
-        kokiri_boots = 1,
-        iron_boots = 2,
-        hover_boots = 3
-    } boots : 4;
+    UNUSED;
+    ubyte unused;
 
-    enum <ubyte> SWORD {
-        no_sword,
-        kokiri_sword = 1,
-        master_sword = 2,
-        biggoron_sword = 3
-    } sword : 4;
-    enum <ubyte> SHIELD {
-        no_shield,
-        deku_shield = 1,
-        hylian_shield = 2,
-        mirror_shield = 3
-    } shield : 4;
+    KNOWN;
+    ZSaveBoots boots : 4;
+    ZSaveTunic tunic : 4;
+    ZSaveShield shield : 4;
+    ZSaveSword sword : 4;
 } ZSaveEquippedData;
+
+typedef struct { // Which item you have in each slot
+    ZSaveInventoryItems deku_stick;
+    ZSaveInventoryItems deku_nut;
+    ZSaveInventoryItems bombs;
+    ZSaveInventoryItems fairy_bow;
+    ZSaveInventoryItems fire_arrow;
+    ZSaveInventoryItems dins_fire;
+    ZSaveInventoryItems fairy_slingshot;
+    ZSaveInventoryItems ocarina;
+    ZSaveInventoryItems bombchus;
+    ZSaveInventoryItems hookshot_longshot;
+    ZSaveInventoryItems ice_arrow;
+    ZSaveInventoryItems farores_wind;
+    ZSaveInventoryItems boomerang;
+    ZSaveInventoryItems lens_of_truth;
+    ZSaveInventoryItems magic_beans;
+    ZSaveInventoryItems megaton_hammer;
+    ZSaveInventoryItems light_arrow;
+    ZSaveInventoryItems nayrus_love;
+    ZSaveInventoryItems bottle_1;
+    ZSaveInventoryItems bottle_2;
+    ZSaveInventoryItems bottle_3;
+    ZSaveInventoryItems bottle_4;
+    ZSaveInventoryItems adult_trade_item;
+    ZSaveInventoryItems child_trade_item;
+} ZSaveInventorySlotItemIDs;
+
+typedef struct { // How much ammo you have in each slot
+    ubyte deku_stick;
+    ubyte deku_nut;
+    ubyte bombs;
+    ubyte fairy_bow;
+    ubyte fire_arrow;
+    ubyte dins_fire;
+    ubyte fairy_slingshot;
+    ubyte ocarina;
+    ubyte bombchus;
+    ubyte hookshot_longshot;
+    ubyte ice_arrow;
+    ubyte farores_wind;
+    ubyte boomerang;
+    ubyte lens_of_truth;
+    ubyte magic_beans;
+} ZSaveInventorySlotItemAmount;
+
+typedef struct {
+    uint heart_pieces : 4;
+    uint unused0 : 4;
+
+    uint gold_skulltula_display : 1;
+    uint gerudos_card : 1;
+    uint stone_of_agony : 1;
+    uint zoras_sapphire : 1;
+    uint gorons_ruby : 1;
+    uint kokiri_emerald : 1;
+    uint song_of_storms : 1;
+    uint song_of_time : 1;
+
+    uint suns_song : 1;
+    uint sarias_song : 1;
+    uint eponas_song : 1;
+    uint zeldas_lullaby : 1;
+    uint prelude_of_light : 1;
+    uint nocturne_of_shadow : 1;
+    uint requiem_of_spirit : 1;
+    uint serenade_of_water : 1;
+
+    uint bolero_of_fire : 1;
+    uint minuet_of_forest : 1;
+    uint light_medallion : 1;
+    uint shadow_medallion : 1;
+    uint spirit_medallion : 1;
+    uint water_medallion : 1;
+    uint fire_medallion : 1;
+    uint forest_medallion : 1;
+} ZSaveQuestStatus;
+
+typedef struct {
+    ubyte unused : 5;
+    ubyte map : 1;
+    ubyte compass : 1;
+    ubyte boss_key : 1;
+} ZSaveDungeonItems;
+
+typedef enum <uint> {
+    age_adult,
+    age_child
+} ZSaveAge;
+
+typedef enum <ubyte> {
+    no_magic_meter,
+    normal_magic_meter,
+    double_magic_meter
+} ZSaveMagicMeterSize;
+
+typedef enum <ubyte> {
+    bg_giants_knife,
+    bg_biggoron_sword,
+} ZSaveBiggoronSword;
+
+typedef struct {
+    ubyte unused_boots_flag : 1;
+    ubyte hover_boots : 1;
+    ubyte iron_boots : 1;
+    ubyte kokiri_boots : 1;
+    ubyte unused_tunic_flag : 1;
+    ubyte zora_tunic : 1;
+    ubyte goron_tunic : 1;
+    ubyte kokiri_tunic : 1;
+
+    ubyte unused_shield_flag : 1;
+    ubyte mirror_shield : 1;
+    ubyte hylian_shield : 1;
+    ubyte deku_shield : 1;
+    ubyte broken_giants_knife : 1; // unused?
+    ubyte biggoron_sword : 1;
+    ubyte master_sword : 1;
+    ubyte kokiri_sword : 1;
+
+    UNUSED;
+    ubyte unused0;
+    ubyte unused1;
+} ZSaveEquipment;
+
+typedef enum <uint> {
+    no_deku_stick_capacity,
+    deku_stick_capacity_10,
+    deku_stick_capacity_20,
+    deku_stick_capacity_30
+} ZSaveUpgradeSticks;
+typedef enum <uint> {
+    no_deku_nut_capacity,
+    deku_nut_capacity_20,
+    deku_nut_capacity_30,
+    deku_nut_capacity_40
+} ZSaveUpgradeNuts;
+typedef enum <uint> {
+    no_scale,
+    silver_scale,
+    gold_scale
+} ZSaveUpgradeScale;
+typedef enum <uint> {
+    default_wallet,
+    adults_wallet,
+    giants_wallet
+} ZSaveUpgradeWallet;
+typedef enum <uint> {
+    no_bullet_bag,
+    bullet_bag_30,
+    bullet_bag_40,
+    bullet_bag_50
+} ZSaveUpgradeBullets;
+typedef enum <uint> {
+    no_quiver,
+    quiver_30,
+    quiver_40,
+    quiver_50
+} ZSaveUpgradeArrows;
+typedef enum <uint> {
+    no_bomb_bag,
+    bomb_bag_20,
+    bomb_bag_30,
+    bomb_bag_40
+} ZSaveUpgradeBombs;
+typedef enum <uint> {
+    no_strength_upgrade,
+    goron_bracelet,
+    silver_gauntlets,
+    golden_gauntlets
+} ZSaveUpgradeStrength;
+
+typedef struct {
+    uint unused0 : 9;
+    ZSaveUpgradeNuts deku_nut_capacity : 3;
+    ZSaveUpgradeSticks deku_stick_capacity : 3;
+    ZSaveUpgradeBullets bullet_bag_capacity : 3;
+    ZSaveUpgradeWallet wallet_size : 2;
+    ZSaveUpgradeScale dive_meter : 3;
+    ZSaveUpgradeStrength strength_upgrade : 3;
+    ZSaveUpgradeBombs bomb_bag_capacity : 3;
+    ZSaveUpgradeArrows quiver_capacity : 3;
+} ZSaveUpgrades;
+
+typedef struct {
+    KNOWN;
+    uint chest_flags <format=hex>;
+    uint switches <format=hex>;
+    uint room_clear_flags <format=hex>;
+    uint collectible_flags <format=hex>;
+    UNUSED;
+    uint unused <format=hex>;
+    KNOWN;
+    uint64 visited_rooms <format=hex>;
+} ZSaveSceneFlags;
+
+typedef struct {
+    float x_coordinate;
+    float y_coordinate;
+    float z_coordinate;
+    float y_axis_rotation;
+    UNKNOWN;
+    ubyte unknown[4];
+    KNOWN;
+    uint entrance_index;
+    uint map_index;
+    uint is_set;
+} ZSaveFaroresWind;
 
 typedef struct {
     local string thisName = "ZSaveData";
-    SetBackColor(cDkGreen);
-    uint entrance_index; //Stores the Entrance Link starts/respawns at.
-    uint age;
+
+    KNOWN;
+    uint entrance_index <format=hex>; // Stores the Entrance Link starts/respawns at
+    ZSaveAge age;
     uint cutscene_offset;
-    uint16 time_of_day;
+    uint16 time_of_day <format=hex>;
     ubyte unknown0[14];
     char file_validation[6];
     uint16 death_counter;
     char file_name[8];
     ubyte disk_drive_flag;
-    ubyte zeroes1[1]; //Disk Drive Flag only use the first byte, so this one is just unread padding
-    AssertUBytesNull(zeroes1, thisName);
-    uint16 heart_containers; //16 per heart
-    uint16 health; //16 per heart
-    enum <ubyte> MAGIC_METER_SIZE {
-        no_magic_meter,
-        normal_magic_meter = 1,
-        double_magic_meter = 2
-    } magic_meter_size;
-    ubyte magic;
+
+    UNUSED;
+    ubyte unused0; // Disk Drive Flag only uses the first byte
+
+    KNOWN;
+    uint16 heart_containers <format=hex>; // 0x10 per heart
+    uint16 health <format=hex>; // 0x10 per heart
+    ZSaveMagicMeterSize magic_meter_size;
+    ubyte magic <format=hex>; // 0x30 for normal, 0x60 for double
     uint16 rupees;
-    uint16 giants_knife_amount; //How many hits left you have on giants knife before it breaks
-    SetBackColor(cLtYellow);
-    ubyte unknown1[6]; //Navi Timer?
-    SetBackColor(cDkGreen);
-    ubyte biggoron_sword_flag; //If set, the giants knife will act as biggoron sword
-    SetBackColor(cLtYellow);
-    ubyte unknown2; //Could just be padding, since the biggoron sword flag only use one byte
-    SetBackColor(cDkGreen);
+    uint16 giants_knife_durability; // How many hits you have left
+    uint16 navi_timer;
+    ubyte has_normal_magic; // boolean
+
+    UNKNOWN;
+    ubyte unknown1;
+
+    KNOWN;
+    ubyte has_double_magic; // boolean
+
+    UNKNOWN;
+    ubyte unknown2;
+
+    KNOWN;
+    ZSaveBiggoronSword biggoron_sword_flag; // If set, the giants knife will act as biggoron sword
+
+    UNKNOWN;
+    ubyte unknown3; // Maybe padding; the biggoron sword flag only uses one byte
+
+    KNOWN;
     ZSaveEquippedData stored_child_equipment;
-    SetBackColor(cDkGreen);
-    ZSaveEquippedData stored_adult_equipment; //Needs to be verified, the previous record may be used for both! This could be unused
-    SetBackColor(cLtYellow);
-    ubyte unknown3[20]; //???
-    SetBackColor(cDkGreen);
+
+    KNOWN;
+    ZSaveEquippedData stored_adult_equipment; // Needs to be verified;
+    // the previous record may be used for both! This could be unused.
+
+    UNKNOWN;
+    ubyte unknown4[20];
+
+    KNOWN;
     ZSaveEquippedData currentEquipment;
-    SetBackColor(cDkGreen);
-    ubyte zeroes2[2];
-    AssertUBytesNull(zeroes2, thisName);
 
-    struct { //Which item you have in each slot
-        enum INVENTORY_ITEMS deku_stick;
-        enum INVENTORY_ITEMS deku_nut;
-        enum INVENTORY_ITEMS bombs;
-        enum INVENTORY_ITEMS fairy_bow;
-        enum INVENTORY_ITEMS fire_arrow;
-        enum INVENTORY_ITEMS dins_fire;
-        enum INVENTORY_ITEMS fairy_slingshot;
-        enum INVENTORY_ITEMS ocarina;
-        enum INVENTORY_ITEMS bombchus;
-        enum INVENTORY_ITEMS hookshot_longshot;
-        enum INVENTORY_ITEMS ice_arrow;
-        enum INVENTORY_ITEMS farores_wind;
-        enum INVENTORY_ITEMS boomerang;
-        enum INVENTORY_ITEMS lens_of_truth;
-        enum INVENTORY_ITEMS magic_beans;
-        enum INVENTORY_ITEMS megaton_hammer;
-        enum INVENTORY_ITEMS light_arrow;
-        enum INVENTORY_ITEMS nayrus_love;
-        enum INVENTORY_ITEMS bottle_1;
-        enum INVENTORY_ITEMS bottle_2;
-        enum INVENTORY_ITEMS bottle_3;
-        enum INVENTORY_ITEMS bottle_4;
-        enum INVENTORY_ITEMS adult_trade_item;
-        enum INVENTORY_ITEMS child_trade_item;
-    } inventory_slot_item_ids;
+    UNUSED;
+    uint16 unused1;
 
-    SetBackColor(cDkGreen);
+    KNOWN;
+    ZSaveInventorySlotItemIDs inventory_slot_item_ids;
 
-    struct { //How much ammo you have in each slot
-        ubyte deku_stick;
-        ubyte deku_nut;
-        ubyte bombs;
-        ubyte fairy_bow;
-        ubyte fire_arrow;
-        ubyte dins_fire;
-        ubyte fairy_slingshot;
-        ubyte ocarina;
-        ubyte bombchus;
-        ubyte hookshot_longshot;
-        ubyte ice_arrow;
-        ubyte farores_wind;
-        ubyte boomerang;
-        ubyte lens_of_truth;
-        ubyte magic_beans;
-    } inventory_slot_item_amount;
+    KNOWN;
+    ZSaveInventorySlotItemAmount inventory_slot_item_amount;
 
-    SetBackColor(cDkGreen);
+    KNOWN;
+    ubyte magic_beans_available; // The amount of Magic Beans available for purchase.
+    ZSaveEquipment equipment_data;
+    KNOWN;
+    ZSaveUpgrades upgrade_data;
 
-    ubyte magic_beans_available; //The amount of Magic Beans available for purchase.
+    KNOWN;
+    ZSaveQuestStatus quest_status_data;
 
-    struct {
-        ubyte kokiri_tunic : 1;
-        ubyte goron_tunic : 1;
-        ubyte zora_tunic : 1;
-        ubyte unused_tunic_flag : 1;
-        ubyte kokiri_boots : 1;
-        ubyte iron_boots : 1;
-        ubyte hover_boots : 1;
-        ubyte unused_boots_flag : 1;
+    KNOWN;
+    ZSaveDungeonItems dungeon_items[20];
 
-        ubyte kokiri_sword : 1;
-        ubyte master_sword : 1;
-        ubyte biggoron_sword : 1;
-        ubyte unused_sword_flag : 1;
-        ubyte deku_shield : 1;
-        ubyte hylian_shield : 1;
-        ubyte mirror_shield : 1;
-        ubyte unused_shield_flag : 1;
-
-        ubyte zeroes1[3];
-
-        ubyte unused_bullet_bag_flag : 1 <comment="Setting this bit will result in a bugged bullet bag.">;
-        enum <ubyte> DEKU_STICK_CAPACITY {
-            no_deku_stick_capacity,
-            deku_stick_capacity_10 = 1,
-            deku_stick_capacity_20 = 2,
-            deku_stick_capacity_30 = 3
-        } deku_stick_capacity : 3;
-        enum <ubyte> DEKU_NUT_CAPACITY {
-            no_deku_nut_capacity,
-            deku_nut_capacity_20 = 1,
-            deku_nut_capacity_30 = 2,
-            deku_nut_capacity_40 = 3
-        } deku_nut_capacity : 3;
-        ubyte zeroes2 : 1;
-
-        ubyte unused_strength_upgrade_flag : 1 <comment="Setting this bit will result in a bugged strength upgrade.">;
-        enum <ubyte> DIVE_METER {
-            no_scale,
-            silver_scale = 1,
-            gold_scale = 2
-        } dive_meter : 3;
-        enum <ubyte> WALLET {
-            default_wallet,
-            adults_wallet = 1,
-            giants_wallet = 2
-        } wallet : 2;
-        enum <ubyte> BULLET_BAG {
-            no_bullet_bag,
-            bullet_bag_30 = 1,
-            bullet_bag_40 = 2,
-            bullet_bag_50 = 3
-        } bullet_bag : 2;
-
-        enum <ubyte> QUIVER {
-            no_quiver,
-            quiver_30 = 1,
-            quiver_40 = 2,
-            quiver_50 = 3
-        } quiver : 3;
-        enum <ubyte> BOMB_BAG {
-            no_bomb_bag,
-            bomb_bag_20 = 1,
-            bomb_bag_30 = 2,
-            bomb_bag_40 = 3
-        } bomb_bag : 3;
-        enum <ubyte> STRENGTH_UPGRADE {
-            no_strength_upgrade,
-            goron_bracelet = 1,
-            silver_gauntlets = 2,
-            golden_gauntlets = 3
-        } strength_upgrade : 2;
-
-    } equipment_data;
-
-    SetBackColor(cDkGreen);
-
-    struct {
-        enum <ubyte> HEART_PIECES {
-            HEART_PIECES_NONE,
-            HEART_PIECES_ONE = 0x10,
-            HEART_PIECES_TWO = 0x20,
-            HEART_PIECES_THREE = 0x30
-        } heart_pieces <format=hex>;
-
-        ubyte song_of_time : 1;
-        ubyte song_of_storms : 1;
-        ubyte kokiri_emerald : 1;
-        ubyte gorons_ruby : 1;
-        ubyte zoras_sapphire : 1;
-        ubyte stone_of_agony : 1;
-        ubyte gerudos_card : 1;
-        ubyte gold_skulltula_display : 1;
-
-        ubyte serenade_of_water : 1;
-        ubyte requiem_of_spirit : 1;
-        ubyte nocturne_of_shadow : 1;
-        ubyte prelude_of_light : 1;
-        ubyte zeldas_lullaby : 1;
-        ubyte eponas_song : 1;
-        ubyte sarias_song : 1;
-        ubyte suns_song : 1;
-
-        ubyte forest_medallion : 1;
-        ubyte fire_medallion : 1;
-        ubyte water_medallion : 1;
-        ubyte spirit_medallion : 1;
-        ubyte shadow_medallion : 1;
-        ubyte light_medallion : 1;
-        ubyte minuet_of_forest : 1;
-        ubyte bolero_of_fire : 1;
-    } quest_status_data;
-
-    SetBackColor(cDkGreen);
-
-    struct {
-        ubyte boss_key : 1;
-        ubyte compass : 1;
-        ubyte map : 1;
-        ubyte unused : 5;
-    } dungeon_items[20];
-
-    SetBackColor(cDkGreen);
-
-    /*
-    enum <ubyte> DUNGEON_ITEM {
-        NONE,
-        BOSS_KEY = 1,
-        COMPASS = 2,
-        BOSS_KEY_COMPASS = 3,
-        MAP = 4,
-        BOSS_KEY_MAP = 5,
-        COMPASS_MAP = 6,
-        BOSS_KEY_COMPASS_MAP = 7
-    } dungeon_items[20] <format=hex>;
-    */
-
+    KNOWN;
     ubyte small_key_amount[20] <comment="255 will hide small key amount.">;
 
     uint16 gold_skulltula_amount;
-    SetBackColor(cLtYellow);
-    uint16 unknown4; //???
-    SetBackColor(cDkGreen);
 
-    struct {
-        uint chest_flags <format=hex>;
-        uint switches <format=hex>;
-        uint room_clear_flags <format=hex>;
-        uint collectible_flags <format=hex>;
-        uint unused;
-        uint64 visited_rooms <format=hex>;
-    } scene_data[101];
+    UNKNOWN;
+    uint16 unknown5;
 
-    SetBackColor(cLtYellow);
+    KNOWN;
+    ZSaveSceneFlags scene_flags[101];
 
-    ubyte unknown5[0x284]; //???
+    UNKNOWN;
+    ubyte unknown6[0x284];
 
-    SetBackColor(cDkGreen);
+    KNOWN;
+    ZSaveFaroresWind farores_wind_data;
 
-    struct {
-        float x_coordinate;
-        float y_coordinate;
-        float z_coordinate;
-        float y_axis_rotation;
-        SetBackColor(cLtYellow);
-        ubyte unknown[4];
-        SetBackColor(cDkGreen);
-        uint entrance_index;
-        uint map_index;
-        uint is_set;
-    } farores_wind_data;
+    UNKNOWN;
+    ubyte unknown7[0x18];
 
-    SetBackColor(cLtYellow);
-
-    ubyte unknown6[0x18]; //???
-
-    SetBackColor(cDkGreen);
-
+    KNOWN;
     ubyte skulltula_flags[0x18] <format=hex>;
 
-    SetBackColor(cLtYellow);
+    UNKNOWN;
+    ubyte unknown8[0x4];
 
-    ubyte unknown7[0x4]; //???
-
-    SetBackColor(cDkGreen);
-
+    KNOWN;
     uint horseback_archery_highscore;
 
-    SetBackColor(cLtYellow);
+    UNKNOWN;
+    ubyte unknown9[0x8];
 
-    ubyte unknown8[0x8]; //???
-
-    SetBackColor(cDkGreen);
-
+    KNOWN;
     uint horse_race_record_time;
     uint marathon_race_record_time;
 
-    SetBackColor(cLtYellow);
+    UNKNOWN;
+    ubyte unknown10[0x6C]; // Event flags are somewhere in here
 
-    ubyte unknown9[0x6C]; //Event flags are somewhere in here
-
-    SetBackColor(cDkGreen);
-
+    KNOWN;
     uint world_map_exploration_data <format=hex>;
 
-    SetBackColor(cLtYellow);
+    UNKNOWN;
+    ubyte unknown11[0x4];
 
-    ubyte unknown10[0x4];
-
-    SetBackColor(cDkGreen);
-
+    KNOWN;
     ubyte scarecrows_song_long[0x364];
 
-    SetBackColor(cLtYellow);
+    UNKNOWN;
+    ubyte unknown12[0x20];
 
-    ubyte unknown11[0x20];
+    KNOWN;
+    ubyte scarecrows_song[0x80]; // TODO: find info on this format
 
-    SetBackColor(cDkGreen);
+    UNKNOWN;
+    ubyte unknown13[4]; // It is read when changing scarecrow's song
+    ubyte unknown14[0xA];
 
-    ubyte scarecrows_song[0x80];
-
-    SetBackColor(cLtYellow);
-
-    ubyte unknown12[4]; //It is read when changing scarecrow's song
-    ubyte unknown13[0xA];
-
-    SetBackColor(cDkGreen);
-
+    KNOWN;
     uint16 checksum <format=hex>;
 
-    ubyte unused_end[0xFD]; //This data is saved from the SRAM, but is never loaded by the game
+    UNUSED;
+    ubyte unused_end[0xFC]; // This data is saved from the SRAM, but is never loaded by the game
 
 } ZSaveData;
 
+typedef struct {
+    UNKNOWN;
+    ubyte unknown[0x20]; // TODO
+} ZSaveDataHeader;
+
 struct {
-    FSeek( 0x00000020 );
+    ZSaveDataHeader saveHeader;
     ZSaveData saveData1;
-
-    FSeek( 0x00001470 );
     ZSaveData saveData2;
-
-    FSeek( 0x000028C0 );
     ZSaveData saveData3;
-
-    FSeek( 0x00003D10 );
     ZSaveData saveData1Backup;
-
-    FSeek( 0x00005160 );
     ZSaveData saveData2Backup;
-
-    FSeek( 0x000065B0 );
     ZSaveData saveData3Backup;
 } Save;
