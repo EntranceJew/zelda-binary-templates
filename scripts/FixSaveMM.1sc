@@ -1,0 +1,34 @@
+// -*- mode: c;-*-
+BigEndian();
+
+local uint checksum_offset = 0x100A;
+void update_checksum( uint start, int owl )
+{
+    local uint16 checksum = 0;
+    local uint pos;
+    for( pos = start; pos < start + checksum_offset; pos++ ) {
+        checksum += (ubyte) ReadByte( pos );
+    }
+    if( owl ) {
+        checksum += 0x24;
+    }
+    WriteShort( pos, checksum );
+}
+
+void copy_save( uint from, uint to, int owl )
+{
+    local uint size = owl ? 0x4000 : 0x2000;
+    local ubyte buffer[size];
+    ReadBytes( buffer, from, size );
+    WriteBytes( buffer, to, size );
+}
+
+update_checksum( 0x00000, 0 );
+update_checksum( 0x04000, 0 );
+update_checksum( 0x08000, 1 );
+update_checksum( 0x10000, 1 );
+
+copy_save( 0x00000, 0x02000, 0 );
+copy_save( 0x04000, 0x06000, 0 );
+copy_save( 0x08000, 0x0C000, 1 );
+copy_save( 0x10000, 0x14000, 1 );
