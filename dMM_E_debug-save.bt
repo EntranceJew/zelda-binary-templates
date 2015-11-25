@@ -418,7 +418,8 @@ typedef struct {
 
 typedef struct {
     uint heart_pieces : 4;
-    uint unused0 : 3;
+    uint unused0 : 2;
+    uint picture_taken : 1;
     uint song_lullaby_intro : 1;
 
     uint unused1 : 4;
@@ -472,6 +473,31 @@ typedef enum <ubyte> {
     green,
     yellow
 } ZSaveSpiderHouseMaskOrder;
+
+typedef enum <ubyte> {
+    note_end = 0x00,
+    note_a = 0x02, // D4
+    note_down = 0x05, // F4
+    note_right = 0x09, // A4
+    note_left = 0x0B, // B4
+    note_up = 0x0E, // D5
+    note_stop = 0xFF,
+} ZNote;
+
+typedef struct {
+    KNOWN;
+    ZNote note;
+    UNKNOWN;
+    ubyte unknown0;
+    KNOWN;
+    uint16 length;
+    ubyte volume;
+    UNKNOWN;
+    ubyte unknown1;
+    KNOWN;
+    byte pitch;
+    byte vibrato;
+} ZSongNote;
 
 typedef struct {
     local string thisName = "ZSaveDataInternal";
@@ -581,7 +607,15 @@ typedef struct {
     ZSaveSceneFlags scene_flags[0x78];
 
     UNKNOWN;
-    ubyte unknown10[0xD4];
+    ubyte unknown10[0xAA];
+
+    KNOWN; // temporary names
+    ubyte pictograph_special;
+    ubyte pictograph_quality;
+    ubyte pictograph_unknown;
+
+    UNKNOWN;
+    ubyte unknown11[0x27];
 
     KNOWN;
     // only the first 4 words wind up being used
@@ -606,10 +640,8 @@ typedef struct {
     GenericBitfield area_arrival[4] <format=hex>;
     GenericBitfield cloud_clear[4] <format=hex>;
 
-    ubyte scarecrows_song[0x80]; // TODO: find info on this format
-
-    UNKNOWN;
-    ubyte unknown14[2];
+    uint16 scarecrows_song_acquired;
+    ZSongNote scarecrows_song[0x10];
 
     KNOWN;
     ubyte bombers_caught;
@@ -653,7 +685,7 @@ typedef struct {
     ubyte hot_spring_water_statuses[6];
     ubyte hot_spring_water_timers[6*32]; // TODO: reverse engineer
 
-    ubyte pictograph_picture[100*112]; // 1 byte per pixel
+    ubyte pictograph_picture[100*112]; // 5 bits per pixel
 
     UNUSED;
     uint unused_end[0xD8];
