@@ -16,3 +16,70 @@ typedef struct(uint64 size){
 
     SIEND;
 } DummyOverlay;
+
+void DumpDummyOverlay( DummyOverlay &d ){
+    local uint64 pair = 0;
+    local uint64 pos = 0;
+    local uint64 value = 0;
+    local uint64 loc = 0;
+    local uint64 thingread = 0;
+    local uint64 rel = 0;
+    Printf("num\tsection(S)\ttype(T)\t\top. value\t\taddress\t\tread at addr.\trel to vram start\trel. pos\n");
+    while( exists( d.header.relocationPointers[pos] ) ){
+        switch( d.header.relocationPointers[pos].type ){
+            case RELO_TYPE_32BITPTR:
+                value = d.header.relocationPointers[pos].offset;
+                break;
+            case RELO_TYPE_26BITPTR:
+                value = d.header.relocationPointers[pos].offset;
+                break;
+            case RELO_TYPE_MIPS_LUI:
+                pair = 1;
+                value = d.header.relocationPointers[pos].offset << 16;
+                break;
+            case RELO_TYPE_MIPS_ORI:
+                value += d.header.relocationPointers[pos].offset;
+                pair = 0;
+                break;
+        }
+
+        switch( d.header.relocationPointers[pos].section ){
+            case RELO_SECTION_TEXT:
+                loc = startof(d.textBlockData);
+                break;
+            case RELO_SECTION_DATA:
+                loc = startof(d.dataBlockData);
+                break;
+            case RELO_SECTION_RODATA:
+                loc = startof(d.rodataBlockData);
+                break;
+            case RELO_SECTION_BSS:
+                loc = startof(d.bssBlockData);
+                break;
+        }
+
+        if( !pair ){
+            if( loc+value < FileSize() ){
+                thingread = ReadUInt(loc+value);
+                rel = thingread - parentof(d).vramStart;
+            }
+
+            Printf("%d\t%s\t%s\t0x%08LX\t0x%08LX\t0x%08LX\t0x%08LX\t0x%08LX\n",
+                pos,
+                EnumToString( d.header.relocationPointers[pos].section ),
+                EnumToString( d.header.relocationPointers[pos].type ),
+                value,
+                loc+value,
+                thingread,
+                rel,
+                startof(d)+rel
+            );
+            value = 0;
+        }
+
+        rel = 0;
+        thingread = 0;
+        loc = 0;
+        pos++;
+    }
+}

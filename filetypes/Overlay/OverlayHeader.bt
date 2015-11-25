@@ -2,6 +2,7 @@
 // http://www.cs.umd.edu/class/sum2003/cmsc311/Notes/Mips/load32.html
 // http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html
 // http://vhouten.home.xs4all.nl/mipsel/r3000-isa.html
+// https://www.cs.umd.edu/class/fall2003/cmsc311/Lectures/lecture15/C_code.pdf
 
 #define OVERLAYHEAD SAVE; \
                     FSeek(startof(this)+size-ReadUInt(startof(this)+size-4)); \
@@ -10,15 +11,15 @@
 
 typedef struct{
     enum <ubyte> RELO_SECTION {
-        RELO_SECTION_TEXT   = 0x0,
-        RELO_SECTION_DATA   = 0x1,
-        RELO_SECTION_RODATA = 0x2,
-        RELO_SECTION_BSS    = 0x3,
+        RELO_SECTION_TEXT   = 0x1,
+        RELO_SECTION_DATA   = 0x2,
+        RELO_SECTION_RODATA = 0x3,
+        RELO_SECTION_BSS    = 0x4,
     } section :  2;
     ubyte unknown : 2;
     enum <ubyte> RELO_TYPE {
         RELO_TYPE_32BITPTR    = 0x2,
-        RELO_TYPE_JUMPTARGET  = 0x4,
+        RELO_TYPE_26BITPTR    = 0x4, //or a jump target?
         RELO_TYPE_MIPS_LUI    = 0x5,
         RELO_TYPE_MIPS_ORI    = 0x6,
     } type    :  4;

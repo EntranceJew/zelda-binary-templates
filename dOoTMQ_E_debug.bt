@@ -32,6 +32,10 @@
 // import the ROM structure
 #include "skeleton.bt"
 
+FSeek(0x00B8FBC0);
+ZActorTableEntry hotdog;
+DumpDummyOverlay(hotdog.myOverlay);
+
 // Overlay files need to know their end so they can
 // find where their footer starts.
 FSeek(0x00C27940);
