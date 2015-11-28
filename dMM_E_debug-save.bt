@@ -8,6 +8,10 @@
 
 #include "autoload.bt"
 
+#define KNOWN SetBackColor(0x62A132) // Green
+#define UNKNOWN SetBackColor(0x7DE3FF) // Yellow
+#define UNUSED SetBackColor(0xA265B8) // Purple
+
 typedef struct {
     ubyte bit_7 : 1;
     ubyte bit_6 : 1;
@@ -105,7 +109,7 @@ typedef enum <ubyte> {
 
     Item_None2              = 0xFD, // sometimes used for B button
     Item_None               = 0xFF
-} InventoryItem;
+} ZSaveInventoryItem;
 
 typedef enum <ubyte> {
     Slot_Ocarina            = 0x00,
@@ -159,88 +163,367 @@ typedef enum <ubyte> {
     Slot_Mask_Fierce_Deity  = 0x2F,
 
     Slot_None               = 0xFF
-} InventorySlot;
+} ZSaveInventorySlot;
 
 typedef struct {
-    InventoryItem b_button_item;
-    InventoryItem c_left_button_item;
-    InventoryItem c_down_button_item;
-    InventoryItem c_right_button_item;
+    ZSaveInventoryItem b_button_item;
+    ZSaveInventoryItem c_left_button_item;
+    ZSaveInventoryItem c_down_button_item;
+    ZSaveInventoryItem c_right_button_item;
 } ZSaveItemsEquipped;
 
-typedef struct {
-    local string thisName = "ZSaveData";
-    uint entrance_index <format=hex>; // Stores the Entrance Link starts/respawns at
-    enum <ubyte> {
-        wear_none = 0,
-        wear_truth = 1,
-        wear_kafei = 2,
-        wear_all_night = 3,
-        wear_bunny = 4,
-        wear_keaton = 5,
-        wear_garos = 6,
-        wear_romani = 7,
-        wear_troupe_leader = 8,
-        wear_postman = 9,
-        wear_couples = 10,
-        wear_great_fairy = 11,
-        wear_gibdo = 12,
-        wear_don_gero = 13,
-        wear_kamaro = 14,
-        wear_captains = 15,
-        wear_stone = 16,
-        wear_bremen = 17,
-        wear_blast = 18,
-        wear_scents = 19,
-        wear_giants = 20,
+typedef struct { // Which item you have in each slot
+    ZSaveInventoryItem ocarina;
+    ZSaveInventoryItem bow;
+    ZSaveInventoryItem fire_arrows;
+    ZSaveInventoryItem ice_arrows;
+    ZSaveInventoryItem light_arrows;
+    ZSaveInventoryItem event_1;
+    ZSaveInventoryItem bombs;
+    ZSaveInventoryItem bombchu;
+    ZSaveInventoryItem deku_stick;
+    ZSaveInventoryItem deku_nut;
+    ZSaveInventoryItem magic_beans;
+    ZSaveInventoryItem event_2;
+    ZSaveInventoryItem powder_keg;
+    ZSaveInventoryItem pictograph;
+    ZSaveInventoryItem lens_of_truth;
+    ZSaveInventoryItem hookshot;
+    ZSaveInventoryItem fairy_sword;
+    ZSaveInventoryItem event_3;
+    ZSaveInventoryItem bottle_1;
+    ZSaveInventoryItem bottle_2;
+    ZSaveInventoryItem bottle_3;
+    ZSaveInventoryItem bottle_4;
+    ZSaveInventoryItem bottle_5;
+    ZSaveInventoryItem bottle_6;
 
-        // impossible without glitches?
-        wear_fierce_deity = 21,
-        wear_goron = 22,
-        wear_zora = 23,
-        wear_deku = 24
-    } wearing_mask;
+    ZSaveInventoryItem mask_postman;
+    ZSaveInventoryItem mask_all_night;
+    ZSaveInventoryItem mask_blast;
+    ZSaveInventoryItem mask_stone;
+    ZSaveInventoryItem mask_great_fairy;
+    ZSaveInventoryItem mask_deku;
+    ZSaveInventoryItem mask_keaton;
+    ZSaveInventoryItem mask_bremen;
+    ZSaveInventoryItem mask_bunny;
+    ZSaveInventoryItem mask_don_gero;
+    ZSaveInventoryItem mask_scents;
+    ZSaveInventoryItem mask_goron;
+    ZSaveInventoryItem mask_romani;
+    ZSaveInventoryItem mask_troupe_leader;
+    ZSaveInventoryItem mask_kafei;
+    ZSaveInventoryItem mask_couples;
+    ZSaveInventoryItem mask_truth;
+    ZSaveInventoryItem mask_zora;
+    ZSaveInventoryItem mask_kamaro;
+    ZSaveInventoryItem mask_gibdo;
+    ZSaveInventoryItem mask_garos;
+    ZSaveInventoryItem mask_captains;
+    ZSaveInventoryItem mask_giants;
+    ZSaveInventoryItem mask_fierce_deity;
+} ZSaveInventorySlotItemIDs;
+
+typedef struct { // How much ammo you have in each slot
+    ubyte ocarina;
+    ubyte bow;
+    ubyte fire_arrows;
+    ubyte ice_arrows;
+    ubyte light_arrows;
+    ubyte event_1;
+    ubyte bombs;
+    ubyte bombchu;
+    ubyte deku_stick;
+    ubyte deku_nut;
+    ubyte magic_beans;
+    ubyte event_2;
+    ubyte powder_keg;
+    ubyte pictograph;
+    ubyte lens_of_truth;
+    ubyte hookshot;
+    ubyte fairy_sword;
+    ubyte event_3;
+    ubyte bottle_1;
+    ubyte bottle_2;
+    ubyte bottle_3;
+    ubyte bottle_4;
+    ubyte bottle_5;
+    ubyte bottle_6;
+} ZSaveInventorySlotItemAmount;
+
+typedef enum <ubyte> {
+    sound_stereo,
+    sound_mono,
+    sound_headset,
+    sound_surround
+} ZSaveSoundSetting;
+
+typedef enum <ubyte> {
+    target_switch,
+    target_hold
+} ZSaveTargetStyle;
+
+typedef enum <ubyte> {
+    wear_none = 0,
+    wear_truth = 1,
+    wear_kafei = 2,
+    wear_all_night = 3,
+    wear_bunny = 4,
+    wear_keaton = 5,
+    wear_garos = 6,
+    wear_romani = 7,
+    wear_troupe_leader = 8,
+    wear_postman = 9,
+    wear_couples = 10,
+    wear_great_fairy = 11,
+    wear_gibdo = 12,
+    wear_don_gero = 13,
+    wear_kamaro = 14,
+    wear_captains = 15,
+    wear_stone = 16,
+    wear_bremen = 17,
+    wear_blast = 18,
+    wear_scents = 19,
+    wear_giants = 20,
+
+    // are these possible without glitches?
+    wear_fierce_deity = 21,
+    wear_goron = 22,
+    wear_zora = 23,
+    wear_deku = 24
+} ZSaveWearingMask;
+
+typedef enum <uint> {
+    no_cutscene = 0x0000,
+    in_cutscene = 0xFFFD
+    // 0xFFEF to 0xFFFF might be used here, but i've only seen 0xFFFD
+} ZSaveCutsceneOffset <format=hex>;
+
+typedef enum <uint16> {
+    owl_hidden = 15, // always takes you to mayor's residence
+    owl_stone_tower = 9,
+    owl_ikana_canyon = 8,
+    owl_southern_swamp = 7,
+    owl_woodfall = 6,
+    owl_milk_road = 5,
+    owl_clock_town = 4,
+    owl_mountain_village = 3,
+    owl_snowhead = 2,
+    owl_zora_cape = 1,
+    owl_great_bay_coast = 0
+} ZSaveOwlID;
+
+typedef enum <uint> {
+    day,
+    night
+} ZSaveDayNight;
+
+typedef enum <int> {
+    // technically, any value is valid
+    normal = 0,
+    inverted_song_of_time = -2
+} ZSaveTimeSpeed;
+
+typedef enum <ubyte> {
+    trans_fierce_deity,
+    trans_goron,
+    trans_zora,
+    trans_deku,
+    trans_human
+} ZSaveTransformation;
+
+typedef enum <ubyte> {
+    no_magic_meter,
+    normal_magic_meter,
+    double_magic_meter
+} ZSaveMagicMeterSize;
+
+typedef struct {
+    uint16 hidden_owl : 1; // used as a placeholder in some scene setups
+    uint16 unused : 5;
+    uint16 stone_tower : 1;
+    uint16 ikana_canyon : 1;
+    uint16 southern_swamp : 1;
+    uint16 woodfall : 1;
+    uint16 milk_road : 1;
+    uint16 clock_town : 1;
+    uint16 mountain_village : 1;
+    uint16 snowhead : 1;
+    uint16 zora_cape : 1;
+    uint16 great_bay_coast : 1;
+} ZSaveOwlsHit;
+
+typedef enum <ubyte> {
+    no_boots
+} ZSaveBoots;
+typedef enum <ubyte> {
+    no_tunic,
+    kokiri_tunic,
+    goron_tunic,
+    zora_tunic
+} ZSaveTunic;
+typedef enum <ubyte> {
+    no_shield,
+    heros_shield,
+    mirror_shield
+} ZSaveShield;
+typedef enum <ubyte> {
+    no_sword,
+    kokiri_sword,
+    razor_sword,
+    gilded_sword
+} ZSaveSword;
+
+typedef enum <uint> {
+    no_deku_nut_capacity,
+    deku_nut_capacity_20,
+    deku_nut_capacity_30,
+    deku_nut_capacity_40
+} ZSaveUpgradeNuts;
+typedef enum <uint> {
+    no_deku_stick_capacity,
+    deku_stick_capacity_10,
+    deku_stick_capacity_20,
+    deku_stick_capacity_30
+} ZSaveUpgradeSticks;
+typedef enum <uint> {
+    default_wallet,
+    adults_wallet,
+    giants_wallet
+} ZSaveUpgradeWallet;
+typedef enum <uint> {
+    no_bomb_capacity,
+    bomb_capacity_20,
+    bomb_capacity_30,
+    bomb_capacity_40
+} ZSaveUpgradeBombs;
+typedef enum <uint> {
+    no_quiver,
+    quiver_30,
+    quiver_40,
+    quiver_50
+} ZSaveUpgradeArrows;
+
+typedef struct {
+    uint unused0 : 9;
+    ZSaveUpgradeNuts deku_nut_capacity : 3;
+    ZSaveUpgradeSticks deku_stick_capacity : 3;
+    ubyte bullet_bag_capacity : 3;
+    ZSaveUpgradeWallet wallet_size : 2;
+    ubyte dive_meter : 3;
+    ubyte strength_upgrade : 3;
+    ZSaveUpgradeBombs bomb_bag_capacity : 3;
+    ZSaveUpgradeArrows quiver_capacity : 3;
+} ZSaveUpgrades;
+
+typedef struct {
+    uint heart_pieces : 4;
+    uint unused0 : 2;
+    uint picture_taken : 1;
+    uint song_lullaby_intro : 1;
+
+    uint unused1 : 4;
+    uint unknown : 1; // TODO
+    uint bombers_notebook : 1;
+    uint suns_song : 1;
+    uint song_of_storms : 1;
+
+    uint song_of_soaring : 1;
+    uint eponas_song : 1;
+    uint song_of_healing : 1;
+    uint song_of_time : 1;
+    uint sarias_song : 1;
+    uint oath_to_order : 1;
+    uint elegy_of_emptiness : 1;
+    uint new_wave_bossa_nova : 1;
+
+    uint goron_lullaby : 1;
+    uint sonata_of_awakening : 1;
+    uint unused2 : 2;
+    uint remains_twinmold : 1;
+    uint remains_gyorg : 1;
+    uint remains_goht : 1;
+    uint remains_odolwa : 1;
+} ZSaveQuestStatus;
+
+typedef struct {
+    ubyte unused : 5;
+    ubyte map : 1;
+    ubyte compass : 1;
+    ubyte boss_key : 1;
+} ZSaveDungeonItems;
+
+typedef struct {
+    // inferring from OoT, which is probably different:
+    uint flags0 <format=binary>; // chest_flags?
+    uint flags1 <format=binary>; // switches?
+    uint flags2 <format=binary>; // room_clear_flags?
+    uint flags3 <format=binary>; // collectible_flags?
+    uint flags4 <format=binary>; // visited_rooms?
+} ZSaveSceneFlags;
+
+typedef struct {
+    ubyte digit1;
+    ubyte digit2;
+    ubyte digit3;
+} ZSaveLotteryCodes;
+typedef enum <ubyte> {
+    red,
+    blue,
+    green,
+    yellow
+} ZSaveSpiderHouseMaskOrder;
+
+typedef enum <ubyte> {
+    note_end = 0x00,
+    note_a = 0x02, // D4
+    note_down = 0x05, // F4
+    note_right = 0x09, // A4
+    note_left = 0x0B, // B4
+    note_up = 0x0E, // D5
+    note_stop = 0xFF,
+} ZNote;
+
+typedef struct {
+    KNOWN;
+    ZNote note;
+    UNKNOWN;
+    ubyte unknown0;
+    KNOWN;
+    uint16 length;
+    ubyte volume;
+    UNKNOWN;
+    ubyte unknown1;
+    KNOWN;
+    byte pitch;
+    byte vibrato;
+} ZSongNote;
+
+typedef struct {
+    local string thisName = "ZSaveDataInternal";
+    KNOWN;
+    uint entrance_index <format=hex>; // Stores the Entrance Link starts/respawns at
+    ZSaveWearingMask wearing_mask;
     ubyte opening_flag; // Has completed intro
     ubyte text_skip_timer; // Prevents skipping text for a period
-    UNK; ubyte unknown0; // Something to do with picking up items?
-    enum <uint> {
-        no_cutscene = 0x0000,
-        in_cutscene = 0xFFFD
-        // 0xFFEF to 0xFFFF might be used here, but i've only seen 0xFFFD
-    } cutscene_offset <format=hex>;
+
+    UNKNOWN;
+    ubyte unknown0; // Something to do with picking up items?
+
+    KNOWN;
+    ZSaveCutsceneOffset cutscene_offset;
     uint16 time_of_day <format=hex>;
-    enum <uint16> {
-        owl_hidden = 15, // always takes you to mayor's residence
-        owl_stone_tower = 9,
-        owl_ikana_canyon = 8,
-        owl_southern_swamp = 7,
-        owl_woodfall = 6,
-        owl_milk_road = 5,
-        owl_clock_town = 4,
-        owl_mountain_village = 3,
-        owl_snowhead = 2,
-        owl_zora_cape = 1,
-        owl_great_bay_coast = 0
-    } owl_id;
-    enum <uint> {
-        day = 0,
-        night = 1
-    } day_night;
-    enum <int> {
-        // technically, any value is valid
-        normal = 0,
-        inverted_song_of_time = -2
-    } time_speed;
+    ZSaveOwlID owl_id;
+    ZSaveDayNight day_night;
+    ZSaveTimeSpeed time_speed;
     uint day;
     uint days_elapsed;
-    enum <ubyte> {
-        trans_fierce_deity = 0,
-        trans_goron = 1,
-        trans_zora = 2,
-        trans_deku = 3,
-        trans_human = 4
-    } transformation;
-    UNK; ubyte unknown1; // spring_flag?
+    ZSaveTransformation transformation;
+
+    UNKNOWN;
+    ubyte unknown1; // spring_flag?
+
+    KNOWN;
     ubyte have_tatl; // boolean
     ubyte owl_save; // boolean
     char file_validation[6];
@@ -248,223 +531,62 @@ typedef struct {
     char file_name[8];
     uint16 heart_containers <format=hex>; // 0x10 per heart
     uint16 health <format=hex>; // 0x10 per heart
-    enum <ubyte> {
-        no_magic_meter,
-        normal_magic_meter = 1,
-        double_magic_meter = 2
-    } magic_meter_size;
+    ZSaveMagicMeterSize magic_meter_size;
     ubyte magic <format=hex>; // 0x30 for normal, 0x60 for double
     uint16 rupees;
     uint navi_timer;
     ubyte has_normal_magic; // boolean
     ubyte has_double_magic; // boolean
     uint16 double_defense; // boolean? actually seems unused in MM
-    UNK; uint16 unknown2;
-    struct {
-        uint16 hidden_owl : 1; // used as a placeholder in some scene setups
-        uint16 unused : 5;
-        uint16 stone_tower : 1;
-        uint16 ikana_canyon : 1;
-        uint16 southern_swamp : 1;
-        uint16 woodfall : 1;
-        uint16 milk_road : 1;
-        uint16 clock_town : 1;
-        uint16 mountain_village : 1;
-        uint16 snowhead : 1;
-        uint16 zora_cape : 1;
-        uint16 great_bay_coast : 1;
-    } owls_hit;
-    UNK; uint unknown3 <format=hex>;
 
+    UNKNOWN;
+    uint16 unknown2;
+
+    KNOWN;
+    ZSaveOwlsHit owls_hit;
+
+    UNKNOWN;
+    uint unknown3 <format=hex>;
+
+    KNOWN;
     ZSaveItemsEquipped items_human; // also used for fierce deity
     ZSaveItemsEquipped items_goron;
     ZSaveItemsEquipped items_zora;
     ZSaveItemsEquipped items_deku;
+    UNUSED;
     ubyte unused; // this is where the b button slot would be
-    InventorySlot c_left_button_slot;
-    InventorySlot c_down_button_slot;
-    InventorySlot c_right_button_slot;
+    KNOWN;
+    ZSaveInventorySlot c_left_button_slot;
+    ZSaveInventorySlot c_down_button_slot;
+    ZSaveInventorySlot c_right_button_slot;
 
-    UNK; uint unknown4<format=hex>;
-    UNK; uint unknown5<format=hex>;
-    UNK; uint unknown6<format=hex>;
-    enum <ubyte> {
-        no_boots,
-    } boots : 4;
-    enum <ubyte> {
-        no_tunic,
-        kokiri_tunic = 1,
-        goron_tunic = 2,
-        zora_tunic = 3
-    } tunic : 4;
-    enum <ubyte> {
-        no_shield,
-        heros_shield = 1,
-        mirror_shield = 2,
-    } shield : 4;
-    enum <ubyte> {
-        no_sword,
-        kokiri_sword = 1,
-        razor_sword = 2,
-        gilded_sword = 3
-    } sword : 4;
-    UNK; uint16 unknown7;
+    UNKNOWN;
+    uint unknown4<format=hex>;
+    uint unknown5<format=hex>;
+    uint unknown6<format=hex>;
 
-    struct { // Which item you have in each slot
-        InventoryItem ocarina;
-        InventoryItem bow;
-        InventoryItem fire_arrows;
-        InventoryItem ice_arrows;
-        InventoryItem light_arrows;
-        InventoryItem event_1;
-        InventoryItem bombs;
-        InventoryItem bombchu;
-        InventoryItem deku_stick;
-        InventoryItem deku_nut;
-        InventoryItem magic_beans;
-        InventoryItem event_2;
-        InventoryItem powder_keg;
-        InventoryItem pictograph;
-        InventoryItem lens_of_truth;
-        InventoryItem hookshot;
-        InventoryItem fairy_sword;
-        InventoryItem event_3;
-        InventoryItem bottle_1;
-        InventoryItem bottle_2;
-        InventoryItem bottle_3;
-        InventoryItem bottle_4;
-        InventoryItem bottle_5;
-        InventoryItem bottle_6;
+    KNOWN;
+    ZSaveBoots boots : 4;
+    ZSaveTunic tunic : 4;
+    ZSaveShield shield : 4;
+    ZSaveSword sword : 4;
 
-        InventoryItem mask_postman;
-        InventoryItem mask_all_night;
-        InventoryItem mask_blast;
-        InventoryItem mask_stone;
-        InventoryItem mask_great_fairy;
-        InventoryItem mask_deku;
-        InventoryItem mask_keaton;
-        InventoryItem mask_bremen;
-        InventoryItem mask_bunny;
-        InventoryItem mask_don_gero;
-        InventoryItem mask_scents;
-        InventoryItem mask_goron;
-        InventoryItem mask_romani;
-        InventoryItem mask_troupe_leader;
-        InventoryItem mask_kafei;
-        InventoryItem mask_couples;
-        InventoryItem mask_truth;
-        InventoryItem mask_zora;
-        InventoryItem mask_kamaro;
-        InventoryItem mask_gibdo;
-        InventoryItem mask_garos;
-        InventoryItem mask_captains;
-        InventoryItem mask_giants;
-        InventoryItem mask_fierce_deity;
-    } inventory_slot_item_ids;
+    UNKNOWN;
+    uint16 unknown7;
 
-    struct { // How much ammo you have in each slot
-        ubyte ocarina;
-        ubyte bow;
-        ubyte fire_arrows;
-        ubyte ice_arrows;
-        ubyte light_arrows;
-        ubyte event_1;
-        ubyte bombs;
-        ubyte bombchu;
-        ubyte deku_stick;
-        ubyte deku_nut;
-        ubyte magic_beans;
-        ubyte event_2;
-        ubyte powder_keg;
-        ubyte pictograph;
-        ubyte lens_of_truth;
-        ubyte hookshot;
-        ubyte fairy_sword;
-        ubyte event_3;
-        ubyte bottle_1;
-        ubyte bottle_2;
-        ubyte bottle_3;
-        ubyte bottle_4;
-        ubyte bottle_5;
-        ubyte bottle_6;
-    } inventory_slot_item_amount;
+    KNOWN;
+    ZSaveInventorySlotItemIDs inventory_slot_item_ids;
+    ZSaveInventorySlotItemAmount inventory_slot_item_amount;
 
-    struct {
-        uint unused0 : 9;
-        enum <uint> {
-            no_deku_nut_capacity,
-            deku_nut_capacity_20 = 1,
-            deku_nut_capacity_30 = 2,
-            deku_nut_capacity_40 = 3
-        } deku_nut_capacity : 3;
-        enum <uint> {
-            no_deku_stick_capacity,
-            deku_stick_capacity_10 = 1,
-            deku_stick_capacity_20 = 2,
-            deku_stick_capacity_30 = 3
-        } deku_stick_capacity : 3;
-        uint unused1 : 3; // bullet_bag?
-        enum <uint> {
-            default_wallet,
-            adults_wallet = 1,
-            giants_wallet = 2
-        } wallet : 2;
-        uint unused2 : 3; // dive_meter?
-        uint unused3 : 3; // strength_upgrade?
-        enum <uint> {
-            no_bomb_capacity,
-            bomb_capacity_20 = 1,
-            bomb_capacity_30 = 2,
-            bomb_capacity_40 = 3
-        } bomb_capacity : 3;
-        enum <uint> {
-            no_quiver,
-            quiver_30 = 1,
-            quiver_40 = 2,
-            quiver_50 = 3
-        } quiver : 3;
-    } upgrade_data;
+    ZSaveUpgrades upgrade_data;
 
-    struct {
-        uint heart_pieces : 4;
-        uint unused0 : 3;
-        uint song_lullaby_intro : 1;
+    ZSaveQuestStatus quest_status_data;
 
-        uint unused1 : 4;
-        uint unknown : 1; // TODO
-        uint bombers_notebook : 1;
-        uint suns_song : 1;
-        uint song_of_storms : 1;
-
-        uint song_of_soaring : 1;
-        uint eponas_song : 1;
-        uint song_of_healing : 1;
-        uint song_of_time : 1;
-        uint sarias_song : 1;
-        uint oath_to_order : 1;
-        uint elegy_of_emptiness : 1;
-        uint new_wave_bossa_nova : 1;
-
-        uint goron_lullaby : 1;
-        uint sonata_of_awakening : 1;
-        uint unused2 : 2;
-        uint remains_twinmold : 1;
-        uint remains_gyorg : 1;
-        uint remains_goht : 1;
-        uint remains_odolwa : 1;
-    } quest_status_data;
-
-    struct {
-        // TODO: verify
-        ubyte unused : 5;
-        ubyte boss_key : 1;
-        ubyte compass : 1;
-        ubyte map : 1;
-    } dungeon_items[10]; // only 4 are used, but
+    ZSaveDungeonItems dungeon_items[10]; // only 4 are used, but
     // debug save has boss/compass/map in all 10
 
     // all used but the last, i think
-    ubyte small_key_amount[9] <comment="255 will hide small key amount.">;
+    byte small_key_amount[9] <comment="-1 hides the small key amount">;
 
     // normally 0 or 20 but anything inbetween works fine
     ubyte doubled_hearts;
@@ -478,19 +600,24 @@ typedef struct {
     char unknown_name1[8];
     char unknown_name2[8];
 
-    UNK; ubyte unknown9[0x37A];
+    UNKNOWN;
+    ubyte unknown9[0x37A];
 
-    struct {
-        // inferring from OoT, which is probably different:
-        uint flags0 <format=hex>; // chest_flags?
-        uint flags1 <format=hex>; // switches?
-        uint flags2 <format=hex>; // room_clear_flags?
-        uint flags3 <format=hex>; // collectible_flags?
-        uint flags4 <format=hex>; // visited_rooms?
-    } scene_flags[0x78];
+    KNOWN;
+    ZSaveSceneFlags scene_flags[0x78];
 
-    UNK; ubyte unknown10[0xD4];
+    UNKNOWN;
+    ubyte unknown10[0xAA];
 
+    KNOWN; // temporary names
+    ubyte pictograph_special;
+    ubyte pictograph_quality;
+    ubyte pictograph_unknown;
+
+    UNKNOWN;
+    ubyte unknown11[0x27];
+
+    KNOWN;
     // only the first 4 words wind up being used
     // but the code supports up to 7 words
     GenericBitfield minimaps[7*4] <format=hex>;
@@ -498,33 +625,29 @@ typedef struct {
     uint16 skulltulas_woodfall;
     uint16 skulltulas_great_bay;
 
-    UNK; ubyte unknown12[0x1A];
+    UNKNOWN;
+    ubyte unknown12[0x1A];
 
+    KNOWN;
     uint16 banked_rupees;
 
-    UNK; ubyte unknown13[0x18];
+    UNKNOWN;
+    ubyte unknown13[0x18];
 
+    KNOWN;
     GenericBitfield week_event_reg[100];
 
     GenericBitfield area_arrival[4] <format=hex>;
     GenericBitfield cloud_clear[4] <format=hex>;
 
-    ubyte scarecrows_song[0x80]; // TODO: find info on this format
-    UNK; ubyte unknown14[2];
+    uint16 scarecrows_song_acquired;
+    ZSongNote scarecrows_song[0x10];
 
+    KNOWN;
     ubyte bombers_caught;
     ubyte bombers_order[5]; // unrelated to bombers code
-    struct {
-        ubyte digit1;
-        ubyte digit2;
-        ubyte digit3;
-    } lottery_codes[3];
-    enum <ubyte> {
-        red = 0,
-        blue = 1,
-        green = 2,
-        yellow = 3
-    } spider_house_mask_order[6];
+    ZSaveLotteryCodes lottery_codes[3];
+    ZSaveSpiderHouseMaskOrder spider_house_mask_order[6];
     ubyte bombers_code[5];
 
     uint16 epona_scene;
@@ -533,14 +656,27 @@ typedef struct {
     int16 epona_z;
     int16 epona_angle;
     uint16 checksum <format=hex>;
+
+} ZSaveDataInternal;
+
+typedef struct {
+    local string thisName = "ZSaveData";
+    KNOWN;
+    ZSaveDataInternal _;
+    // nothing past this point is loaded by the game
+    UNUSED;
+    uint unused_end[0x3FD];
 } ZSaveData;
 
 typedef struct {
     local string thisName = "ZSaveDataOwl";
-    ZSaveData regular_save;
+    KNOWN;
+    ZSaveDataInternal _;
 
+    KNOWN;
     GenericBitfield event_inf[8];
 
+    KNOWN;
     ubyte rock_sirloin; // boolean
     ubyte b_button_enabled; // boolean
     uint16 bubble_timer;
@@ -549,31 +685,90 @@ typedef struct {
     ubyte hot_spring_water_statuses[6];
     ubyte hot_spring_water_timers[6*32]; // TODO: reverse engineer
 
-    ubyte pictograph_picture[100*112]; // 1 byte per pixel
+    ubyte pictograph_picture[100*112]; // 5 bits per pixel
+
+    UNUSED;
+    uint unused_end[0xD8];
 } ZSaveDataOwl;
 
+typedef struct {
+    local string thisName = "ZSaveDataFooter";
+    UNKNOWN;
+    uint16 unknown0;
+    ubyte unknown1;
+
+    KNOWN;
+    ZSaveSoundSetting sound_setting;
+
+    UNKNOWN;
+    ubyte unknown2;
+
+    KNOWN;
+    ZSaveTargetStyle target_style;
+
+    UNKNOWN;
+    uint16 unknown3;
+    uint unknown4;
+
+    KNOWN;
+    uint16 time_of_day <format=hex>;
+    ZSaveOwlID owl_id;
+    ZSaveDayNight day_night;
+    ZSaveTimeSpeed time_speed;
+    uint day;
+    uint days_elapsed;
+    ZSaveTransformation transformation;
+    ubyte unknown5;
+    ubyte have_tatl;
+    ubyte owl_save;
+    char file_validation[6];
+    uint16 song_of_time_count;
+    char file_name[8];
+    uint16 heart_containers <format=hex>;
+    uint16 health <format=hex>;
+    ZSaveMagicMeterSize magic_meter_size;
+    ubyte magic <format=hex>;
+    uint16 rupees;
+    uint navi_timer;
+    ubyte has_normal_magic;
+    ubyte has_double_magic;
+    uint16 double_defense;
+    uint16 unknown6;
+    ZSaveOwlsHit owls_hit;
+    uint unknown7 <format=hex>;
+
+    ZSaveItemsEquipped items_human;
+    ZSaveItemsEquipped items_goron;
+    ZSaveItemsEquipped items_zora;
+    ZSaveItemsEquipped items_deku;
+    ubyte unused;
+    ZSaveInventorySlot c_left_button_slot;
+    ZSaveInventorySlot c_down_button_slot;
+    ZSaveInventorySlot c_right_button_slot;
+
+    uint unknown8<format=hex>;
+    uint unknown9<format=hex>;
+    uint unknown10<format=hex>;
+    ZSaveBoots boots : 4;
+    ZSaveTunic tunic : 4;
+    ZSaveShield shield : 4;
+    ZSaveSword sword : 4;
+    uint16 unknown11;
+
+    ZSaveInventorySlotItemIDs inventory_slot_item_ids;
+
+    UNUSED;
+    uint unused_end[0x1FD8];
+} ZSaveDataFooter;
+
 struct {
-    FSeek( 0x000000 );
     ZSaveData saveData1;
-
-    FSeek( 0x002000 );
     ZSaveData saveData1Backup;
-
-    FSeek( 0x004000 );
     ZSaveData saveData2;
-
-    FSeek( 0x006000 );
     ZSaveData saveData2Backup;
-
-    FSeek( 0x008000 );
     ZSaveDataOwl saveDataOwl1;
-
-    FSeek( 0x00C000 );
     ZSaveDataOwl saveDataOwl1Backup;
-
-    FSeek( 0x010000 );
     ZSaveDataOwl saveDataOwl2;
-
-    FSeek( 0x014000 );
     ZSaveDataOwl saveDataOwl2Backup;
+    ZSaveDataFooter saveDataFooter;
 } Save;
