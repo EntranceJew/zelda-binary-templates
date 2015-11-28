@@ -357,6 +357,31 @@ typedef struct {
     uint is_set;
 } ZSaveFaroresWind;
 
+typedef enum <ubyte> {
+    note_end = 0x00,
+    note_a = 0x02, // D4
+    note_down = 0x05, // F4
+    note_right = 0x09, // A4
+    note_left = 0x0B, // B4
+    note_up = 0x0E, // D5
+    note_stop = 0xFF,
+} ZNote;
+
+typedef struct {
+    KNOWN;
+    ZNote note;
+    UNKNOWN;
+    ubyte unknown0;
+    KNOWN;
+    uint16 length;
+    ubyte volume;
+    UNKNOWN;
+    ubyte unknown1;
+    KNOWN;
+    byte pitch;
+    byte vibrato;
+} ZSongNote;
+
 typedef struct {
     local string thisName = "ZSaveData";
 
@@ -485,10 +510,11 @@ typedef struct {
     ubyte unknown12[0x20];
 
     KNOWN;
-    ubyte scarecrows_song[0x80]; // TODO: find info on this format
+    uint16 scarecrows_song_acquired;
+    ZSongNote scarecrows_song[0x10];
 
     UNKNOWN;
-    ubyte unknown13[4]; // It is read when changing scarecrow's song
+    ubyte unknown13[2]; // padding?
     ubyte unknown14[0xA];
 
     KNOWN;
