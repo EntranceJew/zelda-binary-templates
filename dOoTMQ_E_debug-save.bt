@@ -194,6 +194,18 @@ typedef struct { // How much ammo you have in each slot
     ubyte magic_beans;
 } ZSaveInventorySlotItemAmount;
 
+typedef enum <ubyte> {
+    sound_stereo,
+    sound_mono,
+    sound_headset,
+    sound_surround
+} ZSaveSoundSetting;
+
+typedef enum <ubyte> {
+    target_switch,
+    target_hold
+} ZSaveTargetStyle;
+
 typedef struct {
     uint heart_pieces : 4;
     uint unused0 : 4;
@@ -526,12 +538,23 @@ typedef struct {
 } ZSaveData;
 
 typedef struct {
+    local string thisName = "ZSaveDataHeader";
+    KNOWN;
+    ZSaveSoundSetting sound_setting;
+    ZSaveTargetStyle target_style;
+
     UNKNOWN;
-    ubyte unknown[0x20]; // TODO
+    ubyte unknown[5];
+
+    KNOWN;
+    char file_validation[5];
+
+    UNUSED;
+    ubyte padding[20];
 } ZSaveDataHeader;
 
 struct {
-    ZSaveDataHeader saveHeader;
+    ZSaveDataHeader saveDataHeader;
     ZSaveData saveData1;
     ZSaveData saveData2;
     ZSaveData saveData3;
