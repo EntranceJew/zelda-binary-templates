@@ -20,6 +20,7 @@ SION;
 // == filetypes/*.bt
 #include "filetypes/Banks.bt"
 #include "filetypes/Bits.bt"
+#include "filetypes/DamageCharts.bt"
 #include "filetypes/Entrances.bt"
 #include "filetypes/FileSystem.bt"
 #include "filetypes/Memory.bt"

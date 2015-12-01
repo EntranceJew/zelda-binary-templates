@@ -1,0 +1,56 @@
+// -*- mode: c;-*-
+
+/*
+    This lives here until we find a way to dynamically locate them.
+*/
+
+
+typedef struct {
+    local string thisName = "ZDamageChart";
+    SIBE;
+
+    ubyte effect : 4;
+    ubyte damage : 4;
+
+    SIEND;
+} ZDamageChartEntry;
+
+typedef struct {
+    local string thisName = "ZDamageChart";
+    SIBE;
+
+    ZDamageChartEntry dekuNuts;
+    ZDamageChartEntry dekuStickOrPot; // slash / throw
+    ZDamageChartEntry slingShot;
+    ZDamageChartEntry explosions;
+    ZDamageChartEntry boomerang;
+    ZDamageChartEntry arrow;
+    ZDamageChartEntry hammerSwing;
+    ZDamageChartEntry hookShotOrLongShot;
+    ZDamageChartEntry kokiriSword; // slash
+    ZDamageChartEntry masterSword; // slash
+    ZDamageChartEntry biggoronsSword; // slash
+    ZDamageChartEntry fireArrows;
+    ZDamageChartEntry iceArrows;
+    ZDamageChartEntry lightArrows;
+    ZDamageChartEntry windArrows;
+    ZDamageChartEntry spiritArrows;
+    ZDamageChartEntry shadowArrows;
+    ZDamageChartEntry fireMagic;
+    ZDamageChartEntry iceMagic;
+    ZDamageChartEntry lightMagic;
+    ZDamageChartEntry unknown1;
+    ZDamageChartEntry unknown2;
+    ZDamageChartEntry kokiriSwordSpin; // spin attack
+    ZDamageChartEntry giantsKnifeSpin; // spin attack
+    ZDamageChartEntry masterSwordSpin; // spin attack
+    ZDamageChartEntry kokiriSwordOrBrokenGiantsKnifeJump; // jump / strong spin
+    ZDamageChartEntry giantsKnifeJump; // jump / strong spin
+    ZDamageChartEntry masterSwordJump; // jump / strong spin
+    ZDamageChartEntry unknown3;
+    ZDamageChartEntry unknown4;
+    ZDamageChartEntry hammer; // jump
+    ZDamageChartEntry unknown5;
+
+    SIEND;
+} ZDamageChart;
