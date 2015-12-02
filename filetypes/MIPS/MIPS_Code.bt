@@ -1,10 +1,88 @@
 // -*- mode: c;-*-
 
-enum <ubyte> MIPS_CODE {
-    MIPS_CODE_LOGICAL  = 0x0,  // 0 0 0 0, 0 0 (uses last bits)
-    MIPS_CODE_ADDI     = 0x8,  // 0 0 1 0, 0 0
-    MIPS_CODE_ADDIU    = 0x9,  // 0 0 1 0, 0 1
+local string MIPS_Context_Code = "";
+MIPS_Context_Code += "void advance_pc( int offset ){\n";
+MIPS_Context_Code += "\t PC = nPC;\n";
+MIPS_Context_Code += "\tnPC += offset;\n";
+MIPS_Context_Code += "}\n";
+
+enum <ubyte> MIPS_BRANCH {
+    MIPS_BRANCH_BLTZ   = 0x00,
+    MIPS_BRANCH_BGEZ   = 0x01,
+    // ... ?
+    MIPS_BRANCH_BLTZAL = 0x10,
+    MIPS_BRANCH_BGEZAL = 0x11,
+    // ... ???
 };
+
+enum <ubyte> MIPS_CODE {
+    MIPS_CODE_LOGICAL  = 0x00,  // uses last bits
+    MIPS_CODE_BRANCH   = 0x01,  // uses bits 10-15
+    MIPS_CODE_J        = 0x02,
+    MIPS_CODE_JAL      = 0x03,
+    MIPS_CODE_BEQ      = 0x04,
+    MIPS_CODE_BNE      = 0x05,
+    MIPS_CODE_BLEZ     = 0x06,
+    MIPS_CODE_BGTZ     = 0x07,
+    MIPS_CODE_ADDI     = 0x08,
+    MIPS_CODE_ADDIU    = 0x09,
+    MIPS_CODE_SLTI     = 0x0A,
+    MIPS_CODE_SLTIU    = 0x0B,
+    MIPS_CODE_ANDI     = 0x0C,
+    MIPS_CODE_ORI      = 0x0D,
+    MIPS_CODE_XORI     = 0x0E,
+    MIPS_CODE_LUI      = 0x0F,
+    // ...
+    MIPS_CODE_LB       = 0x20,
+    // ...
+    MIPS_CODE_LW       = 0x23,
+    MIPS_CODE_LBU      = 0x24,
+    // ... 
+    MIPS_CODE_SB       = 0x28,
+    // ...
+    MIPS_CODE_SW       = 0x2B,
+    // ...
+    MIPS_CODE_LD       = 0x37,
+};
+
+enum <ubyte> MIPS_LOGIC {
+    MIPS_LOGIC_SLL      = 0x00,
+    // ...
+    MIPS_LOGIC_SRL      = 0x02,
+    MIPS_LOGIC_SRA      = 0x03,
+    MIPS_LOGIC_SLLV     = 0x04,
+    // ...
+    MIPS_LOGIC_SRLV     = 0x06, // 0 0, 0 1 1 0
+    // ...
+    MIPS_LOGIC_JR       = 0x08, // 0 0, 1 0 0 0
+    // ...
+    MIPS_LOGIC_SYSCALL  = 0x0B, // 0 0, 1 1 0 0
+    // ...
+    MIPS_LOGIC_MFHI     = 0x10, // 0 1, 0 0 0 0
+    // ...
+    MIPS_LOGIC_MFLO     = 0x12, // 0 1, 0 0 1 0
+    // ...
+    MIPS_LOGIC_MULT     = 0x18, // 0 1, 1 0 0 0
+    MIPS_LOGIC_MULTU    = 0x19, // 0 1, 1 0 0 1
+    // ...
+    MIPS_LOGIC_DIV      = 0x1A, // 0 1, 1 0 1 0
+    MIPS_LOGIC_DIVU     = 0x1B, // 0 1, 1 0 1 1
+    // ...
+    MIPS_LOGIC_ADD      = 0x20, // 1 0, 0 0 0 0
+    MIPS_LOGIC_ADDU     = 0x21, // 1 0, 0 0 0 1
+    MIPS_LOGIC_SUB      = 0x22, // 1 0, 0 0 1 0
+    MIPS_LOGIC_SUBU     = 0x23, // 1 0, 0 0 1 1
+    MIPS_LOGIC_AND      = 0x24, // 1 0, 0 1 0 0
+    // ...
+    MIPS_LOGIC_OR       = 0x25, // 1 0, 0 1 0 1
+    MIPS_LOGIC_XOR      = 0x26, // 1 0, 0 1 1 0
+    // ...
+    MIPS_LOGIC_SLT      = 0x2A, // 1 0, 1 0 1 0
+    MIPS_LOGIC_SLTU     = 0x2B, // 1 0, 1 0 1 1
+    // ...
+};
+
+// NOOP == SLL $0, $0, 0
 
 string GetRegisterName( uint i ){
     local string ret = "$";
