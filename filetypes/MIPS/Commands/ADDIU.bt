@@ -1,0 +1,45 @@
+// -*- mode: c;-*-
+// Adds a new matrix from mtxaddr to the appropriate matrix stack.
+typedef struct {
+    local string asmName  = "addiu";
+    local string thisName = "MIPS_Code_ADDIU";
+    SIBE;
+
+    SIT;
+    MIPS_CODE opType : 6;
+    AssertNumberEquals(opType, MIPS_CODE_ADDIU, thisName);
+
+    SIT;
+    ubyte rs : 5;
+
+    SIT;
+    ubyte rt : 5;
+
+    SIT;
+    short imm;
+
+    local string asm_code = ReadASM_MIPS_Code_ADDIU( this );
+    local string c_code   = ReadC_MIPS_Code_ADDIU( this );
+    SIEND;
+} MIPS_Code_ADDIU<read=ReadC_MIPS_Code_ADDIU>;
+
+string ReadASM_MIPS_Code_ADDIU( MIPS_Code_ADDIU &op ){
+    local string out = "";
+    SPrintf(out, "%s\t%s, %s, %d",
+        op.asmName,
+        GetRegisterName(op.rt),
+        GetRegisterName(op.rs),
+        op.imm
+    );
+    return out;
+}
+
+string ReadC_MIPS_Code_ADDIU( MIPS_Code_ADDIU &op ){
+    local string out = "";
+    SPrintf(out, "%s = %s + %d;\nadvance_pc(4);\n",
+        GetRegisterName(op.rt),
+        GetRegisterName(op.rs),
+        op.imm
+    );
+    return out;
+}

@@ -1,0 +1,40 @@
+// -*- mode: c;-*-
+
+enum <ubyte> MIPS_CODE {
+    MIPS_CODE_LOGICAL  = 0x0,  // 0 0 0 0, 0 0 (uses last bits)
+    MIPS_CODE_ADDIU    = 0x9,  // 0 0 1 0, 0 1
+};
+
+string GetRegisterName( uint i ){
+    local string ret = "$";
+    if( i == 0 ){
+        ret += "r" + 0;
+    } else if( i == 1 ){
+        ret += "at";
+    } else if( i >= 2 && i <= 3 ){
+        ret += "v" + (i-2);
+    } else if( i >= 4 && i <= 7 ){
+        ret += "a" + (i-4);
+    } else if( i >= 8 && i <= 15 ){
+        ret += "t" + (i-8);
+    } else if( i >= 16 && i <= 23 ){
+        ret += "s" + (i-16);
+    } else if( i >= 24 && i <= 25 ){
+        ret += "t" + (i-16);
+    } else if( i >= 26 && i <= 27 ){
+        ret += "v" + (i-26);
+    } else if( i == 28 ){
+        ret += "gp";
+    } else if( i == 29 ){
+        ret += "sp";
+    } else if( i == 30 ){
+        ret += "fp";
+    } else if( i == 31 ){
+        ret += "ra";
+    } else if( i == 32 ){
+        ret += "Hi/Lo";
+    } else {
+        ret += "unknownRegister";
+    }
+    return ret;
+}

@@ -47,6 +47,12 @@ SION;
 //...
 #include "filetypes/DisplayList/Commands/Dummy.bt"
 #include "filetypes/DisplayList/DisplayListScanner.bt"
+// == filetypes/MIPS/*.bt
+#include "filetypes/MIPS/MIPS_Code.bt"
+//...
+#include "filetypes/MIPS/Commands/ADDIU.bt"
+//...
+#include "filetypes/MIPS/MIPS_CodeScanner.bt"
 // == filetypes/Overlay/*.bt
 #include "filetypes/Overlay/OverlayHeader.bt"
 #include "filetypes/Overlay/Dummy.bt"

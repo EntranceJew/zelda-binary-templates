@@ -1,0 +1,18 @@
+// -*- mode: c;-*-
+typedef struct {
+    local ubyte breakout = 0;
+    while( !breakout ){
+        switch( ReadUByteBits(FTell(), 0, 6) ){
+            // ...
+            case MIPS_CODE_ADDIU: // 0x9
+                MIPS_Code_ADDIU mipsop;
+                breakout = 1;
+                break;
+            // ...
+            default:
+                //MIPS_Code_Dummy mipsop;
+                breakout = 1;
+                break;
+        }
+    }
+} MIPS_CodeScanner;
