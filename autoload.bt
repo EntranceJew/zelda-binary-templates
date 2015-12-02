@@ -50,6 +50,7 @@ SION;
 // == filetypes/MIPS/*.bt
 #include "filetypes/MIPS/MIPS_Code.bt"
 //...
+#include "filetypes/MIPS/Commands/ADDI.bt"
 #include "filetypes/MIPS/Commands/ADDIU.bt"
 //...
 #include "filetypes/MIPS/MIPS_CodeScanner.bt"

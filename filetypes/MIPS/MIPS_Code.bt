@@ -2,6 +2,7 @@
 
 enum <ubyte> MIPS_CODE {
     MIPS_CODE_LOGICAL  = 0x0,  // 0 0 0 0, 0 0 (uses last bits)
+    MIPS_CODE_ADDI     = 0x8,  // 0 0 1 0, 0 0
     MIPS_CODE_ADDIU    = 0x9,  // 0 0 1 0, 0 1
 };
 

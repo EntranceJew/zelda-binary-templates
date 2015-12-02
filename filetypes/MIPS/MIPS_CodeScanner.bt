@@ -1,4 +1,8 @@
 // -*- mode: c;-*-
+
+// this doesn't have any stop words (that I know of)
+// don't bother with this until all the commands are implemented
+
 typedef struct {
     local ubyte breakout = 0;
     while( !breakout ){
@@ -6,7 +10,6 @@ typedef struct {
             // ...
             case MIPS_CODE_ADDIU: // 0x9
                 MIPS_Code_ADDIU mipsop;
-                breakout = 1;
                 break;
             // ...
             default:
@@ -14,5 +17,6 @@ typedef struct {
                 breakout = 1;
                 break;
         }
+        breakout = 1;
     }
 } MIPS_CodeScanner;

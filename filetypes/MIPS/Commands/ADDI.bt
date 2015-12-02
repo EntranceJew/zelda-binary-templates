@@ -1,13 +1,13 @@
 // -*- mode: c;-*-
 // Adds a new matrix from mtxaddr to the appropriate matrix stack.
 typedef struct {
-    local string asmName  = "addiu";
-    local string thisName = "MIPS_Code_ADDIU";
+    local string asmName  = "addi";
+    local string thisName = "MIPS_Code_ADDI";
     SIBE;
 
     SIT;
     MIPS_CODE opType : 6;
-    AssertNumberEquals(opType, MIPS_CODE_ADDIU, thisName);
+    AssertNumberEquals(opType, MIPS_CODE_ADDI, thisName);
 
     SIT;
     ubyte rs : 5;
@@ -16,14 +16,14 @@ typedef struct {
     ubyte rt : 5;
 
     SIT;
-    ushort imm;
+    short imm;
 
-    local string asm_code = ReadASM_MIPS_Code_ADDIU( this );
-    local string c_code   = ReadC_MIPS_Code_ADDIU( this );
+    local string asm_code = ReadASM_MIPS_Code_ADDI( this );
+    local string c_code   = ReadC_MIPS_Code_ADDI( this );
     SIEND;
-} MIPS_Code_ADDIU<read=ReadC_MIPS_Code_ADDIU>;
+} MIPS_Code_ADDI<read=ReadC_MIPS_Code_ADDI>;
 
-string ReadASM_MIPS_Code_ADDIU( MIPS_Code_ADDIU &op ){
+string ReadASM_MIPS_Code_ADDI( MIPS_Code_ADDI &op ){
     local string out = "";
     SPrintf(out, "%s\t%s, %s, 0x%04LX",
         op.asmName,
@@ -34,7 +34,7 @@ string ReadASM_MIPS_Code_ADDIU( MIPS_Code_ADDIU &op ){
     return out;
 }
 
-string ReadC_MIPS_Code_ADDIU( MIPS_Code_ADDIU &op ){
+string ReadC_MIPS_Code_ADDI( MIPS_Code_ADDI &op ){
     local string out = "";
     SPrintf(out, "%s = %s + 0x%04LX;\nadvance_pc(4);\n",
         GetRegisterName(op.rt),
