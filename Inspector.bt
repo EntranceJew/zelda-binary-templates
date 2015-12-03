@@ -45,7 +45,7 @@ FSeek( pos ); FILETIME _ft   <name="FILETIME">;
 FSeek( pos ); OLETIME  _ot   <name="OLETIME">;
 FSeek( pos ); time_t   _tt   <name="time_t">;
 
-#include "filetypes/Bits.bt"
+#include "scaffolds/Bits.bt"
 #include "filetypes/Banks.bt"
 #include "filetypes/Memory.bt"
 

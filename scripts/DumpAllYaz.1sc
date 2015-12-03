@@ -1,11 +1,12 @@
 //--------------------------------------
 //--- 010 Editor v6.0.3 Script File
 //
-// File:        DumpAllYaz0
+// File:        DumpAllYaz
 // Author:      EntranceJew
 // Revision:    1.0
-// Purpose:     Dump all yaz0 archives from a ROM where they are all named "arc".
+// Purpose:     Dump all Yaz archives from a ROM where they are all named "arc".
 //--------------------------------------
+
 local string wheredump = InputDirectory( "Where to dump these files?" );
 local uint64 startFile = GetFileNum();
 local string dirToMake;

@@ -30,16 +30,78 @@
 #include "autoload.bt"
 
 // import the ROM structure
-#include "skeleton.bt"
+//#include "skeleton.bt"
+
+/*
+FSeek(0x032DD000);
+ZScene child_temple_thing;
+
+FSeek(0x02D07000);
+ZScene back_alley_day;
+*/
+
+FSeek(0x00D98298);
+ZDamageChart guay_or_crow;
+
+FSeek(0x00ED1494);
+ZDamageChart tektite;
+
+FSeek(0x00EA0960);
+ZDamageChart likelike;
 
 FSeek(0x00B8FBC0);
 ZActorTableEntry hotdog;
-DumpDummyOverlay(hotdog.myOverlay);
+DumpZActorTableEntry(hotdog);
+
+FSeek(0x01727000);
+ubyte object_ane[0x0172DFB0-0x01727000];
+local uint64 object_start = 0x01727000;
+
+FSeek(object_start);
+// dissecting object here
+
+typedef struct {
+    SIBE;
+
+    SIT;
+    ZBankPointer p;
+
+    SIT;
+    SAVE;
+    FSeek( object_start + p.offset );
+    ubyte wedge;
+    REST;
+
+    SIEND;
+} PBounce;
+
+SIT;
+ubyte ane_start;
+
+FSkip(7);
+PBounce selfpoint;
+
+FSeek(startof(object_ane) + sizeof(object_ane));
+SIT;
+ubyte ane_done;
+
+FSeek(0x00E6FCB0);
+MIPS_CodeScanner hank;
+
+
+// vram start:          0x80AB9C40
+// vram end:            0x80ABBA50
+// vram instance start: 0x80ABB380
+// vrom filename:       0x80137E1C    
+
+//FSeek(0x00DF1330);
+//En_GirlA en_girla(0x00DF42C0-0x00DF1330);
+
 
 // Overlay files need to know their end so they can
 // find where their footer starts.
-FSeek(0x00C27940);
-OvlMapMarkData ovl_map_mark_data(0x00C2E420 - FTell());
+//FSeek(0x00C27940);
+//OvlMapMarkData ovl_map_mark_data(0x00C2E420 - FTell());
 // import the ROM structure
 
 
@@ -54,14 +116,14 @@ OvlMapMarkData ovl_map_mark_data(0x00C2E420 - FTell());
 // the platform to the hippie
 // 0x29fa294
 
-FSeek(29FA000h);
-ZScene spot13;
+//FSeek(29FA000h);
+//ZScene spot13;
 
-FSeek(44040192);
-ZRoom spot13_room1;
+//FSeek(44040192);
+//ZRoom spot13_room1;
 
-FSeek(44044288);
-ZRoom spot13_room2;
+//FSeek(44044288);
+//ZRoom spot13_room2;
 
 // sample of polyType from inside jabu jabu's belly:
 // 00 01 00 00 00 00 30 03
@@ -75,5 +137,5 @@ ZRoom spot13_room2;
 // sample of water temple that is steep and slopey
 // 24 00 00 03 00 00 B8 12
 
-FSeek(0x230B000);
-ZScene the_entire_water_temple;
+//FSeek(0x230B000);
+//ZScene the_entire_water_temple;

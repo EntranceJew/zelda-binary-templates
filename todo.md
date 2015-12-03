@@ -1,68 +1,58 @@
 # To Do
 A handy file that lists everything that must be done, ever.
 
-## REALLY GOOD IDEAS
-* utilize the ability to pass generic structs around to create
-	a lookup function for startof(*) against the VFS bookmarks
-	therefore enabling easy access/reference
-* create a macro that uses the above, declared at the head of every
-	type/struct to change colors / add info to a stack
-* use the [data here](http://www.sweetscape.com/010editor/manual/CustomVariables.htm)
-	to write type-agnostic data reads (numbers are numbers)
+# Things To Not Do
+* Write general goals that are guidelines that don't list everything that needs to be addressed.
 
-## Stuff That Was Found But Not Documented Yet
-* Most if not all [unknown header commands](filetypes/Scene/HeaderCommand.bt) accept a number, two bytes of null, and then a scene-local [ZBank](filetypes/Banks.bt).
-* Nearly everything in [ootbank.bt](scraps/ootbank.bt), specifically where deathbasket's docs leave gaps that are bridged by spinout's.
-* The 4th sample bank is not yet referenced by ootbank and through testing it only contains a vocal pad, potentially unused?
+# Best Ideas
+* Import datasources from the spreadsheet into a data folder that can be processed into
+	template parts, lookups for names and comments, and externally useful data (wiki modules).
 
-## Template Based
-If it relates to refactoring templates or styles to enforce, then it should happen here.
-### Housekeeping
-* Bring up any stray TODOs in the files here.
-* Clean out unused / copypasted code.
-* Get some standards.
-* Replace all warnings with a hard warning macro.
-### Getting Pumped
+# Scaffolds
+* [Trace.bt](/scaffolds/Trace.bt)
+	* Consume `thisName` and generate a stack using arrays-of-strings.
+	* Track depth, variable number, starts ends and sizes.
+	* These need to be made use of by [Anomaly.bt](/scaffolds/Anomaly.bt) and [Assert.bt](/scaffolds/Assert.bt).
+* [Unknown.bt](/scaffolds/Unknown.bt)
+	* Make use of the thisName convention for traces, same as asserts/warns.
+	* Work with the SIBE/SIEND/SIT for UNK to auto-provide unknown variable names.
+	* Use the distance between a SIT and an UNK to estimate coverage automatically.
+
+# Templates
+* [Yaz.bt](/filetypes/Compressed/Yaz.bt)
+	* Could use some fixing up, using bit reads instead of its current logic.
+* [N64ROMHead.bt](/filetypes/N64ROMHead.bt)
+	* Finish this, mark it up, use the endianess flag in the template.
+	* Write a script to correct the CRCs.
+* [Actor.bt](/filetypes/Overlay/Actor.bt)
+	* Finish resolving the logic for relocation pointers. (1/4)
+* [Overlay/Files](/filetypes/Overlay/Files/)
+	* Locate more pure-data structures and write templates for them.
+* [Texture](/filetypes/Texture/)
+	* Bring up to speed with standards for struct metadata.
+	* Add a flag somewhere to enable/disable variable colorization.
+	* Correct JFIF image coloration code (either very wrong or too big to decipher).
+* Scanners Patterns
+	* Examples:
+		* [Scene](/filetypes/Scene/) (3/32)
+			* Vet good data, nuke bad data.
+		* [DisplayList](/filetypes/DisplayList/) (2/256)
+		* [MIPS](/filetypes/MIPS/) (2/512)
+		* [NIFF](/filetypes/NIFF/) (6/20)
+	* Write objects for the many remaining commands.
+	* Correct the scanner / enums accordingly.
+
+# Scripts
 * Write a handy macro for comparing two like structures using [science](http://www.sweetscape.com/010editor/manual/FuncTools.htm#Compare).
-### Find Data
+* Make a flag/#define for setting bookmarks in the file.
+* Write a macro to report which VFS file the cursor is currently inside.
+* Make it so that SIBE / SIEND add "thisName" to a debug stack.
+	* Make assert functions utilize this behavior / standard.
+* [DumpAllYaz.1sc](/scripts/DumpAllYaz.1sc)
+	* Make a general Export method for Yaz files and not just archives of them.
+	* Write helpers for SAVE/RESTing the current file and potentially preserving template vars.
+	* Use Memcpy instead of iteration.
+
+# Find Data
 * Scrounge around for source code from other tools, particularly files of type .cs, .h, or .py -- I don't want to reverse a source-less tool unless I'm absolutely stumped.
 * Cross-reference checkums and junk with places like No-Intro, GoodN64, MAME's N64 softwarelist.
-### Following The Rules
-* Remove instances of data that was defined as part of the template, this throws off counts.
-* Agnosticize certain files into .h files where it can be done via #defines.
-* Make #defines for whether a template is being run against a full ROM or whether it's being run within the scope of a sub-virtual-file.
-* Replace struct variables with parentof(this) or startof(parentof(this)) where possible.
-### Measuring Progress
-* Convert structures to be On-Demand with non-conflicting size functions.
-* Write more assertions for the existing data types to ensure we understand it and to track anomolies.
-### Coloring Book
-* Make a flag/#define for setting bookmarks in the file.
-* Make a SIGNIFICANT macro that cycles between primary colors to prevent 
-	* Per-line color-changing.
-
-## Coverage Based
-Let's fill these in. If a header is missing a significant child, put it there.
-A @ indicates that it is just a child reference to a global file type, so that ancestor-specific data can be included.
-- [ ] Scenes
-	- [ ] Environment Vars
-	- [ ] Collision
-	- [ ] Cutscenes
-	- [ ] @ Rooms
-- [ ] Rooms
-	- [ ] @ Geometry
-	- [ ] @ Textures
-- [ ] Overlays
-	- [ ] Actors
-- [ ] Objects
-	- [ ] Animations
-	- [ ] @ Textures
-	- [ ] @ Geometry
-- [ ] Text
-- [ ] Skyboxes
-- [ ] Compressed Data (Yaz0)
-- [ ] Geometry
-- [ ] Textures
-	- [ ] Palettes
-	- [ ] Image Data
-		- [x] JFIF / JPEG
-		- [ ] ???

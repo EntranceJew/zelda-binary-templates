@@ -6,6 +6,23 @@ MIPS_Context_Code += "\t PC = nPC;\n";
 MIPS_Context_Code += "\tnPC += offset;\n";
 MIPS_Context_Code += "}\n";
 
+// https://github.com/mikeryan/n64dev/blob/master/docs/n64ops/n64ops%23b.txt
+// http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html
+// http://groups.csail.mit.edu/cag/raw/documents/R4400_Uman_book_Ed2.pdf
+
+/*
+(12:29:13 PM) notwa: they forgot to remove LDC2/SDC2 from #c.txt
+(12:29:20 PM) notwa: they don't exist
+(12:30:02 PM) notwa: or technically they're unimplemented on the R4300i
+(12:30:07 PM) notwa: but details schmetails
+(12:30:12 PM) Zoinkity: RCP is implemented as COP2 iirc
+(12:30:26 PM) notwa: hmm
+(12:30:12 PM) Zoinkity: RCP is implemented as COP2 iirc
+(12:30:26 PM) notwa: hmm
+(12:31:19 PM) notwa: i don't think so
+(12:31:55 PM) notwa: only COP0 and COP1
+*/
+
 enum <ubyte> MIPS_BRANCH {
     MIPS_BRANCH_BLTZ   = 0x00,
     MIPS_BRANCH_BGEZ   = 0x01,

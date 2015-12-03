@@ -1,21 +1,14 @@
 // -*- mode: c;-*-
-local int colorFlop = 0;
 typedef struct Block( uint64 startPoint, uint64 blockRange){
-    Printf( "block range: %d\n", blockRange );
-    if ( colorFlop == 0 ){
-        colorFlop = 1;
-        SetBackColor( cDkBlue );
-        SetForeColor( cLtBlue );
-    } else {
-        colorFlop = 0;
-        SetBackColor( cLtBlue );
-        SetForeColor( cDkBlue );
-    }
-    local uint64 pos = FTell();
+    local string thisName = "Block";
+    SIBE;
+
+    SAVE;
     FSeek(startPoint);
+
+    SIT;
     char block[ blockRange ];
-//    FSeek(pos);
-    SetBackColor( cNone );
-    SetForeColor( cNone );
-    FSeek(pos);
+    REST;
+
+    SIEND;
 };

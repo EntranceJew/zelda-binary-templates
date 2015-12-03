@@ -1,4 +1,7 @@
 // -*- mode: c;-*-
+FSeek( 0 );
+N64ROMHead romHeader;
+
 #ifdef VFS
     FSeek( VFS );
     ZFileSystemTable vfsTable;

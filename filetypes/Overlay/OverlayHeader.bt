@@ -18,8 +18,8 @@ typedef struct{
     } section :  2;
     ubyte unknown : 2;
     enum <ubyte> RELO_TYPE {
-        RELO_TYPE_32BITPTR    = 0x2,
-        RELO_TYPE_26BITPTR    = 0x4, //or a jump target?
+        RELO_TYPE_POINTER     = 0x2,
+        RELO_TYPE_JUMP        = 0x4, //or a jump target?
         RELO_TYPE_MIPS_LUI    = 0x5,
         RELO_TYPE_MIPS_ORI    = 0x6,
     } type    :  4;

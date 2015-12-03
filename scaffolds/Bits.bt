@@ -28,7 +28,6 @@ int FlipIntBits(int theNumber, int numBits) {
 // http://www.mathcs.emory.edu/~cheung/Courses/255/Syllabus/1-C-intro/bit-array.html
 
 typedef struct {
-    BitfieldDisablePadding();
     byte bit1 : 1;
     byte bit2 : 1;
     byte bit3 : 1;

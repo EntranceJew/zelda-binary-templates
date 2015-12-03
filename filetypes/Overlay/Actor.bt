@@ -35,3 +35,78 @@ typedef struct {
         REST;
     }
 } ZActorTableEntry;
+
+void DumpZActorTableEntry( ZActorTableEntry &d ){
+    local uint64 pair = 0;
+    local uint64 pos = 0;
+    local uint64 value = 0;
+    local uint64 loc = 0;
+    local uint64 tgt = 0;
+    local uint64 thingread = 0;
+    local uint64 rel = d.vramStart;
+    Printf("num\tsection(S)\ttype(T)\t\top. value\t\taddress\t\tphys addr\t\tread at addr.\tchanged value\tVrel read\t\tVrel read+value\tphys read\t\tphys read+value\n");
+    while( exists( d.myOverlay.header.relocationPointers[pos] ) ){
+        switch( d.myOverlay.header.relocationPointers[pos].section ){
+            case RELO_SECTION_TEXT:
+                loc = startof(d.myOverlay.textBlockData);
+                break;
+            case RELO_SECTION_DATA:
+                loc = startof(d.myOverlay.dataBlockData);
+                break;
+            case RELO_SECTION_RODATA:
+                loc = startof(d.myOverlay.rodataBlockData);
+                break;
+            case RELO_SECTION_BSS:
+                loc = startof(d.myOverlay.bssBlockData);
+                break;
+        }
+        loc -= startof(d.myOverlay);
+        tgt = loc;
+
+        switch( d.myOverlay.header.relocationPointers[pos].type ){
+            case RELO_TYPE_POINTER:
+                value = d.myOverlay.header.relocationPointers[pos].offset;
+                tgt += value;
+                break;
+            case RELO_TYPE_JUMP:
+                value = d.myOverlay.header.relocationPointers[pos].offset / 4;
+                tgt += value;
+                break;
+            case RELO_TYPE_MIPS_LUI:
+                pair = 1;
+                value = d.myOverlay.header.relocationPointers[pos].offset << 16;
+                break;
+            case RELO_TYPE_MIPS_ORI:
+                value += d.myOverlay.header.relocationPointers[pos].offset;
+                pair = 0;
+                break;
+        }
+
+        if( !pair ){
+            if( startof(d.myOverlay)+tgt < FileSize() ){
+                thingread = ReadUInt(startof(d.myOverlay)+tgt);
+            }
+
+            Printf("%d\t%s\t%s\t0x%08LX\t0x%08LX\t0x%08LX\t0x%08LX\t0x%08LX\t0x%08LX\t0x%08LX\t0x%08LX\t0x%08LX\n",
+                pos,
+                EnumToString( d.myOverlay.header.relocationPointers[pos].section ),
+                EnumToString( d.myOverlay.header.relocationPointers[pos].type ),
+                value,
+                tgt,
+                startof(d.myOverlay)+tgt,
+                thingread,
+                thingread+value,
+                thingread-rel, // if we read an address, peep it
+                thingread+value-rel, // new value, potentially an addr
+                startof(d.myOverlay)+(thingread-rel),
+                startof(d.myOverlay)+(thingread+value-rel)
+            );
+            value = 0;
+            tgt = 0;
+        }
+
+        thingread = 0;
+        loc = 0;
+        pos++;
+    }
+}

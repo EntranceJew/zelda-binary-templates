@@ -4,7 +4,14 @@
     This lives here until we find a way to dynamically locate them.
 */
 
-
+typedef enum <ubyte> {
+    DAMAGE_EFFECT_NORMAL        = 0x0,
+    DAMAGE_EFFECT_STUN          = 0x1,
+    DAMAGE_EFFECT_FIREARROW     = 0x2,
+    DAMAGE_EFFECT_ICEARROW      = 0x3,
+    DAMAGE_EFFECT_LIGHTARROW    = 0x4,
+    DAMAGE_EFFECT_ZORAMAGIC     = 0x5,
+} DAMAGE_EFFECT;
 
 typedef struct {
     local string thisName = "ZDamageChart";

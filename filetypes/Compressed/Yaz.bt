@@ -1,7 +1,13 @@
 // -*- mode: c;-*-
+
+typedef enum <ubyte> {
+    YAZ_TYPE_ROM = 48,
+    YAZ_TYPE_DD  = 49,
+} YAZ_TYPE;
+
 typedef struct {
     uchar magic[3];
-    uchar dest;
+    YAZ_TYPE dest;
     uint uncompressedSize;
     ubyte zeroes[8];
     local uint64 src = FTell();

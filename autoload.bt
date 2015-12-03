@@ -1,16 +1,20 @@
 // -*- mode: c;-*-
 // change the state of 010
+BigEndian();
 BitfieldDisablePadding();
 
 // helpers for not making a mess
 // == scaffolds/*.bt
-#include "scaffolds/Colors.bt"
+#include "scaffolds/Anomaly.bt"
+#include "scaffolds/Assert.bt"
+#include "scaffolds/Bits.bt"
 #include "scaffolds/Block.bt"
+#include "scaffolds/Bucket.bt"
+#include "scaffolds/Colors.bt"
 #include "scaffolds/Jumps.bt"
+#include "scaffolds/Padding.bt"
 #include "scaffolds/Significant.bt"
 #include "scaffolds/Unknown.bt"
-#include "scaffolds/Warning.bt"
-#include "scaffolds/Anomaly.bt"
 
 // post-helper macros
 // turn on painting significant variables
@@ -19,7 +23,6 @@ SION;
 // simple things
 // == filetypes/*.bt
 #include "filetypes/Banks.bt"
-#include "filetypes/Bits.bt"
 #include "filetypes/DamageCharts.bt"
 #include "filetypes/Entrances.bt"
 #include "filetypes/FileSystem.bt"
@@ -27,7 +30,6 @@ SION;
 #include "filetypes/Messages.bt"
 #include "filetypes/N64ROMHead.bt"
 #include "filetypes/Simple.bt"
-#include "filetypes/Vectors.bt"
 
 // bigger data formats
 // == filetypes/Audio/*.bt
@@ -38,7 +40,7 @@ SION;
 #include "filetypes/Audio/SequenceHead.bt"
 #include "filetypes/Audio/ChannelHead.bt"
 // == filetypes/Compressed/*.bt
-#include "filetypes/Compressed/Yaz0.bt"
+#include "filetypes/Compressed/Yaz.bt"
 // == filetypes/DisplayList/*.bt
 #include "filetypes/DisplayList/DisplayList.bt"
 #include "filetypes/DisplayList/Commands/DA.bt"
@@ -57,8 +59,8 @@ SION;
 // == filetypes/Overlay/*.bt
 #include "filetypes/Overlay/OverlayHeader.bt"
 #include "filetypes/Overlay/Dummy.bt"
-#include "filetypes/Overlay/Object.bt"
 #include "filetypes/Overlay/Actor.bt"
+#include "filetypes/Overlay/Object.bt"
 // == filetypes/Overlay/Files/*.bt
 #include "filetypes/Overlay/Files/En_GirlA.bt"
 #include "filetypes/Overlay/Files/map_marker_data.bt"
