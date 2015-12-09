@@ -19,6 +19,17 @@ A handy file that lists everything that must be done, ever.
 	* Use the distance between a SIT and an UNK to estimate coverage automatically.
 
 # Templates
+* [all bootstraps](/templates/)
+	* Make it so that there's RAM/ROM definition pairs for bootstrap headers.
+* [SaveParts.bt](/filetypes/Save/SaveParts.bt)
+	* Some parts are usable in both RAM/ROM.
+		* Find where to put these logically.
+		* Change their names to something more general.
+		* Wrap these with `#ifdef`s.
+	* 
+* [dOoT_E_debug-save.bt](/templates/dOoT_E_debug-save.bt)
+	* Split the structs in here with defchecks for game type.
+	* 
 * [Yaz.bt](/filetypes/Compressed/Yaz.bt)
 	* Could use some fixing up, using bit reads instead of its current logic.
 * [N64ROMHead.bt](/filetypes/N64ROMHead.bt)

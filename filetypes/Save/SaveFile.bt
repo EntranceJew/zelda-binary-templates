@@ -1,0 +1,209 @@
+// -*- mode: c;-*-
+typedef struct {
+    local string thisName = "ZSaveDataInternal";
+    KNOWN;
+    uint entrance_index <format=hex>; // Stores the Entrance Link starts/respawns at
+    ZSaveWearingMask wearing_mask;
+    ubyte opening_flag; // Has completed intro
+    ubyte text_skip_timer; // Prevents skipping text for a period
+
+    UNKNOWN;
+    ubyte unknown0; // Something to do with picking up items?
+
+    KNOWN;
+    ZSaveCutsceneOffset cutscene_offset;
+    uint16 time_of_day <format=hex>;
+    ZSaveOwlID owl_id;
+    ZSaveDayNight day_night;
+    ZSaveTimeSpeed time_speed;
+    uint day;
+    uint days_elapsed;
+    ZSaveTransformation transformation;
+
+    UNKNOWN;
+    ubyte unknown1; // spring_flag?
+
+    KNOWN;
+    ubyte have_tatl; // boolean
+    ubyte owl_save; // boolean
+    char file_validation[6];
+    uint16 song_of_time_count;
+    char file_name[8];
+    uint16 heart_containers <format=hex>; // 0x10 per heart
+    uint16 health <format=hex>; // 0x10 per heart
+    ZSaveMagicMeterSize magic_meter_size;
+    ubyte magic <format=hex>; // 0x30 for normal, 0x60 for double
+    uint16 rupees;
+    uint navi_timer;
+    ubyte has_normal_magic; // boolean
+    ubyte has_double_magic; // boolean
+    uint16 double_defense; // boolean? actually seems unused in MM
+
+    UNKNOWN;
+    uint16 unknown2;
+
+    KNOWN;
+    ZSaveOwlsHit owls_hit;
+
+    UNKNOWN;
+    uint unknown3 <format=hex>;
+
+    KNOWN;
+    ZSaveItemsEquipped items_human; // also used for fierce deity
+    ZSaveItemsEquipped items_goron;
+    ZSaveItemsEquipped items_zora;
+    ZSaveItemsEquipped items_deku;
+    UNUSED;
+    ubyte unused; // this is where the b button slot would be
+    KNOWN;
+    ZSaveInventorySlot c_left_button_slot;
+    ZSaveInventorySlot c_down_button_slot;
+    ZSaveInventorySlot c_right_button_slot;
+
+    UNKNOWN;
+    uint unknown4<format=hex>;
+    uint unknown5<format=hex>;
+    uint unknown6<format=hex>;
+
+    KNOWN;
+    ZSaveBoots boots : 4;
+    ZSaveTunic tunic : 4;
+    ZSaveShield shield : 4;
+    ZSaveSword sword : 4;
+
+    UNKNOWN;
+    uint16 unknown7;
+
+    KNOWN;
+    ZSaveInventorySlotItemIDs inventory_slot_item_ids;
+    ZSaveInventorySlotItemAmount inventory_slot_item_amount;
+
+    ZSaveUpgrades upgrade_data;
+
+    ZSaveQuestStatus quest_status_data;
+
+    ZSaveDungeonItems dungeon_items[10]<optimize=false>; // only 4 are used, but
+    // debug save has boss/compass/map in all 10
+
+    // all used but the last, i think
+    byte small_key_amount[9] <comment="-1 hides the small key amount">;
+
+    // normally 0 or 20 but anything inbetween works fine
+    ubyte doubled_hearts;
+
+    // maybe unused fairies too
+    ubyte fairies[10];
+
+    // says "LINK[eol]LINK[eol]LINK[eol]" in the game's encoding
+    // on my completed file it actually matches my filename! weird.
+    char unknown_name0[8];
+    char unknown_name1[8];
+    char unknown_name2[8];
+
+    UNKNOWN;
+    ubyte unknown9[0x37A];
+
+    KNOWN;
+    ZSaveSceneFlags scene_flags[0x78];
+
+    UNKNOWN;
+    ubyte unknown10[0xAA];
+
+    KNOWN; // temporary names
+    ubyte pictograph_special;
+    ubyte pictograph_quality;
+    ubyte pictograph_unknown;
+
+    UNKNOWN;
+    ubyte unknown11[0x27];
+
+    KNOWN;
+    // only the first 4 words wind up being used
+    // but the code supports up to 7 words
+    BitEight minimaps[7*4] <format=hex>;
+
+    uint16 skulltulas_woodfall;
+    uint16 skulltulas_great_bay;
+
+    UNKNOWN;
+    ubyte unknown12[0x1A];
+
+    KNOWN;
+    uint16 banked_rupees;
+
+    UNKNOWN;
+    ubyte unknown13[0x18];
+
+    KNOWN;
+    BitEight week_event_reg[100];
+
+    BitEight area_arrival[4] <format=hex>;
+    BitEight cloud_clear[4] <format=hex>;
+
+    uint16 scarecrows_song_acquired;
+    ZSongNote scarecrows_song[0x10];
+
+    KNOWN;
+    ubyte bombers_caught;
+    ubyte bombers_order[5]; // unrelated to bombers code
+    ZSaveLotteryCodes lottery_codes[3];
+    ZSaveSpiderHouseMaskOrder spider_house_mask_order[6];
+    ubyte bombers_code[5];
+
+    uint16 epona_scene;
+    int16 epona_x;
+    int16 epona_y;
+    int16 epona_z;
+    int16 epona_angle;
+    uint16 checksum <format=hex>;
+
+} ZSaveDataInternal;
+
+typedef struct {
+    local string thisName = "ZSaveData";
+    KNOWN;
+    ZSaveDataInternal save;
+    // nothing past this point is loaded by the game
+    UNUSED;
+    uint unused_end[0x3FD];
+} ZSaveData;
+
+typedef struct {
+    local string thisName = "ZSaveDataOwl";
+    KNOWN;
+    ZSaveDataInternal save;
+
+    KNOWN;
+    BitEight event_inf[8];
+
+    KNOWN;
+    ubyte rock_sirloin; // boolean
+    ubyte b_button_enabled; // boolean
+    uint16 bubble_timer;
+    uint16 rupee_accumulator;
+
+    ubyte hot_spring_water_statuses[6];
+    ubyte hot_spring_water_timers[6*32]; // TODO: reverse engineer
+
+    ubyte pictograph_picture[100*112]; // 5 bits per pixel 0x000090E0
+
+    UNUSED;
+    uint unused_end[0xD8];
+} ZSaveDataOwl;
+
+typedef struct {
+    local string thisName = "ZSave";
+    
+    KNOWN;
+    ZSaveData save;
+    ZSaveData backup;
+} ZSave;
+
+typedef struct {
+    local string thisName = "ZSaveOwl";
+    local int isOwl = 1;
+
+    KNOWN;
+    ZSaveDataOwl save;
+    ZSaveDataOwl backup;
+} ZSaveOwl;

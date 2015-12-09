@@ -64,6 +64,9 @@ SION;
 // == filetypes/Overlay/Files/*.bt
 #include "filetypes/Overlay/Files/En_GirlA.bt"
 #include "filetypes/Overlay/Files/map_marker_data.bt"
+// == filetypes/Save/*.bt
+#include "filetypes/Save/SaveParts.bt"
+#include "filetypes/Save/SaveFile.bt"
 // == filetypes/Texture/*.bt
 #include "filetypes/Texture/ci4.bt"
 #include "filetypes/Texture/ci8.bt"

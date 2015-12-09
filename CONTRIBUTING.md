@@ -12,6 +12,10 @@ Checking the [Quickstart Guide](docs/quickstart_guide.md) might answer questions
 * Traditionally, an unknown is declared as `ubyte unknown[numBytes];` where the name gets a number in the event of more unknowns, e.g. `ubyte unknown2[numBytes];`.
 * The naming conventions for unknowns apply to bytes anticipated to be null, expressed as `ubyte zeroes[numBytes];`. After declaring a ubyte array of zeroes, the line after it should contain `AssertUBytesZero( zeroes, thisName+"->zeroes");` to hault execution in the event padding is misaligned.
 * Macros like `UNK;` and `SIT;` are decorators, put them on the same line with a space between them in that order when convenient.
+
+### Numbers
+* It's easier to define constants as hex if they can possibly get bigger than sixteen.
+
 * If an enum has unknown values or holes in it, explicitly define each value and leave the comment `// ...` where holes are. This way we can raise warnings when an enum has an unknown value.
 * Whenever possible, try to use `startof()` instead of storing a location in memory. The same goes for using `sizeof(this)` for finding the end of a structure.
 * Try to use `parentof()`, but only when a structure has a simple lineage or whatever behavior utilizing it is operating on abstract / common  values.
