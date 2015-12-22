@@ -55,3 +55,13 @@ N64ROMHead romHeader;
     SequenceTable sequenceTable;
 #endif
 
+#ifdef LINKANIMTABLE
+#ifdef LINKANIMFILE
+#ifdef NUMLINKANIMATIONS
+    FSeek( LINKANIMTABLE );
+    struct {
+        LinkAnimationHeader link_animetion[ NUMLINKANIMATIONS ]<optimize=false>;
+    } AllLinkAnimations;
+#endif
+#endif
+#endif

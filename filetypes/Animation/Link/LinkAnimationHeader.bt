@@ -1,0 +1,27 @@
+// -*- mode: c;-*-
+typedef struct {
+    local string thisName = "LinkAnimationHeader";
+    SIBE;
+
+    SIT;
+    ushort frameCount;
+
+    SIT;
+    ubyte zeroes[2];
+    AssertUBytesNull( zeroes, thisName+"->zeroes" );
+
+    SIT;
+    ZBankPointer off;
+    if( off.zb.bankNo == 0x07 ){
+        SAVE;
+
+        FSeek(LINKANIMFILE + off.offset);
+        LinkAnimationFrame frames(21)[frameCount]<optimize=false>;
+
+        REST;
+    } else {
+        Warning("Unexpected Non-Link Bank");
+    }
+
+    SIEND;
+} LinkAnimationHeader;

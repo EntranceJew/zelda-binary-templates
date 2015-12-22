@@ -32,6 +32,11 @@ SION;
 #include "filetypes/Simple.bt"
 
 // bigger data formats
+// == filetypes/Animation/*.bt
+// == filetypes/Animation/Link/*.bt
+#include "filetypes/Animation/Link/LinkAnimationFrame.bt"
+#include "filetypes/Animation/Link/LinkAnimationHeader.bt"
+
 // == filetypes/Audio/*.bt
 #include "filetypes/Audio/Sample.bt"
 #include "filetypes/Audio/Instrument.bt"

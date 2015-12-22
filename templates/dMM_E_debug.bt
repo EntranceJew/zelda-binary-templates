@@ -13,6 +13,7 @@
 #define AUDIOSEQ      0x000516C0
 #define AUDIOTABLE    0x000A2B40
 #define ATBL_END      0x005EB2B0
+#define LINKANIMFILE  0x005EB2B0
 #define MSG_1_START   0x00AB0000
 #define MSG_1         0x00C71000
 #define MSG_2         0x00C7A000
@@ -47,11 +48,14 @@
 
 #define CODEFILEEND   0x00E12600
 
+#define LINKANIMTABLE 0x0128EF40
+
 // quantities of things
-#define NUMVFSITEMS   1591
-#define NUMACTORS     691
-#define NUMSCENES     113
-#define NUMEXITS      110
+#define NUMVFSITEMS         1591
+#define NUMACTORS           691
+#define NUMSCENES           113
+#define NUMEXITS            110
+#define NUMLINKANIMATIONS   695
 
 // helpers & known types
 #include "autoload.bt"

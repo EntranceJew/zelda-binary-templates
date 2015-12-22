@@ -13,6 +13,7 @@
 #define AUDIOSEQ      0x00044DF0
 #define AUDIOTABLE    0x00094870
 #define ATBL_END      0x004E5C00
+#define LINKANIMFILE  0x004E5C00
 #define CODEFILE      0x00A94000
 #define ACTORSTABLE   0x00B8D440
 #define ENTRANCETABLE 0x00B9F360
@@ -21,16 +22,18 @@
 #define SEQTABLE      0x00BCC6A0
 #define SAMPLES       0x00BCCD90
 #define CODEFILEEND   0x00BCEF30
+#define LINKANIMTABLE 0x00F60310
 
 // quantities of things
-#define NUMACTORS     471
-#define NUMSCENES     331
+#define NUMACTORS           471
+#define NUMSCENES           331
+#define NUMLINKANIMATIONS   573
 
 // helpers & known types
 #include "autoload.bt"
 
 // import the ROM structure
-//#include "skeleton.bt"
+#include "skeleton.bt"
 
 /*
 FSeek(0x032DD000);

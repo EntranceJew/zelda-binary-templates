@@ -1,0 +1,17 @@
+// -*- mode: c;-*-
+typedef struct(uint limbs){
+    // limbs = 21, always
+    local string thisName = "LinkAnimationFrame";
+    SIBE;
+
+    SIT;
+    ZVector translation;
+    
+    SIT;
+    ZVector rotations[limbs]<optimize=false>;
+
+    SIT;
+    ushort expression;
+
+    SIEND;
+} LinkAnimationFrame;
