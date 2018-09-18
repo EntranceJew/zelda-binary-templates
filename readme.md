@@ -7,6 +7,9 @@ If you crack open the ROM you can slurp up that data like some sort of oyster an
 These binary templates aim to cover the gaps in our knowledge by allowing us to explore the data.
 When we can see a byte here or there is being skipped or ignored, we can easily tell what is or isn't being used.
 
+![icons everywhere](https://i.imgur.com/JuCNQIi.gif)
+_Using the power of templates, we're able to view certain image data exactly as it appears in the ROM without any external tools._
+
 ## Binary Templates? 010 Editor?
 If you don't know what [010 editor](http://www.sweetscape.com/010editor/) is and you've been using a hex editor pretty frequently,
 I suggest you try it out. (Plus this repo is mostly useless without it.) If you have it or you can read C structures,
