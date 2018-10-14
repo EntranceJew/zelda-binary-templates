@@ -31,10 +31,10 @@ Help in any way you think you can. Check out the [todo.md](todo.md) to see if th
 I tend to reference ROMs by a shorthand name, the full stats of any ROM I work with are listed in [the checksums directory](checksums/).
 
 ### Majora's Mask
-* `dMM_E_debug.z64` is shorthand for a ROM that matches [these checksums](checksums/decompressed/Legend of Zelda, The - Majora's Mask (E) (M4) (Debug Version).z64.csv)
+* `dMM_E_debug.z64` is shorthand for a ROM that matches [these checksums](checksums/decompressed/Legend%20of%20Zelda%2C%20The%20-%20Majora's%20Mask%20(E)%20(M4)%20(Debug%20Version).z64.csv)
 
 ### Ocarina of Time
-* `dOoT_MQ_E_debug.z64` is shorthand for a ROM that matches [these checksums](checksums/decompressed/Legend of Zelda, The - Ocarina of Time - Master Quest (E) (GC) (Debug Version).z64.csv)
+* `dOoT_MQ_E_debug.z64` is shorthand for a ROM that matches [these checksums](checksums/decompressed/Legend%20of%20Zelda%2C%20The%20-%20Ocarina%20of%20Time%20-%20Master%20Quest%20(E)%20(GC)%20(Debug%20Version).z64.csv)
 
 # Important Files
 * [autoload.bt](autoload.bt) because of nested `#include` restrictions, all includes have go here. Primarily organized alphabetically, and then by dependence. Begins with common scaffolds, then other filetypes.
